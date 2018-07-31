@@ -45,11 +45,10 @@ __copyright__ = \
 __credits__ = ['Nuno Marques <nuno.marques@dronesolution.io>',
                'Vicente Monge']
 __license__ = 'BSD-3-Clause'
-__version__ = '0.1'
+__version__ = '0.1.0'
 __maintainer__ = 'Nuno Marques'
 __email__ = 'nuno.marques@dronesolution.io'
 __status__ = 'Development'
-
 
 project_name = sys.argv[1]
 input_dir = sys.argv[2]
@@ -74,21 +73,33 @@ for filename in os.listdir(output_dir):
         with open(input_file, 'r') as f:
             lines = f.readlines()
             newlines = []
+            alias_msgs = []
+            alias_msg_files = []
 
             for line in lines:
                 for msg_type in msg_list:
                     if ('px4/' + msg_type + ' ') in line:
                         fileUpdated = True
-                        line = line.replace(('px4/' + msg_type), project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
+                        line = line.replace(('px4/' + msg_type),
+                                            project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
                     if ('' + msg_type + '[') in line.partition('#')[0] or ('' + msg_type + ' ') in line.partition('#')[0]:
                         fileUpdated = True
-                        line = line.replace(msg_type, project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
+                        line = line.replace(msg_type,
+                                            project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
                     if '# TOPICS' in line:
                         fileUpdated = True
+                        alias_msgs += line.split()
+                        alias_msgs.remove('#')
+                        alias_msgs.remove('TOPICS')
                         line = line.replace(line, '')
                 newlines.append(line)
 
-        if fileUpdated:
-            with open(input_file, 'w') as f:
+        for msg_file in alias_msgs:
+            with open(output_dir + msg_file.partition(".")[0].title().replace('_', '') + ".msg", 'w+') as f:
                 for line in newlines:
-                        f.write(line)
+                    f.write(line)
+
+        if fileUpdated:
+            with open(input_file, 'w+') as f:
+                for line in newlines:
+                    f.write(line)

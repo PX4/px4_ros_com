@@ -1,1 +1,3 @@
-msg/
+msg/*.msg
+msg/templates/uorb_rtps_message_ids.yaml
+src/micrortps_agent/

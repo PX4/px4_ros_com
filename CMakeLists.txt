@@ -19,6 +19,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
 
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(PythonInterp REQUIRED)
 
 ##########################
 ## Declare ROS messages ##
@@ -35,6 +36,31 @@ if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
 else()
     message(FATAL_ERROR "No uORB msgs found to be generated!")
 endif()
+
+####################################
+## Generate micro-RTPS agent code ##
+####################################
+
+set(ENV{PYTHONPATH} "$ENV{PYTHONPATH}:${PX4_FIRMWARE_MSG_DIR}/tools/")
+
+# Parse the RTPS IDs for each uORB msg into the counterparts for ROS
+execute_process(
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/PX42ROSRTPSIds.py
+                --input-file ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml
+                --output-file ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+    )
+
+execute_process(
+        COMMAND ${PYTHON_EXECUTABLE} ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+                --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
+                --send ${ROS_UORB_MSGS_DIR}
+                --receive ${ROS_UORB_MSGS_DIR}
+                --topic-msg-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg
+                --urtps-templates-dir "/templates"
+                --agent
+                --agent-outdir ${CMAKE_CURRENT_SOURCE_DIR}/src/micrortps_agent
+                --package ${PROJECT_NAME}
+    )
 
 ###################################
 ## ament specific configuration ##

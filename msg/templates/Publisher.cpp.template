@@ -15,6 +15,8 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
+package = 'px4_ros_com'
+namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -66,6 +68,8 @@ topic = spec.short_name
 
 #include "@(topic)_Publisher.h"
 
+using namespace eprosima::fastrtps;
+using namespace eprosima::fastrtps::rtps;
 
 @(topic)_Publisher::@(topic)_Publisher() : mp_participant(nullptr), mp_publisher(nullptr) {}
 
@@ -92,7 +96,8 @@ bool @(topic)_Publisher::init()
     PublisherAttributes Wparam;
     Wparam.topic.topicKind = NO_KEY;
     Wparam.topic.topicDataType = myType.getName();  //This type MUST be registered
-    Wparam.topic.topicName = "@(topic)_PubSubTopic";
+    Wparam.topic.topicName = "@(topic)_topic";
+    Wparam.qos.m_partition.push_back("rt");
     mp_publisher = Domain::createPublisher(mp_participant, Wparam, (PublisherListener*) &m_listener);
     if(mp_publisher == nullptr)
         return false;
@@ -123,7 +128,7 @@ void @(topic)_Publisher::run()
 
     // Publication code
 
-    @(topic)_ st;
+    @(package)::@(namespace)_::@(topic)_ st;
 
     /* Initialize your structure here */
 
@@ -148,7 +153,7 @@ void @(topic)_Publisher::run()
     }while(std::cin >> ch);
 }
 
-void @(topic)_Publisher::publish(@(topic)_* st)
+void @(topic)_Publisher::publish(@(package)::@(namespace)_::@(topic)_* st)
 {
     mp_publisher->write(st);
 }

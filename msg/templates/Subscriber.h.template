@@ -15,6 +15,8 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
+package = 'px4_ros_com'
+namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -94,7 +96,7 @@ private:
         bool has_msg = false;
 
     } m_listener;
-    @(topic)_PubSubType myType;
+    @(package)::@(namespace)_::@(topic)_PubSubType myType;
 };
 
 #endif // _@(topic)__SUBSCRIBER_H_

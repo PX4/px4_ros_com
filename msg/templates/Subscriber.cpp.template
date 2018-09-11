@@ -15,6 +15,8 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
+package = 'px4_ros_com'
+namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -64,6 +66,8 @@ topic = spec.short_name
 
 #include "@(topic)_Subscriber.h"
 
+using namespace eprosima::fastrtps;
+using namespace eprosima::fastrtps::rtps;
 
 @(topic)_Subscriber::@(topic)_Subscriber() : mp_participant(nullptr), mp_subscriber(nullptr) {}
 
@@ -90,7 +94,8 @@ bool @(topic)_Subscriber::init()
     SubscriberAttributes Rparam;
     Rparam.topic.topicKind = NO_KEY;
     Rparam.topic.topicDataType = myType.getName(); //Must be registered before the creation of the subscriber
-    Rparam.topic.topicName = "@(topic)_PubSubTopic";
+    Rparam.topic.topicName = "@(topic)_topic";
+    Rparam.qos.m_partition.push_back("rt");
     mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, (SubscriberListener*) &m_listener);
     if(mp_subscriber == nullptr)
         return false;
@@ -114,7 +119,9 @@ void @(topic)_Subscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Ma
 void @(topic)_Subscriber::SubListener::onNewDataMessage(Subscriber* sub)
 {
         // Take data
-        if(sub->takeNextData(&msg, &m_info))
+        @(package)::@(namespace)_::@(topic)_ st;
+
+        if(sub->takeNextData(&st, &m_info))
         {
             if(m_info.sampleKind == ALIVE)
             {

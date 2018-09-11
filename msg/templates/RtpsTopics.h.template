@@ -19,7 +19,7 @@ from px_generate_uorb_topic_files import MsgScope # this is in Tools/
 topic_names = [single_spec.short_name for single_spec in spec]
 send_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.SEND]
 recv_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.RECEIVE]
-yaml_file = os.environ['RTPS_ID_YAML_FILE']
+yaml_file = os.path.abspath('../..') + '/src/px4_ros_com/msg/templates/uorb_rtps_message_ids.yaml'
 try:
     msg_ids = parse_yaml_msg_id_file(yaml_file)
 except OSError as e:

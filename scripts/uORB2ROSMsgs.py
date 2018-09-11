@@ -81,11 +81,11 @@ for filename in os.listdir(output_dir):
                     if ('px4/' + msg_type + ' ') in line:
                         fileUpdated = True
                         line = line.replace(('px4/' + msg_type),
-                                            project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
+                                            msg_type.partition(".")[0].title().replace('_', ''))
                     if ('' + msg_type + '[') in line.partition('#')[0] or ('' + msg_type + ' ') in line.partition('#')[0]:
                         fileUpdated = True
                         line = line.replace(msg_type,
-                                            project_name + '/' + msg_type.partition(".")[0].title().replace('_', ''))
+                                            msg_type.partition(".")[0].title().replace('_', ''))
                     if '# TOPICS' in line:
                         fileUpdated = True
                         alias_msgs += line.split()

@@ -27,6 +27,8 @@ except OSError as e:
         raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), yaml_file)
     else:
         raise
+package = 'px4_ros_com'
+namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -99,7 +101,7 @@ void RtpsTopics::publish(uint8_t topic_ID, char data_buffer[], size_t len)
 @[for topic in send_topics]@
         case @(rtps_message_id(msg_ids, topic)): // @(topic)
         {
-            @(topic)_ st;
+            @(package)::msg::@(namespace)_::@(topic)_ st;
             eprosima::fastcdr::FastBuffer cdrbuffer(data_buffer, len);
             eprosima::fastcdr::Cdr cdr_des(cdrbuffer);
             st.deserialize(cdr_des);
@@ -152,7 +154,7 @@ bool RtpsTopics::getMsg(const uint8_t topic_ID, eprosima::fastcdr::Cdr &scdr)
         case @(rtps_message_id(msg_ids, topic)): // @(topic)
             if (_@(topic)_sub.hasMsg())
             {
-                @(topic)_ msg = _@(topic)_sub.getMsg();
+                @(package)::msg::@(namespace)_::@(topic)_ msg = _@(topic)_sub.getMsg();
                 msg.serialize(scdr);
                 ret = true;
             }

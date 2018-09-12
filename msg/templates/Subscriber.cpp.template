@@ -119,7 +119,7 @@ void @(topic)_Subscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Ma
 void @(topic)_Subscriber::SubListener::onNewDataMessage(Subscriber* sub)
 {
         // Take data
-        @(package)::@(namespace)_::@(topic)_ st;
+        @(package)::msg::@(namespace)_::@(topic)_ st;
 
         if(sub->takeNextData(&st, &m_info))
         {
@@ -146,7 +146,7 @@ bool @(topic)_Subscriber::hasMsg()
     return m_listener.has_msg;
 }
 
-@(topic)_ @(topic)_Subscriber::getMsg()
+@(package)::msg::@(namespace)_::@(topic)_ @(topic)_Subscriber::getMsg()
 {
     m_listener.has_msg = false;
     return m_listener.msg;

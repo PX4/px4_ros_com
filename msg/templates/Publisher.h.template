@@ -76,7 +76,7 @@ public:
     virtual ~@(topic)_Publisher();
     bool init();
     void run();
-    void publish(@(package)::@(namespace)_::@(topic)_* st);
+    void publish(@(package)::msg::@(namespace)_::@(topic)_* st);
 private:
     Participant *mp_participant;
     Publisher *mp_publisher;
@@ -89,7 +89,7 @@ private:
         void onPublicationMatched(Publisher* pub, MatchingInfo& info);
         int n_matched;
     } m_listener;
-    @(package)::@(namespace)_::@(topic)_PubSubType myType;
+    @(package)::msg::@(namespace)_::@(topic)_PubSubType myType;
 };
 
 #endif // _@(topic)__PUBLISHER_H_

@@ -77,7 +77,7 @@ public:
     bool init();
     void run();
     bool hasMsg();
-    @(topic)_ getMsg();
+    @(package)::msg::@(namespace)_::@(topic)_ getMsg();
 private:
     Participant *mp_participant;
     Subscriber *mp_subscriber;
@@ -92,11 +92,11 @@ private:
         SampleInfo_t m_info;
         int n_matched;
         int n_msg;
-        @(topic)_ msg;
+        @(package)::msg::@(namespace)_::@(topic)_ msg;
         bool has_msg = false;
 
     } m_listener;
-    @(package)::@(namespace)_::@(topic)_PubSubType myType;
+    @(package)::msg::@(namespace)_::@(topic)_PubSubType myType;
 };
 
 #endif // _@(topic)__SUBSCRIBER_H_

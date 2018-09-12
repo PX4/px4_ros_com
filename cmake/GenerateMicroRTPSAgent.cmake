@@ -25,13 +25,14 @@ endif()
 
 # Generates the micro-RTPS agent code after the IDL msgs are generated
 add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
+    TARGET ${PROJECT_NAME}
     COMMAND ${PYTHON_EXECUTABLE} ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
         --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
+        --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
         --send ${ROS_UORB_MSGS_DIR}
         --receive ${ROS_UORB_MSGS_DIR}
         --topic-msg-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg
-        --urtps-templates-dir "/templates"
+        --urtps-templates-dir "templates"
         --agent
         --agent-outdir ${CMAKE_CURRENT_SOURCE_DIR}/src/micrortps_agent
         --package ${PROJECT_NAME}

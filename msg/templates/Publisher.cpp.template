@@ -128,7 +128,7 @@ void @(topic)_Publisher::run()
 
     // Publication code
 
-    @(package)::@(namespace)_::@(topic)_ st;
+    @(package)::msg::@(namespace)_::@(topic)_ st;
 
     /* Initialize your structure here */
 
@@ -153,7 +153,7 @@ void @(topic)_Publisher::run()
     }while(std::cin >> ch);
 }
 
-void @(topic)_Publisher::publish(@(package)::@(namespace)_::@(topic)_* st)
+void @(topic)_Publisher::publish(@(package)::msg::@(namespace)_::@(topic)_* st)
 {
     mp_publisher->write(st);
 }

@@ -19,6 +19,8 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(fastrtps REQUIRED)
 find_package(fastcdr REQUIRED)
+get_default_rmw_implementation(rmw_implementation)
+find_package("${rmw_implementation}" REQUIRED)
 
 find_package(PythonInterp REQUIRED)
 
@@ -44,17 +46,45 @@ endif()
 
 include(GenerateMicroRTPSAgent)
 
-###########
-## Build ##
-###########
+#################
+# Setup targets #
+#################
+
+include_directories(
+  include
+  ${rclcpp_INCLUDE_DIRS}
+)
 
 # Build micro-RTPS agent code
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
 target_link_libraries(micrortps_agent fastrtps fastcdr)
 
+# Build listener
+add_executable(
+    sensor_combined_listener
+    src/listeners/sensor_combined_listener.cpp
+)
+add_dependencies(sensor_combined_listener micrortps_agent)
+
 ###################################
 ## ament specific configuration ##
 ###################################
+
+# Finds the relevant generated C++ code for the msgs generated from rosidl_generator_dds_idl
+get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
+
+foreach(typesupport_impl ${typesupport_impls})
+    rosidl_target_interfaces(
+        sensor_combined_listener
+        ${PROJECT_NAME} ${typesupport_impl}
+    )
+endforeach()
+
+# Add listener dependencies
+ament_target_dependencies(
+    sensor_combined_listener
+    rclcpp
+)
 
 # Export information to downstream packages
 ament_export_dependencies(
@@ -78,7 +108,7 @@ install(
   DESTINATION include
 )
 install(
-  TARGETS micrortps_agent
+  TARGETS micrortps_agent sensor_combined_listener
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

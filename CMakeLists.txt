@@ -17,6 +17,8 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(fastrtps REQUIRED)
+find_package(fastcdr REQUIRED)
 
 find_package(PythonInterp REQUIRED)
 
@@ -42,21 +44,45 @@ endif()
 
 include(GenerateMicroRTPSAgent)
 
-###################################
-## ament specific configuration ##
-###################################
-
 ###########
 ## Build ##
 ###########
 
-ament_export_dependencies(rosidl_default_runtime)
+# Build micro-RTPS agent code
+add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
+target_link_libraries(micrortps_agent fastrtps fastcdr)
+
+###################################
+## ament specific configuration ##
+###################################
+
+# Export information to downstream packages
+ament_export_dependencies(
+  rclcpp
+  rosidl_default_runtime
+)
+ament_export_include_directories(include)
+ament_export_libraries()
 
 #############
 ## Install ##
 #############
 
-#TODO
+# Install artifacts
+install(
+  DIRECTORY cmake
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+install(
+  TARGETS micrortps_agent
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 #############
 ## Testing ##

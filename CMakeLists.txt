@@ -66,6 +66,13 @@ add_executable(
 )
 add_dependencies(sensor_combined_listener micrortps_agent)
 
+# Build advertiser
+add_executable(
+    debug_vect_advertiser
+    src/advertisers/debug_vect_advertiser.cpp
+)
+add_dependencies(debug_vect_advertiser micrortps_agent)
+
 ###################################
 ## ament specific configuration ##
 ###################################
@@ -78,11 +85,21 @@ foreach(typesupport_impl ${typesupport_impls})
         sensor_combined_listener
         ${PROJECT_NAME} ${typesupport_impl}
     )
+    rosidl_target_interfaces(
+        debug_vect_advertiser
+        ${PROJECT_NAME} ${typesupport_impl}
+    )
 endforeach()
 
 # Add listener dependencies
 ament_target_dependencies(
     sensor_combined_listener
+    rclcpp
+)
+
+# Add advertiser dependencies
+ament_target_dependencies(
+    debug_vect_advertiser
     rclcpp
 )
 
@@ -108,7 +125,7 @@ install(
   DESTINATION include
 )
 install(
-  TARGETS micrortps_agent sensor_combined_listener
+  TARGETS micrortps_agent sensor_combined_listener debug_vect_advertiser
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

@@ -1,7 +1,6 @@
 /****************************************************************************
  *
- * Copyright 2017 Proyectos y Sistemas de Mantenimiento SL (eProsima).
- *           2018 PX4 Pro Development Team. All rights reserved.
+ * Copyright 2018 PX4 Pro Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,52 +31,48 @@
  ****************************************************************************/
 
 /**
- * @brief Sensor Combined uORB topic listener example
- * @file sensor_combined_listener.cpp
+ * @brief Debug Vect uORB topic adverstiser example
+ * @file debug_vect_advertiser.cpp
  * @addtogroup examples
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
- * @author Vicente Monge
  */
 
+#include <chrono>
 #include <rclcpp/rclcpp.hpp>
-#include <px4_ros_com/msg/sensor_combined.hpp>
+#include <px4_ros_com/msg/debug_vect.hpp>
 
-/**
- * @brief Sensor Combined uORB topic data callback
- */
-class SensorCombinedListener : public rclcpp::Node
+using namespace std::chrono_literals;
+
+class DebugVectAdvertiser : public rclcpp::Node
 {
 public:
-	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
-		auto callback =
-		[this](const px4_ros_com::msg::SensorCombined::SharedPtr msg)->void
-		{
-			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-			std::cout << "RECEIVED DATA ON SENSOR COMBINED" << std::endl;
-			std::cout << "================================" << std::endl;
-			std::cout << "gyro_rad[0]: " << msg->gyro_rad[0] << std::endl;
-			std::cout << "gyro_rad[1]: " << msg->gyro_rad[1] << std::endl;
-			std::cout << "gyro_rad[2]: " << msg->gyro_rad[2] << std::endl;
-			std::cout << "gyro_integral_dt: " << msg->gyro_integral_dt << std::endl;
-			std::cout << "accelerometer_timestamp_relative: " << msg->accelerometer_timestamp_relative << std::endl;
-			std::cout << "accelerometer_m_s2[0]: " << msg->accelerometer_m_s2[0] << std::endl;
-			std::cout << "accelerometer_m_s2[1]: " << msg->accelerometer_m_s2[1] << std::endl;
-			std::cout << "accelerometer_m_s2[2]: " << msg->accelerometer_m_s2[2] << std::endl;
-			std::cout << "accelerometer_integral_dt: " << msg->accelerometer_integral_dt << std::endl;
+	DebugVectAdvertiser() : Node("debug_vect_advertiser") {
+		publisher_ = this->create_publisher<px4_ros_com::msg::DebugVect>("DebugVect_topic");
+		auto timer_callback =
+		[this]()->void {
+			auto debug_vect = px4_ros_com::msg::DebugVect();
+			debug_vect.timestamp = this->now().nanoseconds() * 1E-3;
+			debug_vect.x = 1.0;
+			debug_vect.y = 2.0;
+			debug_vect.z = 3.0;
+			RCLCPP_INFO(this->get_logger(), "Publishing debug_vect: time: %f x:%f y:%f z:%f",
+                                debug_vect.timestamp, debug_vect.x, debug_vect.y, debug_vect.z)
+			this->publisher_->publish(debug_vect);
 		};
-		subscription_ = this->create_subscription<px4_ros_com::msg::SensorCombined>("SensorCombined_topic", callback);
+		timer_ = this->create_wall_timer(500ms, timer_callback);
 	}
 
 private:
-	rclcpp::Subscription<px4_ros_com::msg::SensorCombined>::SharedPtr subscription_;
+	rclcpp::TimerBase::SharedPtr timer_;
+	rclcpp::Publisher<px4_ros_com::msg::DebugVect>::SharedPtr publisher_;
 };
 
 int main(int argc, char *argv[])
 {
-	std::cout << "Starting sensor_combined listener node..." << std::endl;
+	std::cout << "Starting debug_vect advertiser node..." << std::endl;
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	rclcpp::init(argc, argv);
-	rclcpp::spin(std::make_shared<SensorCombinedListener>());
+	rclcpp::spin(std::make_shared<DebugVectAdvertiser>());
 
 	rclcpp::shutdown();
 	return 0;

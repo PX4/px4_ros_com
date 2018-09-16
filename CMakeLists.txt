@@ -10,6 +10,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 endif()
 
+option(SANITIZER "Looks for and enables a sanitizer set by this option" "")
+if(SANITIZER)
+  find_package(Sanitizer REQUIRED)
+endif()
+
 # Look for the PX4 Firmware dir and get the uORB msg definitions
 find_package(PX4Firmware REQUIRED)
 

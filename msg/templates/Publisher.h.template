@@ -15,8 +15,6 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
-package = 'px4_ros_com'
-namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -76,7 +74,7 @@ public:
     virtual ~@(topic)_Publisher();
     bool init();
     void run();
-    void publish(@(package)::msg::@(namespace)_::@(topic)_* st);
+    void publish(@(package)::msg::dds_::@(topic)_* st);
 private:
     Participant *mp_participant;
     Publisher *mp_publisher;
@@ -89,7 +87,7 @@ private:
         void onPublicationMatched(Publisher* pub, MatchingInfo& info);
         int n_matched;
     } m_listener;
-    @(package)::msg::@(namespace)_::@(topic)_PubSubType myType;
+    @(package)::msg::dds_::@(topic)_PubSubType myType;
 };
 
 #endif // _@(topic)__PUBLISHER_H_

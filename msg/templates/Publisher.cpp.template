@@ -15,8 +15,6 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
-package = 'px4_ros_com'
-namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -128,7 +126,7 @@ void @(topic)_Publisher::run()
 
     // Publication code
 
-    @(package)::msg::@(namespace)_::@(topic)_ st;
+    @(package)::msg::dds_::@(topic)_ st;
 
     /* Initialize your structure here */
 
@@ -153,7 +151,7 @@ void @(topic)_Publisher::run()
     }while(std::cin >> ch);
 }
 
-void @(topic)_Publisher::publish(@(package)::msg::@(namespace)_::@(topic)_* st)
+void @(topic)_Publisher::publish(@(package)::msg::dds_::@(topic)_* st)
 {
     mp_publisher->write(st);
 }

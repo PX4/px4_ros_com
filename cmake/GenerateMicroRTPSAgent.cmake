@@ -88,7 +88,8 @@ add_custom_command(
         --send ${ROS_UORB_MSGS_DIR}
         --receive ${ROS_UORB_MSGS_DIR}
         --topic-msg-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg
-        --urtps-templates-dir "templates"
+        --urtps-templates-dir templates
+        --rtps-ids-file templates/uorb_rtps_message_ids.yaml
         --agent
         --agent-outdir ${MICRORTPS_AGENT_DIR}
         --package ${PROJECT_NAME}

@@ -15,8 +15,6 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 
 topic = spec.short_name
-package = 'px4_ros_com'
-namespace = 'dds'
 }@
 /****************************************************************************
  *
@@ -119,7 +117,7 @@ void @(topic)_Subscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Ma
 void @(topic)_Subscriber::SubListener::onNewDataMessage(Subscriber* sub)
 {
         // Take data
-        @(package)::msg::@(namespace)_::@(topic)_ st;
+        @(package)::msg::dds_::@(topic)_ st;
 
         if(sub->takeNextData(&st, &m_info))
         {
@@ -146,7 +144,7 @@ bool @(topic)_Subscriber::hasMsg()
     return m_listener.has_msg;
 }
 
-@(package)::msg::@(namespace)_::@(topic)_ @(topic)_Subscriber::getMsg()
+@(package)::msg::dds_::@(topic)_ @(topic)_Subscriber::getMsg()
 {
     m_listener.has_msg = false;
     return m_listener.msg;

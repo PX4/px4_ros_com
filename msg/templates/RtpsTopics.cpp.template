@@ -16,7 +16,6 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 from px_generate_uorb_topic_files import MsgScope # this is in Tools/
 
-topic_names = [single_spec.short_name for single_spec in spec]
 send_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.SEND]
 recv_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.RECEIVE]
 }@
@@ -91,7 +90,7 @@ void RtpsTopics::publish(uint8_t topic_ID, char data_buffer[], size_t len)
 @[for topic in send_topics]@
         case @(rtps_message_id(ids, topic)): // @(topic)
         {
-            @(package)::msg::dds_::@(topic)_ st;
+            @(package[0])::msg::dds_::@(topic)_ st;
             eprosima::fastcdr::FastBuffer cdrbuffer(data_buffer, len);
             eprosima::fastcdr::Cdr cdr_des(cdrbuffer);
             st.deserialize(cdr_des);
@@ -144,7 +143,7 @@ bool RtpsTopics::getMsg(const uint8_t topic_ID, eprosima::fastcdr::Cdr &scdr)
         case @(rtps_message_id(ids, topic)): // @(topic)
             if (_@(topic)_sub.hasMsg())
             {
-                @(package)::msg::dds_::@(topic)_ msg = _@(topic)_sub.getMsg();
+                @(package[0])::msg::dds_::@(topic)_ msg = _@(topic)_sub.getMsg();
                 msg.serialize(scdr);
                 ret = true;
             }

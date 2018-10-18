@@ -121,7 +121,6 @@ add_custom_command(
         $ENV{FASTRTPSGEN_DIR}
         ${ROS_UORB_MSGS_DIR}
     COMMAND ${PYTHON_EXECUTABLE} ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
-        --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
         --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
         --topic-msg-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg
         --urtps-templates-dir templates

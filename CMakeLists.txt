@@ -85,7 +85,7 @@ add_executable(
     sensor_combined_listener
     src/listeners/sensor_combined_listener.cpp
 )
-add_dependencies(sensor_combined_listener ${catkin_EXPORTED_TARGETS})
+add_dependencies(sensor_combined_listener ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(sensor_combined_listener ${catkin_LIBRARIES})
 
 ## Build advertiser

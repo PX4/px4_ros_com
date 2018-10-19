@@ -13,7 +13,9 @@ env:
     - CCACHE_DIR=${HOME}/.ccache
     - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2018-10-17
     - PX4_FIRMWARE=https://github.com/PX4/Firmware.git
-    - BUILD="source /opt/ros/ardent/setup.sh; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src; git clone --recursive ${PX4_FIRMWARE} ../Firmware; colcon build --event-handlers console_direct+ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug"
+    - COLCON_BUILD="unset ROS_DISTRO; source /opt/ros/bouncy/setup.sh; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src; git clone --recursive ${PX4_FIRMWARE} ../Firmware; colcon build --event-handlers console_direct+ --symlink-install"
+    - CATKIN_BUILD="unset ROS_DISTRO; source /opt/ros/melodic/setup.sh; mkdir -p ~/catkin_ws/src; cd ~/catkin_ws; ln -s ${TRAVIS_BUILD_DIR} src; git clone --recursive ${PX4_FIRMWARE} ../Firmware; catkin build"
 
 script:
-  - docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${BUILD}"
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${COLCON_BUILD}"; fi
+  - if [ "$TRAVIS_BRANCH" = "ros1" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${CATKIN_BUILD}"; fi

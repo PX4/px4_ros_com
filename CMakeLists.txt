@@ -6,11 +6,7 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EnableC++XX)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-endif()
-
-# Check if any sanitizers set
+## Check if any sanitizers set
 include(EnableSanitizers)
 
 # Option to set the PX4 Firmware repository directory
@@ -22,16 +18,20 @@ endif()
 # Look for the PX4 Firmware dir and get the uORB msg definitions if PX4_FIRMWARE_DIR is not set
 find_package(PX4Firmware REQUIRED)
 
-find_package(ament_cmake REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(fastrtps REQUIRED)
-find_package(fastcdr REQUIRED)
-get_default_rmw_implementation(rmw_implementation)
-find_package("${rmw_implementation}" REQUIRED)
+## Find catkin macros and libraries
+find_package(catkin REQUIRED COMPONENTS
+    geographic_msgs
+    geometry_msgs
+    message_generation
+    message_runtime
+    nav_msgs
+    roscpp
+    sensor_msgs
+    std_msgs
+)
 
-find_package(PythonInterp REQUIRED)
+## System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS system)
 
 ##########################
 ## Declare ROS messages ##
@@ -40,104 +40,82 @@ find_package(PythonInterp REQUIRED)
 include(uORBToPascalCase)
 
 if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
-    rosidl_generate_interfaces(${PROJECT_NAME}
-      ${ROS_UORB_MSGS}
-      DEPENDENCIES
-      builtin_interfaces
+    STRING(REGEX REPLACE "msg/" "" ROS_UORB_MSGS "${ROS_UORB_MSGS}")
+    add_message_files(
+          DIRECTORY msg
+          FILES
+          ${ROS_UORB_MSGS}
     )
 else()
     message(FATAL_ERROR "No uORB msgs found to be generated!")
 endif()
 
-####################################
-## Generate micro-RTPS agent code ##
-####################################
+## Generate added messages
+generate_messages()
 
-include(GenerateMicroRTPSAgent)
-
-#################
-# Setup targets #
-#################
-
-include_directories(
-  include
-  ${rclcpp_INCLUDE_DIRS}
+###################################
+## catkin specific configuration ##
+###################################
+## The catkin_package macro generates cmake config files for your package
+## Declare things to be passed to dependent projects
+## INCLUDE_DIRS: uncomment this if you package contains header files
+## LIBRARIES: libraries you create in this project that dependent projects also need
+## CATKIN_DEPENDS: catkin_packages dependent projects also need
+## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+    INCLUDE_DIRS include
+    LIBRARIES px4_ros_com
+    CATKIN_DEPENDS geographic_msgs geometry_msgs message_generation message_runtime nav_msgs roscpp sensor_msgs std_msgs
+    DEPENDS Boost
 )
 
-# Build micro-RTPS agent code
-add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
-target_link_libraries(micrortps_agent fastrtps fastcdr)
+###########
+## Build ##
+###########
 
-# Build listener
+## Add include dirs
+include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
+
+## Build listener
 add_executable(
     sensor_combined_listener
     src/listeners/sensor_combined_listener.cpp
 )
-add_dependencies(sensor_combined_listener micrortps_agent)
+add_dependencies(sensor_combined_listener ${catkin_EXPORTED_TARGETS})
+target_link_libraries(sensor_combined_listener ${catkin_LIBRARIES})
 
-# Build advertiser
-add_executable(
-    debug_vect_advertiser
-    src/advertisers/debug_vect_advertiser.cpp
-)
-add_dependencies(debug_vect_advertiser micrortps_agent)
-
-###################################
-## ament specific configuration ##
-###################################
-
-# Finds the relevant generated C++ code for the msgs generated from rosidl_generator_dds_idl
-get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
-
-foreach(typesupport_impl ${typesupport_impls})
-    rosidl_target_interfaces(
-        sensor_combined_listener
-        ${PROJECT_NAME} ${typesupport_impl}
-    )
-    rosidl_target_interfaces(
-        debug_vect_advertiser
-        ${PROJECT_NAME} ${typesupport_impl}
-    )
-endforeach()
-
-# Add listener dependencies
-ament_target_dependencies(
-    sensor_combined_listener
-    rclcpp
-)
-
-# Add advertiser dependencies
-ament_target_dependencies(
-    debug_vect_advertiser
-    rclcpp
-)
-
-# Export information to downstream packages
-ament_export_dependencies(
-  rclcpp
-  rosidl_default_runtime
-)
-ament_export_include_directories(include)
-ament_export_libraries()
+## Build advertiser
+# add_executable(
+#     debug_vect_advertiser
+#     src/advertisers/debug_vect_advertiser.cpp
+# )
+# add_dependencies(debug_vect_advertiser ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(debug_vect_advertiser ${catkin_LIBRARIES})
 
 #############
 ## Install ##
 #############
 
-# Install artifacts
-install(
-  DIRECTORY cmake
-  DESTINATION share/${PROJECT_NAME}
+## Mark executables and/or libraries for installation
+install(TARGETS sensor_combined_listener # debug_vect_advertiser
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-install(
-  DIRECTORY include
-  DESTINATION include
+
+## Mark cpp header files for installation
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
-install(
-  TARGETS micrortps_agent sensor_combined_listener debug_vect_advertiser
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+
+## Mark other files for installation (e.g. launch and bag files, etc.)
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
 
 # install ROS2<->ROS1 mapping rules
@@ -156,6 +134,8 @@ install(
 ## Testing ##
 #############
 
+if(CATKIN_ENABLE_TESTING)
+
 #TODO
 
-ament_package()
+endif()

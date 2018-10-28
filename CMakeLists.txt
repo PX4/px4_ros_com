@@ -80,6 +80,14 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
 )
 
+## Add library
+add_library(${PROJECT_NAME}
+    src/listeners/sensor_combined_listener.cpp
+#   src/advertisers/debug_vect_advertiser.cpp
+)
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
 ## Build listener
 add_executable(
     sensor_combined_listener
@@ -101,7 +109,7 @@ target_link_libraries(sensor_combined_listener ${catkin_LIBRARIES})
 #############
 
 ## Mark executables and/or libraries for installation
-install(TARGETS sensor_combined_listener # debug_vect_advertiser
+install(TARGETS ${PROJECT_NAME} sensor_combined_listener # debug_vect_advertiser
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

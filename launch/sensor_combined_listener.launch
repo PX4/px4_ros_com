@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="launch_prefix" default=""/> <!-- for debugging purpose, it fills launch-prefix tag of the nodes -->
+  <arg name="output" default="screen"/> <!--Control node output (screen or log)-->
+  <node pkg="px4_ros_com" type="sensor_combined_listener" name="sensor_combined_listener" output="$(arg output)" launch-prefix="$(arg launch_prefix)"/>
+</launch>

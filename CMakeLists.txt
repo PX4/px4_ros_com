@@ -124,7 +124,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 install(
-  DIRECTORY include/
+  DIRECTORY include
   DESTINATION include
 )
 install(
@@ -133,9 +133,16 @@ install(
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
 # install ROS2<->ROS1 mapping rules
 install(
   FILES px4_ros_com_mapping_rules.yaml
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install launch files
+install(
+  DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 

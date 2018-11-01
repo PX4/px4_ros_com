@@ -99,7 +99,6 @@ void RtpsTopics::publish(uint8_t topic_ID, char data_buffer[], size_t len)
         break;
 @[end for]@
         default:
-            printf("Unexpected topic ID to publish\n");
         break;
     }
 }
@@ -119,16 +118,9 @@ bool RtpsTopics::hasMsg(uint8_t *topic_ID)
             case @(rtps_message_id(ids, topic)): if (_@(topic)_sub.hasMsg()) *topic_ID = @(rtps_message_id(ids, topic)); break;
 @[end for]@
             default:
-                printf("Unexpected topic ID to check hasMsg\n");
             break;
         }
         _next_sub_idx++;
-    }
-
-    if (0 == *topic_ID)
-    {
-        _next_sub_idx = 0;
-        return false;
     }
 
     return true;
@@ -150,7 +142,6 @@ bool RtpsTopics::getMsg(const uint8_t topic_ID, eprosima::fastcdr::Cdr &scdr)
         break;
 @[end for]@
         default:
-            printf("Unexpected topic ID '%hhu' to getMsg\n", topic_ID);
         break;
     }
 

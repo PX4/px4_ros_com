@@ -50,7 +50,7 @@ source /opt/ros/$ROS_DISTRO2/setup.bash
 if [ -f "$ROS1_WS_DIR/install/setup.bash" ]; then
   source "$ROS1_WS_DIR/install/setup.bash"
 else
-  source $ROS1_WS_DIR/scripts/build_ros1_side.sh
+  source $ROS1_WS_DIR/src/px4_ros_com/scripts/build_ros1_side.bash
 fi
 source $ROS2_WS_DIR/install/setup.bash
 

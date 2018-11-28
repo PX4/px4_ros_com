@@ -23,7 +23,7 @@ esac
 
 SCRIPT_DIR=$PWD
 REPO_DIR="$( cd "$(dirname "$SCRIPT_DIR")" && pwd )"
-ROS2_PKG_SRC_DIR="$(cd ../../; pwd)"
+ROS2_PKG_SRC_DIR="$(cd ..; pwd)"
 
 # by default set to $HOME/px4_ros_com_ros1 but user can use command line arg instead
 export ROS1_WS_DIR=${1:-"$( cd "$HOME/px4_ros_com_ros1" && pwd )"}

@@ -7,7 +7,7 @@ ROS_DISTRO1=${ROS_DISTRO1:-$(case ${UBUNTU_CODENAME:-"$(lsb_release -s -c)"} in
   "xenial")
     echo "kinetic"
     ;;
-  "bouncy")
+  "bionic")
     echo "melodic"
     ;;
   *)

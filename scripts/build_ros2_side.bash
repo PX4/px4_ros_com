@@ -11,7 +11,7 @@ case "$UBUNTU_CODENAME" in
     export ROS_DISTRO1="kinetic"
     export ROS_DISTRO2="ardent"
     ;;
-  "bouncy")
+  "bionic")
     export ROS_DISTRO1="melodic"
     export ROS_DISTRO2="bouncy"
     ;;

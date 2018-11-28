@@ -35,7 +35,8 @@ ROS2_WS_DIR="$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd )"
 
 # clone ros1_bridge to the workspace dir
 if [ ! -d "$ROS2_PKG_SRC_DIR/ros1_bridge" ]; then
-  cd $ROS2_PKG_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git
+  # use $ROS_DISTRO2 branch as the latest upstream API changed to fit ROS2 Crystal release
+  cd $ROS2_PKG_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS_DISTRO2
 fi
 
 # build px4_ros_com package, except the ros1_bridge

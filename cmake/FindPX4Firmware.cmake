@@ -44,6 +44,7 @@
 
 # search hints
 set(PX4_FIRMWARE_EXTRA_SEARCH_HINTS
+    ${PX4_FIRMWARE_DIR}/src
     ${CMAKE_SOURCE_DIR}/Firmware/src
     ${CMAKE_SOURCE_DIR}/PX4/Firmware/src
     ${CATKIN_DEVEL_PREFIX}/Firmware/src

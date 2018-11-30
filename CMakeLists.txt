@@ -13,7 +13,13 @@ endif()
 # Check if any sanitizers set
 include(EnableSanitizers)
 
-# Look for the PX4 Firmware dir and get the uORB msg definitions
+# Option to set the PX4 Firmware repository directory
+option(PX4_FIRMWARE_DIR "PX4 Firmware repository directory (by default not set)" "")
+if(${PX4_FIRMWARE} NOT STREQUAL "")
+  set(PX4_FIRMWARE_DIR "${PX4_FIRMWARE_DIR}" CACHE INTERNAL "PX4_FIRMWARE_DIR")
+endif()
+
+# Look for the PX4 Firmware dir and get the uORB msg definitions if PX4_FIRMWARE_DIR is not set
 find_package(PX4Firmware REQUIRED)
 
 find_package(ament_cmake REQUIRED)

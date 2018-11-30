@@ -39,8 +39,11 @@ if [ ! -d "$ROS2_PKG_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_PKG_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS_DISTRO2
 fi
 
+# Check if the PX4 Firmware dir is passed by argument
+PX4_FIRMWARE_DIR=${2:-""}
+
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS2_WS_DIR && colcon build --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+cd $ROS2_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # source the environments/workspaces so the bridge is be built with support for
 # any messages that are on your path and have an associated mapping between ROS 1 and ROS 2

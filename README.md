@@ -1,4 +1,6 @@
-# px4_ros_com [![BuildStatus](https://travis-ci.com/PX4/px4_ros_com.svg?token=wyo8gnJf2urtswRL6tUy&branch=master)](https://travis-ci.com/PX4/px4_ros_com)
+# px4_ros_com
+[![DOI](https://zenodo.org/badge/142936318.svg)](https://zenodo.org/badge/latestdoi/142936318)
+ [![BuildStatus](https://travis-ci.com/PX4/px4_ros_com.svg?token=wyo8gnJf2urtswRL6tUy&branch=master)](https://travis-ci.com/PX4/px4_ros_com)
 
 This package materializes the PX4-FastRTPS bridge, with an interface between the PX4 autopilot stack, ROS2 and ROS1 (from now on, referenced as ROS) over [`ros1_bridge`](https://github.com/ros2/ros1_bridge).
 

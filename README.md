@@ -12,3 +12,12 @@ The package is divided into two different branches:
 ## Install, build and usage
 
 Check the [RTPS/ROS2 Interface](https://dev.px4.io/en/middleware/micrortps.html) section on the PX4 Devguide for details on how to install the required dependencies, build the package (composed by the two branches) and use them.
+
+## Bug tracking and feature requests
+
+Use the [Issues](https://github.com/PX4/px4_ros_com/issues) section to create a new issue. Report your issue or feature request [here](https://github.com/PX4/px4_ros_com/issues/new).
+
+## Questions and troubleshooting
+
+Reach the PX4 development team on the `#messaging` PX4 Slack channel:
+[![Slack](https://px4-slack.herokuapp.com/badge.svg)](http://slack.px4.io)

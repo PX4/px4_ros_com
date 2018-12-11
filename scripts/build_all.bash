@@ -80,7 +80,7 @@ else
   source /opt/ros/$ROS1_DISTRO/setup.bash
 
   # build the ROS1 workspace of the px4_ros_com package
-  cd $ROS1_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
+  cd $ROS1_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --event-handlers console_direct+
 fi
 
 # source the environments/workspaces so the bridge is be built with support for

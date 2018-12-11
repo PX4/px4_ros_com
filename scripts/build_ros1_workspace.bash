@@ -55,7 +55,7 @@ PX4_FIRMWARE_DIR=${px4_firmware_dir:-""}
 source /opt/ros/$ROS_DISTRO/setup.bash
 
 # build the ROS1 workspace of the px4_ros_com package
-cd $ROS_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
+cd $ROS_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --event-handlers console_direct+
 
 # source the workspace
 source $ROS_WS_DIR/install/setup.bash

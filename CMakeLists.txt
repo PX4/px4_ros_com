@@ -41,11 +41,33 @@ find_package(PythonInterp REQUIRED)
 include(uORBToPascalCase)
 
 if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
+    # Generate introspection typesupport for C and C++
     rosidl_generate_interfaces(${PROJECT_NAME}
       ${ROS_UORB_MSGS}
-      DEPENDENCIES
-      builtin_interfaces
     )
+
+    # Generate Fast RTPS IDL files
+    rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
+      IDL_FILES ${ROS_UORB_MSGS_DIR}
+      OUTPUT_SUBFOLDERS "dds_fastrtps"
+    )
+    set(DDS_IDL_FILES "" CACHE INTERNAL "DDS_IDL_FILES")
+    set(DDS_IDL_BASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
+    foreach(_idl_file ${ROS_UORB_MSGS_DIR})
+      get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
+      get_filename_component(_parent_folder "${_parent_folder}" NAME)
+      get_filename_component(_extension "${_idl_file}" EXT)
+      get_filename_component(_name "${_idl_file}" NAME_WE)
+      if(_extension STREQUAL ".msg")
+        list(APPEND DDS_IDL_FILES
+        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/${_name}_.idl")
+      elseif(_extension STREQUAL ".srv")
+        list(APPEND DDS_IDL_FILES
+          "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Request_.idl")
+        list(APPEND DDS_IDL_FILES
+          "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Response_.idl")
+      endif()
+    endforeach()
 else()
     message(FATAL_ERROR "No uORB msgs found to be generated!")
 endif()
@@ -55,6 +77,10 @@ endif()
 ####################################
 
 include(GenerateMicroRTPSAgent)
+add_dependencies(
+  ${PROJECT_NAME}__fastrtps_idl
+  micrortps_agent
+)
 
 #################
 # Setup targets #

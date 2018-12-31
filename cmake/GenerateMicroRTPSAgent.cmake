@@ -120,6 +120,7 @@ add_custom_command(
         ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
         $ENV{FASTRTPSGEN_DIR}
         ${ROS_UORB_MSGS_DIR}
+        ${DDS_IDL_FILES}
     COMMAND ${PYTHON_EXECUTABLE} ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
         --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
         --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
@@ -129,7 +130,7 @@ add_custom_command(
         --agent
         --agent-outdir ${MICRORTPS_AGENT_DIR}
         --package ${PROJECT_NAME}
-        --idl-dir ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/${PROJECT_NAME}/msg/dds_opensplice
+        --idl-dir ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/${PROJECT_NAME}/msg/dds_fastrtps
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating micro-RTPS agent code..."
 )

@@ -53,11 +53,12 @@ public:
 		[this](const px4_ros_com::msg::SensorCombined::SharedPtr msg)->void
 		{
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-			std::cout << "RECEIVED DATA ON SENSOR COMBINED" << std::endl;
-			std::cout << "================================" << std::endl;
-			std::cout << "gyro_rad[0]: " << msg->gyro_rad[0] << std::endl;
-			std::cout << "gyro_rad[1]: " << msg->gyro_rad[1] << std::endl;
-			std::cout << "gyro_rad[2]: " << msg->gyro_rad[2] << std::endl;
+			std::cout << "RECEIVED DATA ON SENSOR COMBINED"   << std::endl;
+			std::cout << "================================"   << std::endl;
+			std::cout << "ts: "	     << msg->timestamp    << std::endl;
+			std::cout << "gyro_rad[0]: " << msg->gyro_rad[0]  << std::endl;
+			std::cout << "gyro_rad[1]: " << msg->gyro_rad[1]  << std::endl;
+			std::cout << "gyro_rad[2]: " << msg->gyro_rad[2]  << std::endl;
 			std::cout << "gyro_integral_dt: " << msg->gyro_integral_dt << std::endl;
 			std::cout << "accelerometer_timestamp_relative: " << msg->accelerometer_timestamp_relative << std::endl;
 			std::cout << "accelerometer_m_s2[0]: " << msg->accelerometer_m_s2[0] << std::endl;

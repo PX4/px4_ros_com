@@ -7,6 +7,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS2 workspace."
   echo -e "\t--px4_firmware_dir \t Location of the PX4 Firmware repo. If not set, the FindPX4Firmware CMake module will look for it."
   echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo
   return 0
 fi
@@ -21,7 +22,7 @@ while [ $# -gt 0 ]; do
 done
 
 # One can pass the ROS_DISTRO using the '--ros_distro' arg
-if [ -z $ros_distro]; then
+if [ -z $ros_distro ]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
   "trusty")
@@ -38,8 +39,18 @@ if [ -z $ros_distro]; then
     exit 1
     ;;
   esac
+  # source the ROS2 environment
+  source /opt/ros/$ROS_DISTRO/setup.bash
 else
-  ROS_DISTRO="$ros_distro"
+  export ROS_DISTRO="$ros_distro"
+  if [ -z $ros_path ]; then
+    echo "- Warning: You set a ROS2 distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
+    echo "           This assumes you are using a ROS2 version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/bouncy/install/setup.bash)"
+    exit 1
+  else
+    # source the ROS2 environment (from arg)
+    source $ros_path
+  fi
 fi
 
 SCRIPT2_DIR=$PWD
@@ -48,9 +59,6 @@ SCRIPT2_DIR=$PWD
 ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT2_DIR")" && pwd)
 ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
-
-# source the ROS2 environment
-source /opt/ros/$ROS_DISTRO/setup.bash
 
 # clone ros1_bridge to the workspace dir
 if [ ! -o no_ros1_bridge ] && [ ! -d "$ROS_PKG_SRC_DIR/ros1_bridge" ]; then

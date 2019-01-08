@@ -92,8 +92,12 @@ bool @(topic)_Subscriber::init()
     SubscriberAttributes Rparam;
     Rparam.topic.topicKind = NO_KEY;
     Rparam.topic.topicDataType = myType.getName(); //Must be registered before the creation of the subscriber
+#if ROS2_ARDENT
     Rparam.topic.topicName = "@(topic)_topic";
     Rparam.qos.m_partition.push_back("rt");
+#else
+    Rparam.topic.topicName = "rt/@(topic)_topic";
+#endif
     mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, (SubscriberListener*) &m_listener);
     if(mp_subscriber == nullptr)
         return false;

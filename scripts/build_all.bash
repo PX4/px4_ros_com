@@ -52,9 +52,6 @@ fi
 if [ -z $ros2_distro ]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
-  "trusty")
-    export ROS2_DISTRO="ardent"
-    ;;
   "xenial")
     export ROS2_DISTRO="ardent"
     ;;
@@ -66,6 +63,8 @@ if [ -z $ros2_distro ]; then
     exit 1
     ;;
   esac
+  # source the ROS2 environment
+  source /opt/ros/$ROS2_DISTRO/setup.bash
 else
   export ROS2_DISTRO="$ros2_distro"
   if [ -z $ros2_path ]; then

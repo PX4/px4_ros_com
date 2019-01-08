@@ -24,10 +24,6 @@ done
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -sc)" in
-  "trusty")
-    ROS1_DISTRO="indigo"
-    ROS2_DISTRO="ardent"
-    ;;
   "xenial")
     ROS1_DISTRO="kinetic"
     ROS2_DISTRO="ardent"

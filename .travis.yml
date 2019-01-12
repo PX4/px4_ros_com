@@ -17,7 +17,7 @@ matrix:
           cache:
             ccache: true
           env:
-            - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-01
+            - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-08
         - name: Build on ROS2 Bouncy
           os: linux
           language: cpp
@@ -26,7 +26,16 @@ matrix:
           cache:
             ccache: true
           env:
-            - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-01-01
+            - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-01-08
+        - name: Build on ROS2 Crystal
+          os: linux
+          language: cpp
+          services:
+            - docker
+          cache:
+            ccache: true
+          env:
+            - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-01-08
 
 script:
   - if [ "$TRAVIS_BRANCH" = "master" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${COLCON_BUILD}"; fi

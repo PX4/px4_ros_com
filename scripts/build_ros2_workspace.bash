@@ -27,10 +27,10 @@ if [ -z $ros_distro ]; then
   # set the ROS2_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
   "xenial")
-    export ROS2_DISTRO="ardent"
+    export ROS2_DISTRO="bouncy"
     ;;
   "bionic")
-    export ROS2_DISTRO="bouncy"
+    export ROS2_DISTRO="crystal"
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."

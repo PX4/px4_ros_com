@@ -27,11 +27,11 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   case "$(lsb_release -sc)" in
   "xenial")
     ROS1_DISTRO="kinetic"
-    ROS2_DISTRO="ardent"
+    ROS2_DISTRO="bouncy"
     ;;
   "bionic")
     ROS1_DISTRO="melodic"
-    ROS2_DISTRO="bouncy"
+    ROS2_DISTRO="crystal"
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."

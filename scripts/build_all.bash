@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -11,7 +12,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--ros1_path \t\t Set ROS(1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS1_DISTRO/"
   echo -e "\t--ros2_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS2_DISTRO/"
   echo
-  return 0
+  exit 0
 fi
 
 # parse the arguments

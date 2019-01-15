@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -10,7 +11,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo
-  return 0
+  exit 0
 fi
 
 # parse the arguments
@@ -26,10 +27,6 @@ done
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
-  "trusty")
-    ROS1_DISTRO="indigo"
-    ROS2_DISTRO="ardent"
-    ;;
   "xenial")
     ROS1_DISTRO="kinetic"
     ROS2_DISTRO="ardent"

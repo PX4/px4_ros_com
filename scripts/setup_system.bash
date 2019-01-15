@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -8,7 +9,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--clean \t If set, issues 'apt-get autoremove', 'apt-get autoclean' and deletes temp files."
   echo
-  return 0
+  exit 0
 fi
 
 # parse the arguments

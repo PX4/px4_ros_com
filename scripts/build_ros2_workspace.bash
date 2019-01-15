@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -9,7 +10,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS2_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS2_DISTRO"
   echo
-  return 0
+  exit 0
 fi
 
 # parse the arguments
@@ -42,7 +43,7 @@ else
   export ROS2_DISTRO="$ros_distro"
   if [ -z $ros_path ]; then
     echo "- Warning: You set a ROS2 distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
-    echo "           This assumes you are using a ROS2 version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/bouncy/install/setup.bash)"
+    echo "           This assumes you want to use another ROS2 version installed on your system. Please set the install location with '--ros_path' arg! (ex: --ros_path ~/ros_src/bouncy/install/setup.bash)"
     exit 1
   else
     # source the ROS2 environment (from arg)

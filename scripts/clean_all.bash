@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -7,7 +8,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--delete_ros1_bridge \t Deletes the ros1_bridge repository under the ROS2 workspace"
   echo -e "\t--ros1_ws_dir \t\t Location of the ROS(1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
   echo
-  return 0
+  exit 0
 fi
 
 # parse the arguments

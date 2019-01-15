@@ -89,9 +89,11 @@ export ROS2_WS_DIR=$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd)
 export ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 
 # clone ros1_bridge to the workspace dir
-if [ ! -d "$ROS2_PKG_SRC_DIR/ros1_bridge" ]; then
+if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_PKG_SRC_DIR/ros1_bridge" ]; then
   # use $ROS2_DISTRO branch as the latest upstream API changed to fit ROS2 Crystal release
-  cd $ROS2_PKG_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
+  # if using Crystal otherwise, use master
+  ROS1_BRIDGE_RELEASE=$([ $ROS2_DISTRO == "crystal" ] && echo "master" || echo "$ROS2_DISTRO")
+  cd $ROS_PKG_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS1_BRIDGE_RELEASE
 fi
 
 # Check if the PX4 Firmware dir is passed by argument

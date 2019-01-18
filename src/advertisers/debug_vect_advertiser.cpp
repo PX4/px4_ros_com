@@ -39,7 +39,7 @@
 
 #include <chrono>
 #include <rclcpp/rclcpp.hpp>
-#include <px4_ros_com/msg/debug_vect.hpp>
+#include <px4_msgs/msg/debug_vect.hpp>
 
 using namespace std::chrono_literals;
 
@@ -47,10 +47,10 @@ class DebugVectAdvertiser : public rclcpp::Node
 {
 public:
 	DebugVectAdvertiser() : Node("debug_vect_advertiser") {
-		publisher_ = this->create_publisher<px4_ros_com::msg::DebugVect>("DebugVect_topic");
+		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("DebugVect_topic");
 		auto timer_callback =
 		[this]()->void {
-			auto debug_vect = px4_ros_com::msg::DebugVect();
+			auto debug_vect = px4_msgs::msg::DebugVect();
 			debug_vect.timestamp = this->now().nanoseconds() * 1E-3;
 			debug_vect.x = 1.0;
 			debug_vect.y = 2.0;
@@ -64,7 +64,7 @@ public:
 
 private:
 	rclcpp::TimerBase::SharedPtr timer_;
-	rclcpp::Publisher<px4_ros_com::msg::DebugVect>::SharedPtr publisher_;
+	rclcpp::Publisher<px4_msgs::msg::DebugVect>::SharedPtr publisher_;
 };
 
 int main(int argc, char *argv[])

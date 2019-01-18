@@ -61,7 +61,8 @@ for filename in os.listdir(input_dir):
         msg_list.append(filename.rstrip('.msg'))
         input_file = input_dir + filename
 
-        output_file = output_dir + filename.partition(".")[0].title().replace('_', '') + ".msg"
+        output_file = output_dir + \
+            filename.partition(".")[0].title().replace('_', '') + ".msg"
         copyfile(input_file, output_file)
 
 for filename in os.listdir(output_dir):

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(px4_ros_com)
+project(px4_roscom)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -47,16 +47,15 @@ find_package(fastcdr REQUIRED)
 get_default_rmw_implementation(rmw_implementation)
 find_package("${rmw_implementation}" REQUIRED)
 
+find_package(px4_msgs REQUIRED)
+
 find_package(PythonInterp REQUIRED)
 
-#########################
-# Declare ROS messages ##
-#########################
+################################
+# Generate Fast RTPS IDL files #
+################################
 
-add_subdirectory(msg)
-
-if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
-  # Generate Fast RTPS IDL files
+  # string(REPLACE "," ";" ROS_UORB_MSGS $ENV{ROS_UORB_MSGS})
   rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
                                  IDL_FILES
                                  ${ROS_UORB_MSGS_DIR}
@@ -88,9 +87,6 @@ if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
         )
     endif()
   endforeach()
-else()
-  message(FATAL_ERROR "No uORB msgs found to be generated!")
-endif()
 
 ###################################
 # Generate micro-RTPS agent code ##
@@ -127,10 +123,8 @@ add_dependencies(debug_vect_advertiser micrortps_agent)
 get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
 
 foreach(typesupport_impl ${typesupport_impls})
-  rosidl_target_interfaces(sensor_combined_listener ${PX4_MSGS_PROJECT_NAME}
-                           ${typesupport_impl})
-  rosidl_target_interfaces(debug_vect_advertiser ${PX4_MSGS_PROJECT_NAME}
-                           ${typesupport_impl})
+  rosidl_target_interfaces(sensor_combined_listener ${typesupport_impl})
+  rosidl_target_interfaces(debug_vect_advertiser ${typesupport_impl})
 endforeach()
 
 # Add listener dependencies

@@ -55,7 +55,7 @@ SCRIPT2_DIR=$PWD
 
 # setup the required path variables
 ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT2_DIR")" && pwd)
-ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
+ROS_PKG_SRC_DIR=$(cd "$(dirname $(dirname "$ROS_REPO_DIR"))" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
 
 # clone ros1_bridge to the workspace dir

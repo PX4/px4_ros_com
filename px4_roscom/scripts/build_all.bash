@@ -82,7 +82,7 @@ SCRIPT_DIR=$PWD
 
 # setup the required path variables
 export ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
-export ROS2_PKG_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
+export ROS2_PKG_SRC_DIR=$(cd "$(dirname $(dirname "$ROS2_REPO_DIR"))" && pwd)
 export ROS2_WS_DIR=$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd)
 
 # by default set to $HOME/px4_ros_com_ros1 but user can use command line arg instead

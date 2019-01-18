@@ -27,7 +27,8 @@ CLEAN_HISTORY=0
 
 # ROS2 dirs
 ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
-ROS2_PKG_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
+ROS2_PKG_SRC_DIR=$(cd "$(dirname $(dirname "$ROS2_REPO_DIR"))" && pwd)
+ROS2_MSGS_REPO_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")/px4_msgs" && pwd)
 ROS2_WS_DIR=$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd)
 
 # ROS1 dirs (one can pass the ROS1 workspace dir using '--ros1_ws_dir <ws_dir>')
@@ -35,10 +36,10 @@ ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 ROS1_REPO_DIR=$(cd $ROS1_WS_DIR/src/px4_ros_com && pwd)
 
 # clean generated msgs and RTPS ID map file on the px4_ros_com ROS2 side
-cd $ROS2_REPO_DIR/msg && sudo find . -name "*.msg" -type f -delete
-if [ -f $ROS2_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml ]; then
-  cd $ROS2_REPO_DIR/msg/templates && sudo rm uorb_rtps_message_ids.yaml
-  echo -e "\t - Deleted $ROS2_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml"
+cd $ROS2_MSGS_REPO_DIR/msg && sudo find . -name "*.msg" -type f -delete
+if [ -f $ROS2_MSGS_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml ]; then
+  cd $ROS2_MSGS_REPO_DIR/msg/templates && sudo rm uorb_rtps_message_ids.yaml
+  echo -e "\t - Deleted $ROS2_MSGS_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml"
   CLEAN_HISTORY=1
 fi
 

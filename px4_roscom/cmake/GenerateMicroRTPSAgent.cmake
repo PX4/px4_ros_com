@@ -145,9 +145,8 @@ endforeach()
 
 # Generates the micro-RTPS agent code after the IDL msgs are generated
 add_custom_command(
-  OUTPUT ${MICRORTPS_AGENT_FILES}
-  DEPENDS ${PX4_MSGS_PROJECT_NAME}
-          ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+  OUTPUT  ${MICRORTPS_AGENT_FILES}
+  DEPENDS ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
           $ENV{FASTRTPSGEN_DIR}
           ${ROS_UORB_MSGS_DIR}
           ${DDS_IDL_FILES}

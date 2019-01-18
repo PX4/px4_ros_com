@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 
 project(px4_msgs)
 
-set(PX4_MSGS_PROJECT_NAME ${PROJECT_NAME}
-    CACHE INTERNAL "PX4_MSGS_PROJECT_NAME")
-
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EnableC++XX)
@@ -37,7 +34,7 @@ include(uORBToPascalCase)
 
 if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
   # Generate introspection typesupport for C and C++
-  rosidl_generate_interfaces(${PX4_MSGS_PROJECT_NAME} ${ROS_UORB_MSGS})
+  rosidl_generate_interfaces(${PROJECT_NAME} ${ROS_UORB_MSGS})
 else()
   message(FATAL_ERROR "No uORB msgs found to be generated!")
 endif()

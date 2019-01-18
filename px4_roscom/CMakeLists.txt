@@ -55,15 +55,25 @@ find_package(PythonInterp REQUIRED)
 # Generate Fast RTPS IDL files #
 ################################
 
-  # string(REPLACE "," ";" ROS_UORB_MSGS $ENV{ROS_UORB_MSGS})
+# Builds lists of ROS messages and IDL files
+get_filename_component(MSGS_DIR "../" ABSOLUTE BASE_DIR "${px4_msgs_DIR}")
+
+set(MSGS_DIR "${MSGS_DIR}/msg")
+file(GLOB DDS_IDL_DIR_LIST ${MSGS_DIR}/*.idl)
+file(GLOB ROS_MSG_DIR_LIST ${MSGS_DIR}/*.msg)
+
+set(DDS_IDL_DIR_LIST "${DDS_IDL_DIR_LIST}" CACHE INTERNAL "DDS_IDL_DIR_LIST")
+set(ROS_MSG_DIR_LIST "${ROS_MSG_DIR_LIST}" CACHE INTERNAL "ROS_MSG_DIR_LIST")
+
+if(NOT $ENV{ROS2_DISTRO} STREQUAL "crystal")
   rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
                                  IDL_FILES
-                                 ${ROS_UORB_MSGS_DIR}
+                                 ${ROS_MSG_DIR_LIST}
                                  OUTPUT_SUBFOLDERS
                                  "dds_fastrtps")
   set(DDS_IDL_FILES "" CACHE INTERNAL "DDS_IDL_FILES")
   set(DDS_IDL_BASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
-  foreach(_idl_file ${ROS_UORB_MSGS_DIR})
+  foreach(_idl_file ${ROS_MSG_DIR_LIST})
     get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
     get_filename_component(_parent_folder "${_parent_folder}" NAME)
     get_filename_component(_extension "${_idl_file}" EXT)
@@ -87,13 +97,14 @@ find_package(PythonInterp REQUIRED)
         )
     endif()
   endforeach()
+  add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
+endif()
 
 ###################################
 # Generate micro-RTPS agent code ##
 ###################################
 
 include(GenerateMicroRTPSAgent)
-add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
 
 #################
 # Setup targets #
@@ -120,12 +131,12 @@ add_dependencies(debug_vect_advertiser micrortps_agent)
 
 # Finds the relevant generated C++ code for the msgs generated from
 # rosidl_generator_dds_idl
-get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
-
-foreach(typesupport_impl ${typesupport_impls})
-  rosidl_target_interfaces(sensor_combined_listener ${typesupport_impl})
-  rosidl_target_interfaces(debug_vect_advertiser ${typesupport_impl})
-endforeach()
+# get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
+#
+# foreach(typesupport_impl ${typesupport_impls})
+#   rosidl_target_interfaces(sensor_combined_listener ${PROJECT_NAME} ${typesupport_impl})
+#   rosidl_target_interfaces(debug_vect_advertiser ${PROJECT_NAME} ${typesupport_impl})
+# endforeach()
 
 # Add listener dependencies
 ament_target_dependencies(sensor_combined_listener rclcpp)

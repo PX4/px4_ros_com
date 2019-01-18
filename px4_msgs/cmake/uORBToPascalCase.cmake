@@ -57,7 +57,8 @@ function(glob_generate target file_glob)
   endforeach()
   set(ROS_UORB_NAMES "${ROS_UORB_MSGS_NAMES}" CACHE INTERNAL "ROS_UORB_NAMES")
   set(ROS_UORB_MSGS "${ROS_UORB_MSGS_LIST}" CACHE INTERNAL "ROS_UORB_MSGS")
-  set(ROS_UORB_MSGS_DIR "${ROS_UORB_MSGS_DIR}" PARENT_SCOPE)
+  set(ROS_UORB_MSGS_DIR "${ROS_UORB_MSGS_DIR}"
+      CACHE INTERNAL "ROS_UORB_MSGS_DIR")
 endfunction()
 
 glob_generate(models_gen ${PX4_FIRMWARE_MSG_DIR}*.msg)

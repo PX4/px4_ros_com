@@ -34,16 +34,13 @@
 
 set(ROS_UORB_MSGS_LIST "")
 
-get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}" DIRECTORY)
-set(PARENT_DIR "${PARENT_DIR}" CACHE INTERNAL "PARENT_DIR")
-
 function(glob_generate target file_glob)
   file(GLOB uorb_glob_files ${file_glob})
   set(UORB_MSGS_LIST)
-  set(PX4_ROS_COM_MSG_DIR "${PARENT_DIR}/msg/")
+  set(PX4_ROS_COM_MSG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/msg/")
   file(MAKE_DIRECTORY ${PX4_ROS_COM_MSG_DIR})
   execute_process(COMMAND ${PYTHON_EXECUTABLE}
-                          ${PARENT_DIR}/scripts/uORB2ROSMsgs.py
+                          ${CMAKE_CURRENT_SOURCE_DIR}/scripts/uORB2ROSMsgs.py
                           ${PROJECT_NAME} "${PX4_FIRMWARE_MSG_DIR}/"
                           ${PX4_ROS_COM_MSG_DIR}
                   WORKING_DIRECTORY ${PX4_FIRMWARE_REPO_DIR}
@@ -54,8 +51,8 @@ function(glob_generate target file_glob)
     get_filename_component(filename_we ${ros_glob_file} NAME_WE)
     list(APPEND ROS_UORB_MSGS_NAMES "${filename_we}")
     get_filename_component(filename ${ros_glob_file} NAME)
-    list(APPEND ROS_UORB_MSGS_LIST "${filename}")
-    list(APPEND ROS_UORB_MSGS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${filename}")
+    list(APPEND ROS_UORB_MSGS_LIST "msg/${filename}")
+    list(APPEND ROS_UORB_MSGS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/msg/${filename}")
     message(STATUS "\t${filename}")
   endforeach()
   set(ROS_UORB_NAMES "${ROS_UORB_MSGS_NAMES}" CACHE INTERNAL "ROS_UORB_NAMES")

@@ -144,28 +144,49 @@ foreach(topic ${CONFIG_RTPS_SEND_TOPICS}) # advertised topics should first be
 endforeach()
 
 # Generates the micro-RTPS agent code after the IDL msgs are generated
-add_custom_command(
-  OUTPUT ${MICRORTPS_AGENT_FILES}
-  DEPENDS ${PX4_MSGS_PROJECT_NAME}
-          ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
-          $ENV{FASTRTPSGEN_DIR}
-          ${ROS_UORB_MSGS_DIR}
-          ${DDS_IDL_FILES}
-  COMMAND
-    ${PYTHON_EXECUTABLE}
-    ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
-    --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
-    --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
-    --topic-msg-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg
-    --urtps-templates-dir templates
-    --rtps-ids-file templates/uorb_rtps_message_ids.yaml
-    --agent
-    --agent-outdir ${MICRORTPS_AGENT_DIR}
-    --package ${PROJECT_NAME}
-    --idl-dir
-      ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/${PROJECT_NAME}/msg/dds_fastrtps
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "Generating micro-RTPS agent code...")
+# add_custom_command(
+#   OUTPUT  ${MICRORTPS_AGENT_FILES}
+#   DEPENDS ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+#           $ENV{FASTRTPSGEN_DIR}
+#           ${ROS_UORB_MSGS_DIR}
+#           ${DDS_IDL_DIR_LIST}
+#   COMMAND
+#     ${PYTHON_EXECUTABLE}
+#     ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+#     --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
+#     --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}
+#     --topic-msg-dir ${MSGS_DIR}
+#     --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates
+#     --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+#     --agent
+#     --agent-outdir ${MICRORTPS_AGENT_DIR}
+#     --package ${PROJECT_NAME}
+#     --idl-dir ${MSGS_DIR}
+#   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#   COMMENT "Generating micro-RTPS agent code...")
+
+  add_custom_command(
+    OUTPUT ${MICRORTPS_AGENT_FILES}
+    DEPENDS ${PX4_MSGS_PROJECT_NAME}
+            ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+            $ENV{FASTRTPSGEN_DIR}
+            ${ROS_UORB_MSGS_DIR}
+            ${DDS_IDL_FILES}
+    COMMAND
+      ${PYTHON_EXECUTABLE}
+      ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+      --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
+      --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
+      --topic-msg-dir ${MSGS_DIR}
+      --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates
+      --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+      --agent
+      --agent-outdir ${MICRORTPS_AGENT_DIR}
+      --package ${PROJECT_NAME}
+      --idl-dir
+        ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/${PROJECT_NAME}/msg/dds_fastrtps
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating micro-RTPS agent code...")
 
 set(MICRORTPS_AGENT_FILES "${MICRORTPS_AGENT_FILES}"
     CACHE INTERNAL "MICRORTPS_AGENT_FILES")

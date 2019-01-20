@@ -7,7 +7,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS2 workspace."
   echo -e "\t--px4_firmware_dir \t Location of the PX4 Firmware repo. If not set, the FindPX4Firmware CMake module will look for it."
-  echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS2_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy|crystal). If not set, the script will set the ROS2_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS2_DISTRO"
   echo
   exit 0
@@ -55,7 +55,7 @@ SCRIPT2_DIR=$PWD
 
 # setup the required path variables
 ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT2_DIR")" && pwd)
-ROS_PKG_SRC_DIR=$(cd "$(dirname $(dirname "$ROS_REPO_DIR"))" && pwd)
+ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
 
 # clone ros1_bridge to the workspace dir

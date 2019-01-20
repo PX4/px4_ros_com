@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(px4_roscom)
+project(px4_ros_com)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -65,7 +65,7 @@ file(GLOB ROS_MSG_DIR_LIST ${MSGS_DIR}/*.msg)
 set(DDS_IDL_DIR_LIST "${DDS_IDL_DIR_LIST}" CACHE INTERNAL "DDS_IDL_DIR_LIST")
 set(ROS_MSG_DIR_LIST "${ROS_MSG_DIR_LIST}" CACHE INTERNAL "ROS_MSG_DIR_LIST")
 
-if(NOT $ENV{ROS2_DISTRO} STREQUAL "crystal")
+# if(NOT $ENV{ROS2_DISTRO} STREQUAL "crystal")
   rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
                                  IDL_FILES
                                  ${ROS_MSG_DIR_LIST}
@@ -98,7 +98,7 @@ if(NOT $ENV{ROS2_DISTRO} STREQUAL "crystal")
     endif()
   endforeach()
   add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
-endif()
+# endif()
 
 ###################################
 # Generate micro-RTPS agent code ##
@@ -129,24 +129,15 @@ add_dependencies(debug_vect_advertiser micrortps_agent)
 # ament specific configuration ##
 #################################
 
-# Finds the relevant generated C++ code for the msgs generated from
-# rosidl_generator_dds_idl
-# get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
-#
-# foreach(typesupport_impl ${typesupport_impls})
-#   rosidl_target_interfaces(sensor_combined_listener ${PROJECT_NAME} ${typesupport_impl})
-#   rosidl_target_interfaces(debug_vect_advertiser ${PROJECT_NAME} ${typesupport_impl})
-# endforeach()
-
 # Add listener dependencies
-ament_target_dependencies(sensor_combined_listener rclcpp)
+ament_target_dependencies(sensor_combined_listener rclcpp px4_msgs)
 
 # Add advertiser dependencies
-ament_target_dependencies(debug_vect_advertiser rclcpp)
+ament_target_dependencies(debug_vect_advertiser rclcpp px4_msgs)
 
 # Export information to downstream packages
 ament_export_dependencies(rclcpp rosidl_default_runtime)
-ament_export_include_directories(include)
+ament_export_include_directories(include ${px4_msgs_INCLUDE_DIRS})
 ament_export_libraries()
 
 ############

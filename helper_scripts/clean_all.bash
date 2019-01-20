@@ -27,8 +27,8 @@ CLEAN_HISTORY=0
 
 # ROS2 dirs
 ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
-ROS2_PKG_SRC_DIR=$(cd "$(dirname $(dirname "$ROS2_REPO_DIR"))" && pwd)
-ROS2_MSGS_REPO_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")/px4_msgs" && pwd)
+ROS2_PKG_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
+ROS2_MSGS_REPO_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")/px4_ros_com/px4_msgs" && pwd)
 ROS2_WS_DIR=$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd)
 
 # ROS1 dirs (one can pass the ROS1 workspace dir using '--ros1_ws_dir <ws_dir>')
@@ -44,9 +44,9 @@ if [ -f $ROS2_MSGS_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml ]; then
 fi
 
 # clean micrortps_agent generated source code
-if [ -d $ROS2_REPO_DIR/src/micrortps_agent ]; then
-  cd $ROS2_REPO_DIR/src && sudo rm -rf micrortps_agent
-  echo -e "\t - Deleted $ROS2_REPO_DIR/src/micrortps_agent"
+if [ -d $ROS2_REPO_DIR/px4_ros_com/src/micrortps_agent ]; then
+  cd $ROS2_REPO_DIR/px4_ros_com/src && sudo rm -rf micrortps_agent
+  echo -e "\t - Deleted $ROS2_REPO_DIR/px4_ros_com/src/micrortps_agent"
   CLEAN_HISTORY=1
 fi
 

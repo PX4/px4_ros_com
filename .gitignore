@@ -1,3 +1,3 @@
 px4_msgs/msg/*.msg
-px4_roscom/msg/templates/uorb_rtps_message_ids.yaml
-px4_roscom/src/micrortps_agent/
+px4_ros_com/msg/templates/uorb_rtps_message_ids.yaml
+px4_ros_com/src/micrortps_agent/

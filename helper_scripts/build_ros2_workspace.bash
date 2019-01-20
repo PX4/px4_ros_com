@@ -59,7 +59,7 @@ ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
 
 # clone ros1_bridge to the workspace dir
-if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_PKG_SRC_DIR/ros1_bridge" ]; then
+if [ -z $no_ros1_bridge ] && [ ! -d "$ROS_PKG_SRC_DIR/ros1_bridge" ]; then
   # use $ROS2_DISTRO branch as the latest upstream API changed to fit ROS2 Crystal release
   # if using Crystal otherwise, use master
   ROS1_BRIDGE_RELEASE=$([ $ROS2_DISTRO == "crystal" ] && echo "master" || echo "$ROS2_DISTRO")

@@ -65,46 +65,44 @@ file(GLOB ROS_MSG_DIR_LIST ${MSGS_DIR}/*.msg)
 set(DDS_IDL_DIR_LIST "${DDS_IDL_DIR_LIST}" CACHE INTERNAL "DDS_IDL_DIR_LIST")
 set(ROS_MSG_DIR_LIST "${ROS_MSG_DIR_LIST}" CACHE INTERNAL "ROS_MSG_DIR_LIST")
 
-# if(NOT $ENV{ROS2_DISTRO} STREQUAL "crystal")
-  rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
-                                 IDL_FILES
-                                 ${ROS_MSG_DIR_LIST}
-                                 OUTPUT_SUBFOLDERS
-                                 "dds_fastrtps")
-  set(DDS_IDL_FILES "" CACHE INTERNAL "DDS_IDL_FILES")
-  set(DDS_IDL_BASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
-  foreach(_idl_file ${ROS_MSG_DIR_LIST})
-    get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
-    get_filename_component(_parent_folder "${_parent_folder}" NAME)
-    get_filename_component(_extension "${_idl_file}" EXT)
-    get_filename_component(_name "${_idl_file}" NAME_WE)
-    if(_extension STREQUAL ".msg")
-      list(
+rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
+                                IDL_FILES
+                                ${ROS_MSG_DIR_LIST}
+                                OUTPUT_SUBFOLDERS
+                                "dds_fastrtps")
+set(DDS_IDL_FILES "" CACHE INTERNAL "DDS_IDL_FILES")
+set(DDS_IDL_BASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
+foreach(_idl_file ${ROS_MSG_DIR_LIST})
+  get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
+  get_filename_component(_parent_folder "${_parent_folder}" NAME)
+  get_filename_component(_extension "${_idl_file}" EXT)
+  get_filename_component(_name "${_idl_file}" NAME_WE)
+  if(_extension STREQUAL ".msg")
+    list(
         APPEND
-          DDS_IDL_FILES
-          "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/${_name}_.idl"
+        DDS_IDL_FILES
+        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/${_name}_.idl"
         )
-    elseif(_extension STREQUAL ".srv")
-      list(
+  elseif(_extension STREQUAL ".srv")
+    list(
         APPEND
-          DDS_IDL_FILES
-          "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Request_.idl"
+        DDS_IDL_FILES
+        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Request_.idl"
         )
-      list(
+    list(
         APPEND
-          DDS_IDL_FILES
-          "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Response_.idl"
+        DDS_IDL_FILES
+        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Response_.idl"
         )
-    endif()
-  endforeach()
-  add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
-# endif()
+  endif()
+endforeach()
 
 ###################################
 # Generate micro-RTPS agent code ##
 ###################################
 
 include(GenerateMicroRTPSAgent)
+add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
 
 #################
 # Setup targets #

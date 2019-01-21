@@ -20,7 +20,7 @@ matrix:
         - ROS2_DISTRO=ardent
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH} --no_ros1_bridge"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-17
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-21
     - name: Build on ROS2 Bouncy
       os: linux
       language: cpp
@@ -32,7 +32,7 @@ matrix:
         - ROS2_DISTRO=bouncy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-01-17
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-01-21
     - name: Build on ROS2 Crystal
       os: linux
       language: cpp
@@ -44,7 +44,7 @@ matrix:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-01-17
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-01-21
 
 script:
   - if [ "$TRAVIS_BRANCH" = "master" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${COLCON_BUILD} ${BUILD_ARGS}"; fi

@@ -49,8 +49,8 @@ SCRIPT_DIR=$PWD
 
 # ROS2 dirs
 ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
-ROS2_PKG_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
-ROS2_WS_DIR=$(cd "$(dirname "$ROS2_PKG_SRC_DIR")" && pwd)
+ROS2_WS_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
+ROS2_WS_DIR=$(cd "$(dirname "$ROS2_WS_SRC_DIR")" && pwd)
 
 # ROS1 dirs (one can pass the ROS1 workspace dir using '--ros1_ws_dir <ws_dir>')
 ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}

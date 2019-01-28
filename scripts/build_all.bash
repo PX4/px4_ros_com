@@ -5,7 +5,6 @@ set -e
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_all.bash [option...] \t This script builds px4_ros_com workspaces for ROS2 and ROS(1)" >&2
   echo
-  echo -e "\t--px4_firmware_dir \t Location of the PX4 Firmware repo. If not set, the FindPX4Firmware CMake module will look for it."
   echo -e "\t--ros1_ws_dir \t\t Location of the ROS(1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
   echo -e "\t--ros1_distro \t\t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros2_distro \t\t Set ROS2 distro name (ardent|bouncy|crystal). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
@@ -96,11 +95,8 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS1_BRIDGE_RELEASE
 fi
 
-# Check if the PX4 Firmware dir is passed by argument
-PX4_FIRMWARE_DIR=${px4_firmware_dir:-""}
-
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS2_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+cd $ROS2_WS_DIR && colcon build --cmake-args --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
 if [ -f "$ROS1_WS_DIR/install/setup.bash" ]; then
@@ -114,7 +110,7 @@ else
   fi
 
   # build the ROS1 workspace of the px4_ros_com package
-  cd $ROS1_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --event-handlers console_direct+
+  cd $ROS1_WS_DIR && colcon build --cmake-args --symlink-install --event-handlers console_direct+
 fi
 
 # source the environments/workspaces so the bridge is be built with support for

@@ -1,0 +1,280 @@
+rtps:
+  - id: 0
+    msg: ActuatorArmed
+  - id: 1
+    msg: ActuatorControl
+  - id: 2
+    msg: ActuatorDirect
+  - id: 3
+    msg: ActuatorOutput
+  - id: 4
+    msg: AdcReport
+    send: true
+  - id: 5
+    msg: Airspeed
+    send: true
+  - id: 6
+    msg: BatteryStatus
+    send: true
+  - id: 7
+    msg: CameraCapture
+    receive: true
+  - id: 8
+    msg: CameraTrigger
+    receive: true
+  - id: 9
+    msg: CollisionReport
+    receive: true
+  - id: 10
+    msg: CommanderState
+  - id: 11
+    msg: Cpuload
+    send: true
+  - id: 12
+    msg: DebugArray
+    receive: true
+  - id: 13
+    msg: DebugKeyValue
+    receive: true
+  - id: 14
+    msg: DebugValue
+    receive: true
+  - id: 15
+    msg: DebugVect
+    receive: true
+  - id: 16
+    msg: DifferentialPressure
+  - id: 17
+    msg: DistanceSensor
+    send: true
+  - id: 18
+    msg: Ekf2Innovations
+  - id: 19
+    msg: Ekf2Timestamps
+  - id: 20
+    msg: EkfGpsDrift
+  - id: 21
+    msg: EkfGpsPosition
+  - id: 22
+    msg: EscReport
+  - id: 23
+    msg: EscStatus
+  - id: 24
+    msg: EstimatorStatus
+    send: true
+  - id: 25
+    msg: FollowTarget
+  - id: 26
+    msg: GeofenceResult
+  - id: 27
+    msg: GpsDump
+  - id: 28
+    msg: GpsInjectData
+  - id: 29
+    msg: HomePosition
+    send: true
+  - id: 30
+    msg: InputRc
+  - id: 31
+    msg: IridiumsbdStatus
+    send: true
+  - id: 32
+    msg: IrlockReport
+  - id: 33
+    msg: LandingTargetInnovation
+  - id: 34
+    msg: LandingTargetPose
+  - id: 35
+    msg: LedControl
+  - id: 36
+    msg: LogMessage
+  - id: 37
+    msg: ManualControlSetpoint
+  - id: 38
+    msg: MavlinkLog
+  - id: 39
+    msg: Mission
+  - id: 40
+    msg: MissionResult
+  - id: 41
+    msg: MountOrientation
+  - id: 42
+    msg: MultirotorMotorLimit
+  - id: 43
+    msg: ObstacleDistance
+    receive: true
+  - id: 44
+    msg: OffboardControlMode
+  - id: 45
+    msg: OpticalFlow
+    receive: true
+  - id: 46
+    msg: ParameterUpdate
+  - id: 47
+    msg: Ping
+  - id: 48
+    msg: PositionControllerLandingStatus
+  - id: 49
+    msg: PositionControllerStatus
+  - id: 50
+    msg: PositionSetpoint
+    receive: true
+  - id: 51
+    msg: PositionSetpointTriplet
+    receive: true
+  - id: 52
+    msg: PowerButtonState
+  - id: 53
+    msg: PwmInput
+  - id: 54
+    msg: QshellReq
+  - id: 55
+    msg: QshellRetval
+  - id: 56
+    msg: RadioStatus
+    send: true
+  - id: 57
+    msg: RateCtrlStatus
+  - id: 58
+    msg: RcChannels
+  - id: 59
+    msg: RcParameterMap
+  - id: 60
+    msg: Safety
+  - id: 61
+    msg: SatelliteInfo
+    send: true
+  - id: 62
+    msg: SensorAccel
+  - id: 63
+    msg: SensorBaro
+    send: true
+  - id: 64
+    msg: SensorBias
+  - id: 65
+    msg: SensorCombined
+    send: true
+  - id: 66
+    msg: SensorCorrection
+  - id: 67
+    msg: SensorGyro
+  - id: 68
+    msg: SensorMag
+  - id: 69
+    msg: SensorPreflight
+  - id: 70
+    msg: SensorSelection
+    send: true
+  - id: 71
+    msg: ServorailStatus
+  - id: 72
+    msg: SubsystemInfo
+  - id: 73
+    msg: SystemPower
+  - id: 74
+    msg: TaskStackInfo
+  - id: 75
+    msg: TecsStatus
+  - id: 76
+    msg: TelemetryStatus
+  - id: 77
+    msg: TestMotor
+  - id: 78
+    msg: TimesyncStatus
+  - id: 79
+    msg: TrajectoryWaypoint
+    receive: true
+  - id: 80
+    msg: TransponderReport
+  - id: 81
+    msg: TuneControl
+  - id: 82
+    msg: UavcanParameterRequest
+  - id: 83
+    msg: UavcanParameterValue
+  - id: 84
+    msg: UlogStream
+  - id: 85
+    msg: UlogStreamAck
+  - id: 86
+    msg: VehicleAirData
+  - id: 87
+    msg: VehicleAttitude
+    send: true
+  - id: 88
+    msg: VehicleAttitudeSetpoint
+  - id: 89
+    msg: VehicleCommand
+  - id: 90
+    msg: VehicleCommandAck
+  - id: 91
+    msg: VehicleConstraint
+  - id: 92
+    msg: VehicleControlMode
+  - id: 93
+    msg: VehicleGlobalPosition
+  - id: 94
+    msg: VehicleGpsPosition
+  - id: 95
+    msg: VehicleLandDetected
+  - id: 96
+    msg: VehicleLocalPosition
+  - id: 97
+    msg: VehicleLocalPositionSetpoint
+  - id: 98
+    msg: VehicleMagnetometer
+  - id: 99
+    msg: VehicleOdometry
+    send: true
+  - id: 100
+    msg: VehicleRatesSetpoint
+  - id: 101
+    msg: VehicleRoi
+  - id: 102
+    msg: VehicleStatus
+  - id: 103
+    msg: VehicleStatusFlags
+  - id: 104
+    msg: VehicleTrajectoryWaypoint
+    receive: true
+  - id: 105
+    msg: VtolVehicleStatus
+    send: true
+  - id: 106
+    msg: WindEstimate
+    send: true
+  - id: 107
+    msg: CollisionConstraints
+    send: true
+  - id: 120
+    msg: ActuatorControl0
+  - id: 121
+    msg: ActuatorControl1
+  - id: 122
+    msg: ActuatorControl2
+  - id: 123
+    msg: ActuatorControl3
+  - id: 124
+    msg: ActuatorControlsVirtualFw
+  - id: 125
+    msg: ActuatorControlsVirtualMc
+  - id: 126
+    msg: McVirtualAttitudeSetpoint
+  - id: 127
+    msg: FwVirtualAttitudeSetpoint
+  - id: 128
+    msg: VehicleAttitudeGroundtruth
+  - id: 129
+    msg: VehicleGlobalPositionGroundtruth
+  - id: 130
+    msg: VehicleLocalPositionGroundtruth
+  - id: 131
+    msg: VehicleMocapOdometry
+  - id: 132
+    msg: VehicleVisualOdometry
+  - id: 133
+    msg: McVirtualRatesSetpoint
+  - id: 134
+    msg: FwVirtualRatesSetpoint
+  - id: 135
+    msg: VehicleTrajectoryWaypointDesired

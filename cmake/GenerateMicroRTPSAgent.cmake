@@ -30,40 +30,27 @@
 ##################################################################################
 # Cmake module to generate micro-RTPS agent code Depends on:
 #       - px4_msgs
-#       - PX4_FIRMWARE_MSG_DIR/tools/uorb_rtps_message_ids.yaml
-#       - PX4_FIRMWARE_MSG_DIR/tools/uorb_rtps_classifier.py
+#       - templates/uorb_rtps_message_ids.yaml
+#       - scripts/uorb_rtps_classifier.py
+#       - scripts/generate_microRTPS_bridge.py
 #       - FASTRTPSGEN_DIR
-#       - ROS_UORB_MSGS_DIR
 ##################################################################################
 
-# Add the python scripts dir from PX4 msg/tools to PYTHONPATH
-set(ENV{PYTHONPATH} "$ENV{PYTHONPATH}:${PX4_FIRMWARE_MSG_DIR}/tools/")
 
 # Check if the RTPS ID's mapper yaml file exists and if yes, change the msg
 # naming to PascalCase
-if(EXISTS ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml)
-  set(RTPS_ID_YAML_FILE
-      ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml)
-
-  # Parse the RTPS IDs for each uORB msg into the counterparts for ROS
-  execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/scripts/PX42ROSRTPSIds.py
-            --input-file
-            ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml
-            --output-file ${RTPS_ID_YAML_FILE})
-  message(STATUS "RTPS msg ID yaml file: ${RTPS_ID_YAML_FILE}")
-
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
   # Create list of messages to send
   set(CONFIG_RTPS_SEND_TOPICS)
   message(STATUS "Retrieving list of msgs to send...")
   execute_process(COMMAND ${PYTHON_EXECUTABLE}
-                          ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_classifier.py
+                          ${CMAKE_CURRENT_SOURCE_DIR}/scripts/uorb_rtps_classifier.py
                           --receive # the msgs the client receives, are the
                                     # messages the agent sends
                           --topic-msg-dir
-                          ${PROJECT_SOURCE_DIR}/msg
+                          ${CMAKE_CURRENT_SOURCE_DIR}/msg
                           --rtps-ids-file
-                          ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_SEND_TOPICS)
   string(REGEX
          REPLACE "\n"
@@ -81,13 +68,13 @@ if(EXISTS ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml)
   set(CONFIG_RTPS_RECEIVE_TOPICS)
   message(STATUS "Retrieving list of msgs to receive...")
   execute_process(COMMAND ${PYTHON_EXECUTABLE}
-                          ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_classifier.py
+                          ${CMAKE_CURRENT_SOURCE_DIR}/scripts/uorb_rtps_classifier.py
                           --send # the msgs the client sends, are the messages
                                  # the agent receives
                           --topic-msg-dir
-                          ${PROJECT_SOURCE_DIR}/msg
+                          ${CMAKE_CURRENT_SOURCE_DIR}/msg
                           --rtps-ids-file
-                          ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_RECEIVE_TOPICS)
   string(REGEX
          REPLACE "\n"
@@ -104,7 +91,7 @@ if(EXISTS ${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml)
 else()
   message(
     FATAL_ERROR
-      "RTPS msg ID yaml file \"${PX4_FIRMWARE_MSG_DIR}/tools/uorb_rtps_message_ids.yaml\" not found!"
+      "RTPS msg ID yaml file \"${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml\" not found!"
     )
 endif()
 
@@ -145,19 +132,17 @@ endforeach()
 
 add_custom_command(
   OUTPUT  ${MICRORTPS_AGENT_FILES}
-  DEPENDS ${PX4_MSGS_PROJECT_NAME}
-          ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
           $ENV{FASTRTPSGEN_DIR}
-          ${ROS_UORB_MSGS_DIR}
           ${DDS_IDL_FILES}
   COMMAND
     ${PYTHON_EXECUTABLE}
-    ${PX4_FIRMWARE_MSG_DIR}/tools/generate_microRTPS_bridge.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
     --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
     --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
     --topic-msg-dir ${MSGS_DIR}
-    --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates
-    --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/msg/templates/uorb_rtps_message_ids.yaml
+    --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/templates
+    --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
     --agent
     --agent-outdir ${MICRORTPS_AGENT_DIR}
     --package ${PROJECT_NAME}

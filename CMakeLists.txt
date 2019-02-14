@@ -34,7 +34,7 @@ if(${PX4_FIRMWARE} NOT STREQUAL "")
 endif()
 
 # Look for the PX4 Firmware dir if PX4_FIRMWARE_DIR is not set
-find_package(PX4Firmware)
+# find_package(PX4Firmware)
 
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)

@@ -50,10 +50,10 @@ else
   fi
 fi
 
-SCRIPT2_DIR=$PWD
+SCRIPT_DIR=$PWD
 
 # setup the required path variables
-ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT2_DIR")" && pwd)
+ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
 ROS_WS_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_WS_SRC_DIR")" && pwd)
 

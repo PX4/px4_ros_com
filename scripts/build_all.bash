@@ -128,7 +128,7 @@ fi
 
 # source the ROS workspaces
 source $ROS2_WS_DIR/install/setup.bash
-source $ROS1_WS_DIR/install/setup.bash
+source $ROS1_WS_DIR/install/local_setup.bash
 
 # build the ros1_bridge only
 cd $ROS2_WS_DIR && colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+

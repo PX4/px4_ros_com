@@ -42,7 +42,7 @@
 #include <boost/thread.hpp>
 #include <boost/make_unique.hpp>
 
-#include "px4_ros_com/SensorCombined.h"
+#include "px4_msgs/SensorCombined.h"
 
 static constexpr auto kDefaultSensorCombinedPubTopic = "SensorCombined_topic_feedback";
 static constexpr auto kDefaultSensorCombinedSubTopic = "SensorCombined_topic";
@@ -60,7 +60,7 @@ ros::Subscriber _sensor_combined_sub;
 /**
  * @brief Sensor Combined uORB topic data callback
  */
-void sensor_combined_callback(const px4_ros_com::SensorCombined::ConstPtr& msg)
+void sensor_combined_callback(const px4_msgs::SensorCombined::ConstPtr& msg)
 {
 	ROS_INFO("Receiving sensor_combined_topic");
 	std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         ros::NodeHandle nh;
 
         // set the publisher
-        _sensor_combined_pub = nh.advertise<px4_ros_com::SensorCombined>(kDefaultSensorCombinedPubTopic, 100);
+        _sensor_combined_pub = nh.advertise<px4_msgs::SensorCombined>(kDefaultSensorCombinedPubTopic, 100);
 
         // set the subscriber
         _sensor_combined_sub = nh.subscribe(kDefaultSensorCombinedSubTopic, 100, sensor_combined_callback);

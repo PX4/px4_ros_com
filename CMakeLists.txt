@@ -16,57 +16,22 @@ if(${PX4_FIRMWARE} NOT STREQUAL "")
 endif()
 
 # Look for the PX4 Firmware dir and get the uORB msg definitions if PX4_FIRMWARE_DIR is not set
-find_package(PX4Firmware REQUIRED)
+# find_package(PX4Firmware REQUIRED)
 
 ## Find catkin macros and libraries
-find_package(catkin REQUIRED COMPONENTS
-    geographic_msgs
-    geometry_msgs
-    message_generation
-    message_runtime
-    nav_msgs
-    roscpp
-    sensor_msgs
-    std_msgs
-)
+find_package(catkin REQUIRED COMPONENTS roscpp)
 
-## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
-
-##########################
-## Declare ROS messages ##
-##########################
-
-include(uORBToPascalCase)
-
-if(NOT "${ROS_UORB_MSGS}" STREQUAL "")
-    STRING(REGEX REPLACE "msg/" "" ROS_UORB_MSGS "${ROS_UORB_MSGS}")
-    add_message_files(
-          DIRECTORY msg
-          FILES
-          ${ROS_UORB_MSGS}
-    )
-else()
-    message(FATAL_ERROR "No uORB msgs found to be generated!")
-endif()
-
-## Generate added messages
-generate_messages()
+find_package(px4_msgs REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
 ###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
+
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES px4_ros_com
-    CATKIN_DEPENDS geographic_msgs geometry_msgs message_generation message_runtime nav_msgs roscpp sensor_msgs std_msgs
-    DEPENDS Boost
+    CATKIN_DEPENDS px4_msgs
+    # DEPENDS ...
 )
 
 ###########
@@ -77,7 +42,7 @@ catkin_package(
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
+    ${px4_msgs_INCLUDE_DIRS}
 )
 
 ## Add library
@@ -85,7 +50,6 @@ add_library(${PROJECT_NAME}
     src/listeners/sensor_combined_listener.cpp
 #   src/advertisers/debug_vect_advertiser.cpp
 )
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Build listener
@@ -93,7 +57,7 @@ add_executable(
     sensor_combined_listener
     src/listeners/sensor_combined_listener.cpp
 )
-add_dependencies(sensor_combined_listener ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(sensor_combined_listener ${catkin_EXPORTED_TARGETS})
 target_link_libraries(sensor_combined_listener ${catkin_LIBRARIES})
 
 ## Build advertiser
@@ -124,12 +88,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-)
-
-# install ROS2<->ROS1 mapping rules
-install(
-  FILES px4_ros_com_mapping_rules.yaml
-  DESTINATION share/${PROJECT_NAME}
 )
 
 # Install launch files

@@ -1,11 +1,12 @@
 #!/bin/bash
+set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros1_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS(1)" >&2
   echo
-  echo -e "\t--px4_firmware_dir \t Location of the PX4 Firmware repo. If not set, the FindPX4Firmware CMake module will look for it."
   echo -e "\t--ros_distro \t\t Set ROS distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_path \t\t Set ROS environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo
   return 0
 fi
@@ -37,8 +38,18 @@ if [ -z $ros_distro]; then
     exit 1
     ;;
   esac
+  # source the ROS environment
+  source /opt/ros/$ROS_DISTRO/setup.bash
 else
-  ROS_DISTRO="$ros_distro"
+  export ROS_DISTRO="$ros_distro"
+  if [ -z $ros_path ]; then
+    echo "- Warning: You set a ROS distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
+    echo "           This assumes you want to use another ROS version installed on your system. Please set the install location with '--ros_path' arg! (ex: --ros_path ~/ros_src/melodic/install/setup.bash)"
+    exit 1
+  else
+    # source the ROS environment (from arg)
+    source $ros_path
+  fi
 fi
 
 SCRIPT_DIR=$PWD
@@ -48,14 +59,10 @@ ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
 ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
 
-# Check if the PX4 Firmware dir is passed by argument
-PX4_FIRMWARE_DIR=${px4_firmware_dir:-""}
-
-# Source the ROS environment
-source /opt/ros/$ROS_DISTRO/setup.bash
-
 # build the ROS1 workspace of the px4_ros_com package
-cd $ROS_WS_DIR && colcon build --cmake-args -DPX4_FIRMWARE_DIR=$PX4_FIRMWARE_DIR --symlink-install --event-handlers console_direct+
+cd $ROS_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
 
 # source the workspace
-source $ROS_WS_DIR/install/setup.bash
+source $ROS_WS_DIR/install/local_setup.bash
+
+cd $SCRIPT_DIR

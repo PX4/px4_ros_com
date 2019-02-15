@@ -1,13 +1,12 @@
-# px4_ros_com
+# px4_ros_com for ROS
 
-[![GitHub license](https://img.shields.io/github/license/PX4/px4_ros_com.svg)](https://github.com/PX4/px4_ros_com/blob/master/LICENSE) [![GitHub (pre-)release](https://img.shields.io/github/release-pre/PX4/px4_ros_com.svg)](https://github.com/PX4/px4_ros_com/releases/tag/beta) [![DOI](https://zenodo.org/badge/142936318.svg)](https://zenodo.org/badge/latestdoi/142936318) [![Build Status](https://travis-ci.com/PX4/px4_ros_com.svg?token=wyo8gnJf2urtswRL6tUy&branch=master)](https://travis-ci.com/PX4/px4_ros_com)
+[![GitHub license](https://img.shields.io/github/license/PX4/px4_ros_com.svg)](https://github.com/PX4/px4_ros_com/blob/master/LICENSE) [![GitHub (pre-)release](https://img.shields.io/github/release-pre/PX4/px4_ros_com.svg)](https://github.com/PX4/px4_ros_com/releases/tag/beta) [![DOI](https://zenodo.org/badge/142936318.svg)](https://zenodo.org/badge/latestdoi/142936318) [![Build Status](https://travis-ci.com/PX4/px4_ros_com.svg?token=wyo8gnJf2urtswRL6tUy&branch=ros1)](https://travis-ci.com/PX4/px4_ros_com)
 
-This package materializes the PX4-FastRTPS bridge, with an interface between the PX4 autopilot stack, ROS2 and ROS1 (from now on, referenced as ROS) over [`ros1_bridge`](https://github.com/ros2/ros1_bridge).
+This package materializes the ROS1 side (from now on, referenced as ROS) of PX4-FastRTPS bridge, for interfacing with the ROS2 over [`ros1_bridge`](https://github.com/ros2/ros1_bridge). The [`master`](https://github.com/PX4/px4_ros_com/tree/master) branch of the package repository represents the ROS2 side of the bridge.
 
-The package is divided into two different branches:
+The package serves as an example for testing the interface with the ROS2 side, mainly by showing the usage of the [`px4_msgs`](https://github.com/PX4/px4_msgs) `ros1` branch for this same purpose. The idea is that the developer using this package uses the `px4_msgs` on its own ROS nodes so to exchange data with ROS2, and by consequence, with PX4 internals.
 
-1. The [`master`](https://github.com/PX4/px4_ros_com/tree/master) branch composes the required Cmake modules and build structure to generate the ROS2 message headers and source files, which are then used and propagated on the RTPS DDS layer;
-2. The [`ros1`](https://github.com/PX4/px4_ros_com/tree/ros1) branch is a product of the `master` branch and its purpose is also generate the ROS message headers and source files, but to use on the ROS side. The interface between the ROS2 and ROS is possible through the [`ros1_bridge`](https://github.com/ros2/ros1_bridge).
+The [`ros1`](https://github.com/PX4/px4_ros_com/tree/ros1) branch is a product of the [`master`](https://github.com/PX4/px4_ros_com/tree/master). The interface between the ROS2 and ROS is possible through the [`ros1_bridge`](https://github.com/ros2/ros1_bridge).
 
 ## Install, build and usage
 

@@ -28,7 +28,6 @@ CLEAN_HISTORY=0
 # ROS2 dirs
 ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
 ROS2_WS_SRC_DIR=$(cd "$(dirname "$ROS2_REPO_DIR")" && pwd)
-PX4_MSGS_REPO_DIR=$(cd "$ROS2_WS_SRC_DIR/px4_msgs" && pwd)
 ROS2_WS_DIR=$(cd "$(dirname "$ROS2_WS_SRC_DIR")" && pwd)
 
 # ROS1 dirs (one can pass the ROS1 workspace dir using '--ros1_ws_dir <ws_dir>')
@@ -65,9 +64,6 @@ for dir in "${dirs[@]}"; do
     CLEAN_HISTORY=1
   fi
 done
-
-# clean generated msgs on the ROS1 side
-cd $ROS1_REPO_DIR/msg && sudo find . -name "*.msg" -type f -delete
 
 # delete build, install and log folders in the ROS1 workspace
 dirs=("$ROS1_WS_DIR/build" "$ROS1_WS_DIR/install" "$ROS1_WS_DIR/log")

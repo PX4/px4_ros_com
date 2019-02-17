@@ -5,8 +5,7 @@ env:
     - CCACHE_DIR=${HOME}/.ccache
     - PX4_FIRMWARE=https://github.com/PX4/Firmware.git
     - PX4_MSGS=https://github.com/PX4/px4_msgs.git
-    - CATKIN_BUILD="unset ROS_DISTRO; mkdir -p ~/catkin_ws/src; cd ~/catkin_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone --recursive ${PX4_FIRMWARE} ../Firmware; git clone ${PX4_MSGS}; cd src/px4_ros_com/scripts; ./build_ros1_workspace.bash"
-    - COLCON_BUILD="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone --recursive ${PX4_FIRMWARE} ../Firmware; git clone ${PX4_MSGS}; cd src/px4_ros_com/scripts; ./build_ros2_workspace.bash"
+    - COLCON_BUILD="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts; ./build_ros2_workspace.bash"
 
 matrix:
   include:
@@ -21,7 +20,7 @@ matrix:
         - ROS2_DISTRO=ardent
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH} --no_ros1_bridge"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-21
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-02-14
     - name: Build on ROS2 Bouncy
       os: linux
       language: cpp
@@ -33,7 +32,7 @@ matrix:
         - ROS2_DISTRO=bouncy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-01-21
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-02-14
     - name: Build on ROS2 Crystal
       os: linux
       language: cpp
@@ -45,8 +44,8 @@ matrix:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-01-21
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-02-14
 
 script:
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${COLCON_BUILD} ${BUILD_ARGS}"; fi
-  - if [ "$TRAVIS_BRANCH" = "ros1" ]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${CATKIN_BUILD}"; fi
+  # CI runs over all branches containing 'master' on the name or that do not contain 'ros1' in the name
+  - if [[ $TRAVIS_BRANCH =~ "master" ]] || [[ ! "$TRAVIS_BRANCH" =~ "ros1" ]]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "${COLCON_BUILD} ${BUILD_ARGS}"; fi

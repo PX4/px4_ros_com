@@ -41,6 +41,8 @@ if [ -z $ros1_distro ]; then
     exit 1
     ;;
   esac
+  # source the ROS1 environment
+  source /opt/ros/$ROS1_DISTRO/setup.bash
 else
   export ROS1_DISTRO="$ros1_distro"
   if [ -z $ros1_path ]; then
@@ -96,7 +98,7 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
 fi
 
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS2_WS_DIR && colcon build --cmake-args --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+cd $ROS2_WS_DIR && colcon build --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
 if [ -f "$ROS1_WS_DIR/install/setup.bash" ]; then
@@ -115,15 +117,15 @@ fi
 
 # source the environments/workspaces so the bridge is be built with support for
 # any messages that are on your path and have an associated mapping between ROS 1 and ROS 2
+if [ -z $ros2_path ]; then
+  source /opt/ros/$ROS2_DISTRO/setup.bash
+else
+  source $ros2_path
+fi
 if [ -z $ros1_path ]; then
   source /opt/ros/$ROS1_DISTRO/setup.bash
 else
   source $ros1_path
-fi
-if [ -z $ros1_path ]; then
-  source /opt/ros/$ROS2_DISTRO/setup.bash
-else
-  source $ros2_path
 fi
 
 # source the ROS workspaces

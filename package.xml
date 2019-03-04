@@ -20,6 +20,5 @@
 
   <export>
     <build_type>ament_cmake</build_type>
-    <ros1_bridge mapping_rules="px4_ros_com_mapping_rules.yaml"/>
   </export>
 </package>

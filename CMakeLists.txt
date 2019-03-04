@@ -86,14 +86,14 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-# Install launch files
+## Install package.xml
 install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
+  FILES ${PROJECT_SOURCE_DIR}/package.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${PROJECT_NAME}
 )
 
 #############

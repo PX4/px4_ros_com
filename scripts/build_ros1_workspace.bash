@@ -59,10 +59,12 @@ ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
 ROS_PKG_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_PKG_SRC_DIR")" && pwd)
 
+# check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
+printf "\n************* Building ROS1 workspace *************\n\n"
 # build the ROS1 workspace of the px4_ros_com package
 cd $ROS_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
 
-# source the workspace
+# source the ROS1 workspace environment so to have it ready to use
 source $ROS_WS_DIR/install/local_setup.bash
 
-cd $SCRIPT_DIR
+printf "\nROS1 workspace ready...\n\n"

@@ -13,19 +13,6 @@ endif()
 # Check if any sanitizers set
 include(EnableSanitizers)
 
-# Verify if ROS2 env is set
-if(DEFINED ENV{ROS2_DISTRO})
-  set(IS_ARDENT 0)
-  if($ENV{ROS2_DISTRO} STREQUAL "ardent")
-    set(IS_ARDENT 1)
-  endif()
-  # Pass if ROS2 is Ardent or not as preprocessor macro Used to define the
-  # config for micro-RTPS agent Pubs and Subs
-  add_definitions(-DROS2_ARDENT=${IS_ARDENT})
-else()
-  message(FATAL_ERROR "No ROS2 environment sourced!")
-endif()
-
 # Option to set the PX4 Firmware repository directory
 option(PX4_FIRMWARE_DIR "PX4 Firmware repository directory (by default not set)"
        "")

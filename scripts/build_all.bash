@@ -152,7 +152,7 @@ gnome-terminal --tab -- /bin/bash -c \
     source $ROS2_WS_DIR/install/local_setup.bash
 
     # temporary fix while https://github.com/colcon/colcon-ros/pull/56 is not released
-    export CMAKE_PREFIX_PATH=/home/nuno/PX4/px4_ros_com_ros2/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros2/install/px4_msgs:/home/nuno/PX4/px4_ros_com_ros1/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros1/install/px4_msgs:/opt/ros/crystal/setup.bash:/opt/ros/melodic
+    export CMAKE_PREFIX_PATH=/home/nuno/PX4/px4_ros_com_ros2/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros2/install/px4_msgs:/home/nuno/PX4/px4_ros_com_ros1/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros1/install/px4_msgs:/opt/ros/crystal:/opt/ros/melodic
 
     printf "\n************* Building ros1_bridge *************\n\n"
     # build the ros1_bridge only

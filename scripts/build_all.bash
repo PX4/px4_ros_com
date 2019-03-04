@@ -129,22 +129,15 @@ cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge --event-handlers con
 
 gnome-terminal --tab -- /bin/bash -c \
   '''
-    # source the ROS1 environment (temporary while https://github.com/colcon/colcon-ros/pull/54 is not released)
     unset ROS_DISTRO
-    if [ -z $ros1_path ]; then
-      source /opt/ros/$ROS1_DISTRO/setup.bash
-    else
-      source $ros1_path
-    fi
-
-    # check if the ROS1 workspace of px4_ros_com was built and source it.
+    # check if the ROS1 workspace of px4_ros_com and px4_msgs was built and source it.
     if [ -z $ROS1_WS_DIR ]; then
       echo "ROS1 workspace does not exist!"
       exec /bin/bash
       exit 1
     else
       if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
-        unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
+        unset ROS_DISTRO && source $ROS1_WS_DIR/install/local_setup.bash
       else
         echo "ROS1 workspace not built."
         exec /bin/bash

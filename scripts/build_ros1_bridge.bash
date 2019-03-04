@@ -55,20 +55,13 @@ ROS2_WS_DIR=$(cd "$(dirname "$ROS2_WS_SRC_DIR")" && pwd)
 # ROS1 dirs (one can pass the ROS1 workspace dir using '--ros1_ws_dir <ws_dir>')
 ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 
-# source the ROS1 environment (temporary while https://github.com/colcon/colcon-ros/pull/54 is not released)
-if [ -z $ros1_path ]; then
-  unset ROS_DISTRO && source /opt/ros/$ROS1_DISTRO/setup.bash
-else
-  source $ros1_path
-fi
-
 # check if the ROS1 workspace of px4_ros_com was built and source it.
 if [ -z $ROS1_WS_DIR ]; then
   echo "ROS1 workspace does not exist!"
   exit 1
 else
   if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
-    unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
+    unset ROS_DISTRO && source $ROS1_WS_DIR/install/local_setup.bash
   else
     echo "ROS1 workspace not built."
     exit 1

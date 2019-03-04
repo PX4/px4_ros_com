@@ -57,36 +57,33 @@ ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 
 # source the ROS1 environment (temporary while https://github.com/colcon/colcon-ros/pull/54 is not released)
 if [ -z $ros1_path ]; then
-  source /opt/ros/$ROS1_DISTRO/setup.bash
+  unset ROS_DISTRO && source /opt/ros/$ROS1_DISTRO/setup.bash
 else
   source $ros1_path
 fi
 
 # check if the ROS1 workspace of px4_ros_com was built and source it.
-if [ -f $ROS1_WS_DIR ]; then
+if [ -z $ROS1_WS_DIR ]; then
+  echo "ROS1 workspace does not exist!"
+  exit 1
+else
   if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
-    source $ROS1_WS_DIR/install/setup.bash
+    unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
   else
     echo "ROS1 workspace not built."
-    return 0
+    exit 1
   fi
-else
-  echo "ROS1 workspace does not exist."
-  return 0
 fi
 
 # source the ROS2 workspace
-source $ROS2_WS_DIR/install/local_setup.bash
-
-# temporary fix while https://github.com/colcon/colcon-ros/pull/56 is not released
-export CMAKE_PREFIX_PATH=/home/nuno/PX4/px4_ros_com_ros2/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros2/install/px4_msgs:/home/nuno/PX4/px4_ros_com_ros1/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros1/install/px4_msgs:/opt/ros/crystal:/opt/ros/melodic
+unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
 
 printf "\n************* Building ros1_bridge *************\n\n"
 # build the ros1_bridge only
 cd $ROS2_WS_DIR && colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
 
 # source the ROS2 workspace environment so to have it ready to use
-source $ROS2_WS_DIR/install/local_setup.bash
+unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
 
 printf "\nros1_bridge workspace ready...\n\n"
 

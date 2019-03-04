@@ -22,6 +22,7 @@ while [ $# -gt 0 ]; do
 done
 
 # One can pass the ROS2_DISTRO using the '--ros_distro' arg
+unset ROS_DISTRO
 if [ -z $ros_distro ]; then
   # set the ROS2_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
@@ -69,6 +70,6 @@ fi
 cd $ROS_WS_DIR && colcon build --cmake-args --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # source the ROS2 workspace environment so to have it ready to use
-source $ROS_WS_DIR/install/local_setup.bash
+unset ROS_DISTRO && source $ROS_WS_DIR/install/local_setup.bash
 
 printf "\nROS2 workspace ready...\n\n"

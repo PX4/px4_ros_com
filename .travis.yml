@@ -9,18 +9,6 @@ env:
 
 matrix:
   include:
-    - name: Build on ROS2 Ardent
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
-      env:
-        - ROS2_DISTRO=ardent
-        - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
-        - BUILD_ARGS="--ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH} --no_ros1_bridge"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-01-25
     - name: Build on ROS2 Bouncy
       os: linux
       language: cpp

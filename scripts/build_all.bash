@@ -24,6 +24,7 @@ while [ $# -gt 0 ]; do
 done
 
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
+unset ROS_DISTRO
 if [ -z $ros1_distro ]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
@@ -41,7 +42,7 @@ if [ -z $ros1_distro ]; then
     exit 1
     ;;
   esac
-  # source the ROS1 environment
+  # source the ROS1 environment (required so px4_ros_com uses genmsg)
   source /opt/ros/$ROS1_DISTRO/setup.bash
 else
   export ROS1_DISTRO="$ros1_distro"
@@ -49,6 +50,9 @@ else
     echo "- Warning: You set a ROS(1) distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
     echo "           This assumes you are using a ROS version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/kinetic/devel)"
     exit 1
+  else
+    # source the ROS1 environment (from arg)
+    source $ros1_path
   fi
 fi
 if [ -z $ros2_distro ]; then
@@ -97,42 +101,71 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS1_BRIDGE_RELEASE
 fi
 
+gnome-terminal --tab -- /bin/bash -c \
+  '''
+    # source the ROS1 environment
+    if [ -z $ros1_path ]; then
+      source /opt/ros/$ROS1_DISTRO/setup.bash
+    else
+      source $ros1_path
+    fi
+
+    # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
+    printf "\n************* Building ROS1 workspace *************\n\n"
+    # build the ROS1 workspace of the px4_ros_com package
+    cd $ROS1_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
+
+    # source the ROS1 workspace environment so to have it ready to use
+    source $ROS1_WS_DIR/install/local_setup.bash
+
+    printf "\nROS1 workspace ready...\n\n"
+    exec /bin/bash
+  '''
+
+printf "\n************* Building ROS2 workspace *************\n\n"
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS2_WS_DIR && colcon build --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge --event-handlers console_direct+
 
-# check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
-if [ -f "$ROS1_WS_DIR/install/setup.bash" ]; then
-  source "$ROS1_WS_DIR/install/setup.bash"
-else
-  # source the ROS1 environment
-  if [ -z $ros1_path ]; then
-    source /opt/ros/$ROS1_DISTRO/setup.bash
-  else
-    source $ros1_path
-  fi
+gnome-terminal --tab -- /bin/bash -c \
+  '''
+    # source the ROS1 environment (temporary while https://github.com/colcon/colcon-ros/pull/54 is not released)
+    if [ -z $ros1_path ]; then
+      source /opt/ros/$ROS1_DISTRO/setup.bash
+    else
+      source $ros1_path
+    fi
 
-  # build the ROS1 workspace of the px4_ros_com package
-  cd $ROS1_WS_DIR && colcon build --cmake-args --symlink-install --event-handlers console_direct+
-fi
+    # check if the ROS1 workspace of px4_ros_com was built and source it.
+    if [ -f $ROS1_WS_DIR ]; then
+      if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
+        source $ROS1_WS_DIR/install/setup.bash
+      else
+        echo "ROS1 workspace not built."
+        return 0
+      fi
+    else
+      echo "ROS1 workspace does not exist."
+      return 0
+    fi
 
-# source the environments/workspaces so the bridge is be built with support for
-# any messages that are on your path and have an associated mapping between ROS 1 and ROS 2
-if [ -z $ros2_path ]; then
-  source /opt/ros/$ROS2_DISTRO/setup.bash
-else
-  source $ros2_path
-fi
-if [ -z $ros1_path ]; then
-  source /opt/ros/$ROS1_DISTRO/setup.bash
-else
-  source $ros1_path
-fi
+    # source the ROS2 workspace
+    source $ROS2_WS_DIR/install/local_setup.bash
 
-# source the ROS workspaces
-source $ROS2_WS_DIR/install/setup.bash
-source $ROS1_WS_DIR/install/local_setup.bash
+    # temporary fix while https://github.com/colcon/colcon-ros/pull/56 is not released
+    export CMAKE_PREFIX_PATH=/home/nuno/PX4/px4_ros_com_ros2/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros2/install/px4_msgs:/home/nuno/PX4/px4_ros_com_ros1/install/px4_ros_com:/home/nuno/PX4/px4_ros_com_ros1/install/px4_msgs:/opt/ros/crystal/setup.bash:/opt/ros/melodic
 
-# build the ros1_bridge only
-cd $ROS2_WS_DIR && colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
+    printf "\n************* Building ros1_bridge *************\n\n"
+    # build the ros1_bridge only
+    cd $ROS2_WS_DIR && colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
 
-cd $SCRIPT_DIR
+    # source the ROS2 workspace environment so to have it ready to use
+    source $ROS2_WS_DIR/install/local_setup.bash
+
+    printf "\nros1_bridge workspace ready...\n\n"
+    exec /bin/bash
+  '''
+
+# source the ROS2 workspace environment so to have it ready to use
+source $ROS2_WS_DIR/install/local_setup.bash
+
+printf "\nROS2 workspace ready...\n\n"

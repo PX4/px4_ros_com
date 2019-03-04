@@ -69,6 +69,6 @@ fi
 cd $ROS_WS_DIR && colcon build --cmake-args --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # source the ROS2 workspace environment so to have it ready to use
-source $ROS2_WS_DIR/install/local_setup.bash
+source $ROS_WS_DIR/install/local_setup.bash
 
 printf "\nROS2 workspace ready...\n\n"

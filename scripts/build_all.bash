@@ -163,3 +163,12 @@ gnome-terminal --tab -- /bin/bash -c \
 unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
 
 printf "\nROS2 workspace ready...\n\n"
+
+gnome-terminal --tab -- /bin/bash -c \
+  '''
+  # source the ROS2 workspace environment so to have it ready to use
+  unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
+
+  printf "To start the microRTPS bridge agent, use \"micrortps_agent [options]\"\n\n"
+  exec /bin/bash
+  '''

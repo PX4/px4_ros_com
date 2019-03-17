@@ -49,9 +49,9 @@ class SensorCombinedListener : public rclcpp::Node
 {
 public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
-		auto callback =
-		[this](const px4_msgs::msg::SensorCombined::SharedPtr msg)->void
-		{
+		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
+		"SensorCombined_topic",
+		[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED DATA ON SENSOR COMBINED"   << std::endl;
 			std::cout << "================================"   << std::endl;
@@ -65,8 +65,7 @@ public:
 			std::cout << "accelerometer_m_s2[1]: " << msg->accelerometer_m_s2[1] << std::endl;
 			std::cout << "accelerometer_m_s2[2]: " << msg->accelerometer_m_s2[2] << std::endl;
 			std::cout << "accelerometer_integral_dt: " << msg->accelerometer_integral_dt << std::endl;
-		};
-		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>("SensorCombined_topic", callback);
+		});
 	}
 
 private:

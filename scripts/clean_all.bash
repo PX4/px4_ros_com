@@ -34,17 +34,10 @@ ROS2_WS_DIR=$(cd "$(dirname "$ROS2_WS_SRC_DIR")" && pwd)
 ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 ROS1_REPO_DIR=$(cd $ROS1_WS_DIR/src/px4_ros_com && pwd)
 
-# clean generated RTPS ID map file on the px4_ros_com ROS2 side
-if [ -f $ROS2_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml ]; then
-  cd $ROS2_REPO_DIR/msg/templates && sudo rm uorb_rtps_message_ids.yaml
-  echo -e "\t - Deleted $ROS2_REPO_DIR/msg/templates/uorb_rtps_message_ids.yaml"
-  CLEAN_HISTORY=1
-fi
-
 # clean micrortps_agent generated source code
-if [ -d $ROS2_REPO_DIR/px4_ros_com/src/micrortps_agent ]; then
-  cd $ROS2_REPO_DIR/px4_ros_com/src && sudo rm -rf micrortps_agent
-  echo -e "\t - Deleted $ROS2_REPO_DIR/px4_ros_com/src/micrortps_agent"
+if [ -d $ROS2_WS_SRC_DIR/px4_ros_com/src/micrortps_agent ]; then
+  cd $ROS2_WS_SRC_DIR/px4_ros_com/src && sudo rm -rf micrortps_agent
+  echo -e "\t - Deleted $ROS2_WS_SRC_DIR/px4_ros_com/src/micrortps_agent"
   CLEAN_HISTORY=1
 fi
 

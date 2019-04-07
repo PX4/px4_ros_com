@@ -48,7 +48,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
                           --receive # the msgs the client receives, are the
                                     # messages the agent sends
                           --topic-msg-dir
-                          ${CMAKE_CURRENT_SOURCE_DIR}/msg
+                          ${MSGS_DIR}
                           --rtps-ids-file
                           ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_SEND_TOPICS)
@@ -72,7 +72,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
                           --send # the msgs the client sends, are the messages
                                  # the agent receives
                           --topic-msg-dir
-                          ${CMAKE_CURRENT_SOURCE_DIR}/msg
+                          ${MSGS_DIR}
                           --rtps-ids-file
                           ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_RECEIVE_TOPICS)
@@ -130,24 +130,26 @@ foreach(topic ${CONFIG_RTPS_SEND_TOPICS}) # advertised topics should first be
     APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}_Subscriber.h)
 endforeach()
 
+MESSAGE(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
+MESSAGE(STATUS "px4_msgs message dir under ${MSGS_DIR}")
+
+get_filename_component(px4_msgs_FASTRTPSGEN_INCLUDE "../../" ABSOLUTE BASE_DIR ${px4_msgs_DIR})
 add_custom_command(
   OUTPUT  ${MICRORTPS_AGENT_FILES}
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
           $ENV{FASTRTPSGEN_DIR}
-          ${DDS_IDL_FILES}
   COMMAND
     ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
     --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
-    --fastrtpsgen-include ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/
+    --fastrtpsgen-include ${px4_msgs_FASTRTPSGEN_INCLUDE}
     --topic-msg-dir ${MSGS_DIR}
     --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/templates
     --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
     --agent
     --agent-outdir ${MICRORTPS_AGENT_DIR}
-    --package ${PROJECT_NAME}
-    --idl-dir
-    ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl/${PROJECT_NAME}/msg/dds_fastrtps
+    --package "px4_msgs"
+    --idl-dir ${MSGS_DIR}/dds_fastrtps
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Generating micro-RTPS agent code...")
 

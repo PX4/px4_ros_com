@@ -37,58 +37,13 @@ find_package(px4_msgs REQUIRED)
 
 find_package(PythonInterp REQUIRED)
 
-################################
-# Generate Fast RTPS IDL files #
-################################
-
-# Builds lists of ROS messages and IDL files
-get_filename_component(MSGS_DIR "../" ABSOLUTE BASE_DIR "${px4_msgs_DIR}")
-
-set(MSGS_DIR "${MSGS_DIR}/msg")
-file(GLOB DDS_IDL_DIR_LIST ${MSGS_DIR}/*.idl)
-file(GLOB ROS_MSG_DIR_LIST ${MSGS_DIR}/*.msg)
-
-set(DDS_IDL_DIR_LIST "${DDS_IDL_DIR_LIST}" CACHE INTERNAL "DDS_IDL_DIR_LIST")
-set(ROS_MSG_DIR_LIST "${ROS_MSG_DIR_LIST}" CACHE INTERNAL "ROS_MSG_DIR_LIST")
-
-rosidl_generate_dds_interfaces(${PROJECT_NAME}__fastrtps_idl
-                                IDL_FILES
-                                ${ROS_MSG_DIR_LIST}
-                                OUTPUT_SUBFOLDERS
-                                "dds_fastrtps")
-set(DDS_IDL_FILES "" CACHE INTERNAL "DDS_IDL_FILES")
-set(DDS_IDL_BASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
-foreach(_idl_file ${ROS_MSG_DIR_LIST})
-  get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
-  get_filename_component(_parent_folder "${_parent_folder}" NAME)
-  get_filename_component(_extension "${_idl_file}" EXT)
-  get_filename_component(_name "${_idl_file}" NAME_WE)
-  if(_extension STREQUAL ".msg")
-    list(
-        APPEND
-        DDS_IDL_FILES
-        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/${_name}_.idl"
-        )
-  elseif(_extension STREQUAL ".srv")
-    list(
-        APPEND
-        DDS_IDL_FILES
-        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Request_.idl"
-        )
-    list(
-        APPEND
-        DDS_IDL_FILES
-        "${DDS_IDL_BASE_PATH}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/Sample_${_name}_Response_.idl"
-        )
-  endif()
-endforeach()
-
 ###################################
 # Generate micro-RTPS agent code ##
 ###################################
 
+get_filename_component(PX4_MSGS_DIR "../" ABSOLUTE BASE_DIR ${px4_msgs_DIR})
+set(MSGS_DIR "${PX4_MSGS_DIR}/msg" CACHE INTERNAL "MSGS_DIR")
 include(GenerateMicroRTPSAgent)
-add_dependencies(${PROJECT_NAME}__fastrtps_idl micrortps_agent)
 
 #################
 # Setup targets #

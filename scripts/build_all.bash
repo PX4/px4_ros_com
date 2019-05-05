@@ -95,10 +95,7 @@ export ROS1_WS_DIR=${ros1_ws_dir:-"$(cd "$HOME/px4_ros_com_ros1" && pwd)"}
 
 # clone ros1_bridge to the workspace dir
 if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
-  # use $ROS2_DISTRO branch as the latest upstream API changed to fit ROS2 Crystal release
-  # if using Crystal otherwise, use master
-  ROS1_BRIDGE_RELEASE=$([ $ROS2_DISTRO == "crystal" ] && echo "master" || echo "$ROS2_DISTRO")
-  cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS1_BRIDGE_RELEASE
+  cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
 fi
 
 gnome-terminal --tab -- /bin/bash -c \

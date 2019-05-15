@@ -111,10 +111,10 @@ gnome-terminal --tab -- /bin/bash -c \
     # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
     printf "\n************* Building ROS1 workspace *************\n\n"
     # build the ROS1 workspace of the px4_ros_com package
-    cd $ROS1_WS_DIR && colcon build --symlink-install --event-handlers console_direct+
+    cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
 
     # source the ROS1 workspace environment so to have it ready to use
-    source $ROS1_WS_DIR/install/local_setup.bash
+    source $ROS1_WS_DIR/install/setup.bash
 
     printf "\nROS1 workspace ready...\n\n"
     exec /bin/bash
@@ -134,7 +134,7 @@ gnome-terminal --tab -- /bin/bash -c \
       exit 1
     else
       if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
-        unset ROS_DISTRO && source $ROS1_WS_DIR/install/local_setup.bash
+        unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
       else
         echo "ROS1 workspace not built."
         exec /bin/bash
@@ -143,21 +143,21 @@ gnome-terminal --tab -- /bin/bash -c \
     fi
 
     # source the ROS2 workspace
-    unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
+    unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
 
     printf "\n************* Building ros1_bridge *************\n\n"
     # build the ros1_bridge only
-    cd $ROS2_WS_DIR && colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
+    cd $ROS2_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
 
     # source the ROS2 workspace environment so to have it ready to use
-    unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
+    unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
 
     printf "\nros1_bridge workspace ready...\n\n"
     exec /bin/bash
   '''
 
 # source the ROS2 workspace environment so to have it ready to use
-unset ROS_DISTRO && source $ROS2_WS_DIR/install/local_setup.bash
+unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
 
 printf "\nROS2 workspace ready...\n\n"
 

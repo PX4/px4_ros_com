@@ -67,9 +67,9 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS_WS_SRC_DIR/ros1_bridge" ]; then
 fi
 
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS_WS_DIR && colcon build --cmake-args --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+cd $ROS_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
 
 # source the ROS2 workspace environment so to have it ready to use
-unset ROS_DISTRO && source $ROS_WS_DIR/install/local_setup.bash
+unset ROS_DISTRO && source $ROS_WS_DIR/install/setup.bash
 
 printf "\nROS2 workspace ready...\n\n"

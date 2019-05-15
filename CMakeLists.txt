@@ -55,10 +55,13 @@ include_directories(include ${rclcpp_INCLUDE_DIRS})
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
 target_link_libraries(micrortps_agent fastrtps fastcdr)
 
-# Build listener
+# Build listeners
 add_executable(sensor_combined_listener
                src/listeners/sensor_combined_listener.cpp)
 add_dependencies(sensor_combined_listener micrortps_agent)
+add_executable(vehicle_global_position_listener
+               src/listeners/vehicle_global_position_listener.cpp)
+add_dependencies(vehicle_global_position_listener micrortps_agent)
 
 # Build advertiser
 add_executable(debug_vect_advertiser src/advertisers/debug_vect_advertiser.cpp)
@@ -70,6 +73,7 @@ add_dependencies(debug_vect_advertiser micrortps_agent)
 
 # Add listener dependencies
 ament_target_dependencies(sensor_combined_listener rclcpp px4_msgs)
+ament_target_dependencies(vehicle_global_position_listener rclcpp px4_msgs)
 
 # Add advertiser dependencies
 ament_target_dependencies(debug_vect_advertiser rclcpp px4_msgs)
@@ -86,7 +90,7 @@ ament_export_libraries()
 # Install artifacts
 install(DIRECTORY cmake DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY include DESTINATION include)
-install(TARGETS micrortps_agent sensor_combined_listener debug_vect_advertiser
+install(TARGETS micrortps_agent sensor_combined_listener vehicle_global_position_listener debug_vect_advertiser
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin)

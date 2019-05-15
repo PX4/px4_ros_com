@@ -39,8 +39,8 @@
  * @author Vicente Monge
  */
 
-#include <rclcpp/rclcpp.hpp>
-#include <px4_msgs/msg/sensor_combined.hpp>
+ #include <rclcpp/rclcpp.hpp>
+ #include <px4_msgs/msg/sensor_combined.hpp>
 
 /**
  * @brief Sensor Combined uORB topic data callback
@@ -50,12 +50,12 @@ class SensorCombinedListener : public rclcpp::Node
 public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
-		"SensorCombined_topic",
-		[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
+			"SensorCombined_topic",
+			[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-			std::cout << "RECEIVED DATA ON SENSOR COMBINED"   << std::endl;
-			std::cout << "================================"   << std::endl;
-			std::cout << "ts: "	     << msg->timestamp    << std::endl;
+			std::cout << "RECEIVED SENSOR COMBINED DATA"   << std::endl;
+			std::cout << "============================="   << std::endl;
+			std::cout << "ts: "          << msg->timestamp    << std::endl;
 			std::cout << "gyro_rad[0]: " << msg->gyro_rad[0]  << std::endl;
 			std::cout << "gyro_rad[1]: " << msg->gyro_rad[1]  << std::endl;
 			std::cout << "gyro_rad[2]: " << msg->gyro_rad[2]  << std::endl;

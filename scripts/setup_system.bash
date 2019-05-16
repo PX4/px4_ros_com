@@ -90,11 +90,30 @@ sudo apt-get --qq update
 sudo apt-get -qq dist-upgrade
 echo "Installing ROS2 $ROS2_DISTRO and some dependencies..."
 
+# Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 18.10 and above)
+sudo apt-get install -y --quiet python3-genmsg
+  || sudo wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/
+    && sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb
+    && sudo apt-get -y autoremove
+    && sudo apt-get clean autoclean
+    && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
+
+# Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 18.10 and above)
+sudo apt-get install -y --quiet python3-gencpp
+  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/
+    && sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb
+    && sudo apt-get -y autoremove
+    && sudo apt-get clean autoclean
+    && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
+
 sudo apt-get install -y \
+  dirmngr \
+  gnupg2 \
+  gradle \
   python3-colcon-common-extensions \
   python3-dev \
   ros-$ROS2_DISTRO-desktop \
-  ros-$ROS2_DISTRO-rmw-opensplice-cpp
+  ros-$ROS2_DISTRO-rosidl-generator-dds-idl
 
 # Install Python3 packages needed for testing
 curl https://bootstrap.pypa.io/get-pip.py | python3 &&

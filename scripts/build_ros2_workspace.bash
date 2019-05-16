@@ -21,6 +21,15 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 19.04 and above)
+sudo apt-get install python3-genmsg ||
+  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/ &&
+    sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
+# Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 19.04 and above)
+sudo apt-get install python3-gencpp ||
+  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/ &&
+    sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
+
 # One can pass the ROS2_DISTRO using the '--ros_distro' arg
 unset ROS_DISTRO
 if [ -z $ros_distro ]; then
@@ -59,11 +68,8 @@ ROS_WS_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_WS_SRC_DIR")" && pwd)
 
 # clone ros1_bridge to the workspace dir
-if [ -z $no_ros1_bridge ] && [ ! -d "$ROS_WS_SRC_DIR/ros1_bridge" ]; then
-  # use $ROS2_DISTRO branch as the latest upstream API changed to fit ROS2 Crystal release
-  # if using Crystal otherwise, use master
-  ROS1_BRIDGE_RELEASE=$([ $ROS2_DISTRO == "crystal" ] && echo "master" || echo "$ROS2_DISTRO")
-  cd $ROS_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS1_BRIDGE_RELEASE
+if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
+  cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
 fi
 
 # build px4_ros_com package, except the ros1_bridge

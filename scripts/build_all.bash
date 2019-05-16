@@ -23,6 +23,15 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 19.04 and above)
+sudo apt-get install python3-genmsg ||
+  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/ &&
+    sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
+# Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 19.04 and above)
+sudo apt-get install python3-gencpp ||
+  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/ &&
+    sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
+
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 unset ROS_DISTRO
 if [ -z $ros1_distro ]; then
@@ -42,17 +51,12 @@ if [ -z $ros1_distro ]; then
     exit 1
     ;;
   esac
-  # source the ROS1 environment (required so px4_ros_com uses genmsg)
-  source /opt/ros/$ROS1_DISTRO/setup.bash
 else
   export ROS1_DISTRO="$ros1_distro"
   if [ -z $ros1_path ]; then
     echo "- Warning: You set a ROS(1) distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
     echo "           This assumes you are using a ROS version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/kinetic/devel)"
     exit 1
-  else
-    # source the ROS1 environment (from arg)
-    source $ros1_path
   fi
 fi
 if [ -z $ros2_distro ]; then

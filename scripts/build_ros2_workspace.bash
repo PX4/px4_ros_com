@@ -22,13 +22,19 @@ while [ $# -gt 0 ]; do
 done
 
 # Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 19.04 and above)
-sudo apt-get install python3-genmsg ||
-  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/ &&
-    sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
+apt-get install -y --quiet python3-genmsg
+  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/
+    && dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb
+    && apt-get -y autoremove
+    && apt-get clean autoclean
+    && rm /tmp/python3-genmsg_0.5.11-2_all.deb
 # Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 19.04 and above)
-sudo apt-get install python3-gencpp ||
-  wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/ &&
-    sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
+apt-get install -y --quiet python3-gencpp
+  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/
+    && dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb
+    && apt-get -y autoremove
+    && apt-get clean autoclean
+    && rm /tmp/python3-gencpp_0.6.0-4_all.deb
 
 # One can pass the ROS2_DISTRO using the '--ros_distro' arg
 unset ROS_DISTRO

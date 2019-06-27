@@ -20,7 +20,7 @@ matrix:
         - ROS2_DISTRO=bouncy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-05-05
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-06-27
     - name: Build on ROS2 Crystal
       os: linux
       language: cpp
@@ -32,7 +32,7 @@ matrix:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-05-05
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-06-27
 
 script:
   # CI runs over all branches containing 'master' or 'ros2' on the name or that do not contain 'ros1' in the name

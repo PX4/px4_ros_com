@@ -2,11 +2,11 @@ rtps:
   - id: 0
     msg: ActuatorArmed
   - id: 1
-    msg: ActuatorControl
+    msg: ActuatorControls
   - id: 2
     msg: ActuatorDirect
   - id: 3
-    msg: ActuatorOutput
+    msg: ActuatorOutputs
   - id: 4
     msg: AdcReport
     send: true
@@ -81,7 +81,7 @@ rtps:
   - id: 32
     msg: IrlockReport
   - id: 33
-    msg: LandingTargetInnovation
+    msg: LandingTargetInnovations
   - id: 34
     msg: LandingTargetPose
   - id: 35
@@ -99,7 +99,7 @@ rtps:
   - id: 41
     msg: MountOrientation
   - id: 42
-    msg: MultirotorMotorLimit
+    msg: MultirotorMotorLimits
   - id: 43
     msg: ObstacleDistance
     receive: true
@@ -208,7 +208,7 @@ rtps:
   - id: 90
     msg: VehicleCommandAck
   - id: 91
-    msg: VehicleConstraint
+    msg: VehicleConstraints
   - id: 92
     msg: VehicleControlMode
   - id: 93
@@ -246,35 +246,53 @@ rtps:
   - id: 107
     msg: CollisionConstraints
     send: true
-  - id: 120
-    msg: ActuatorControl0
-  - id: 121
-    msg: ActuatorControl1
-  - id: 122
-    msg: ActuatorControl2
-  - id: 123
-    msg: ActuatorControl3
-  - id: 124
+  - id: 108
+    msg: OrbitStatus
+  - id: 109
+    msg: PowerMonitor
+  - id: 110
+    msg: LandingGear
+  - alias: ActuatorControls
+    id: 120
+    msg: ActuatorControls0
+  - alias: ActuatorControls
+    id: 121
+    msg: ActuatorControls1
+  - alias: ActuatorControls
+    id: 122
+    msg: ActuatorControls2
+  - alias: ActuatorControls
+    id: 123
+    msg: ActuatorControls3
+  - alias: ActuatorControls
+    id: 124
     msg: ActuatorControlsVirtualFw
-  - id: 125
+  - alias: ActuatorControls
+    id: 125
     msg: ActuatorControlsVirtualMc
-  - id: 126
+  - alias: VehicleAttitudeSetpoint
+    id: 126
     msg: McVirtualAttitudeSetpoint
-  - id: 127
+  - alias: VehicleAttitudeSetpoint
+    id: 127
     msg: FwVirtualAttitudeSetpoint
-  - id: 128
+  - alias: VehicleAttitude
+    id: 128
     msg: VehicleAttitudeGroundtruth
-  - id: 129
+  - alias: VehicleGlobalPosition
+    id: 129
     msg: VehicleGlobalPositionGroundtruth
-  - id: 130
+  - alias: VehicleLocalPosition
+    id: 130
     msg: VehicleLocalPositionGroundtruth
-  - id: 131
+  - alias: VehicleOdometry
+    id: 131
     msg: VehicleMocapOdometry
-  - id: 132
+    receive: true
+  - alias: VehicleOdometry
+    id: 132
     msg: VehicleVisualOdometry
-  - id: 133
-    msg: McVirtualRatesSetpoint
-  - id: 134
-    msg: FwVirtualRatesSetpoint
-  - id: 135
+    receive: true
+  - alias: VehicleTrajectoryWaypoint
+    id: 133
     msg: VehicleTrajectoryWaypointDesired

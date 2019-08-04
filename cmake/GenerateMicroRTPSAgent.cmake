@@ -45,48 +45,52 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
   message(STATUS "Retrieving list of msgs to send...")
   execute_process(COMMAND ${PYTHON_EXECUTABLE}
                           ${CMAKE_CURRENT_SOURCE_DIR}/scripts/uorb_rtps_classifier.py
-                          --receive # the msgs the client receives, are the
-                                    # messages the agent sends
+                          --receive  # the msgs the client receives, are the messages
+                                     # the agent sends
+                          --alias    # retrieves alias topics as well
                           --topic-msg-dir
                           ${MSGS_DIR}
                           --rtps-ids-file
                           ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_SEND_TOPICS)
-  string(REGEX
-         REPLACE "\n"
-                 ""
-                 CONFIG_RTPS_SEND_TOPICS
-                 "${CONFIG_RTPS_SEND_TOPICS}")
-  message(STATUS "List of msgs to send: ${CONFIG_RTPS_SEND_TOPICS}")
-  string(REGEX
-         REPLACE ", "
-                 ";"
-                 CONFIG_RTPS_SEND_TOPICS
-                 "${CONFIG_RTPS_SEND_TOPICS}")
+  set(CONFIG_RTPS_SEND_ALIAS_TOPICS "")
+  string(FIND ${CONFIG_RTPS_SEND_TOPICS} "alias" found_send_alias)
+  if (NOT ${found_send_alias} EQUAL "-1")
+          string(REGEX REPLACE ".*alias " "" CONFIG_RTPS_SEND_ALIAS_TOPICS "${CONFIG_RTPS_SEND_TOPICS}")
+          string(REPLACE "\n" "" CONFIG_RTPS_SEND_ALIAS_TOPICS "${CONFIG_RTPS_SEND_ALIAS_TOPICS}")
+          string(REGEX REPLACE " alias.*" "" CONFIG_RTPS_SEND_TOPICS "${CONFIG_RTPS_SEND_TOPICS}")
+  endif()
+  string(REGEX REPLACE "\n" "" CONFIG_RTPS_SEND_TOPICS "${CONFIG_RTPS_SEND_TOPICS}")
+  message(STATUS "List of msgs to send: ${CONFIG_RTPS_SEND_TOPICS}, ${CONFIG_RTPS_SEND_ALIAS_TOPICS}")
+  string(REPLACE ", " ";" CONFIG_RTPS_SEND_ALIAS_TOPICS "${CONFIG_RTPS_SEND_ALIAS_TOPICS}")
+  string(REGEX REPLACE ", " ";" CONFIG_RTPS_SEND_TOPICS "${CONFIG_RTPS_SEND_TOPICS}")
+  set(CONFIG_RTPS_SEND_TOPICS "${CONFIG_RTPS_SEND_TOPICS};${CONFIG_RTPS_SEND_ALIAS_TOPICS}")
 
   # Create list of messages to receive
   set(CONFIG_RTPS_RECEIVE_TOPICS)
   message(STATUS "Retrieving list of msgs to receive...")
   execute_process(COMMAND ${PYTHON_EXECUTABLE}
                           ${CMAKE_CURRENT_SOURCE_DIR}/scripts/uorb_rtps_classifier.py
-                          --send # the msgs the client sends, are the messages
-                                 # the agent receives
+                          --send  # the msgs the client sends, are the messages
+                                  # the agent receives
+                          --alias # retrieves alias topics as well
                           --topic-msg-dir
                           ${MSGS_DIR}
                           --rtps-ids-file
                           ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_RECEIVE_TOPICS)
-  string(REGEX
-         REPLACE "\n"
-                 ""
-                 CONFIG_RTPS_RECEIVE_TOPICS
-                 "${CONFIG_RTPS_RECEIVE_TOPICS}")
+  set(CONFIG_RTPS_RECEIVE_ALIAS_TOPICS "")
+  string(FIND ${CONFIG_RTPS_RECEIVE_TOPICS} "alias" found_receive_alias)
+  if (NOT ${found_receive_alias} EQUAL "-1")
+          STRING(REGEX REPLACE ".*alias " "" CONFIG_RTPS_RECEIVE_ALIAS_TOPICS "${CONFIG_RTPS_RECEIVE_TOPICS}")
+          STRING(REPLACE "\n" "" CONFIG_RTPS_RECEIVE_ALIAS_TOPICS "${CONFIG_RTPS_RECEIVE_ALIAS_TOPICS}")
+          STRING(REGEX REPLACE " alias.*" "" CONFIG_RTPS_RECEIVE_TOPICS "${CONFIG_RTPS_RECEIVE_TOPICS}")
+  endif()
+  string(REGEX REPLACE "\n" "" CONFIG_RTPS_RECEIVE_TOPICS "${CONFIG_RTPS_RECEIVE_TOPICS}")
   message(STATUS "List of msgs to receive: ${CONFIG_RTPS_RECEIVE_TOPICS}")
-  string(REGEX
-         REPLACE ", "
-                 ";"
-                 CONFIG_RTPS_RECEIVE_TOPICS
-                 "${CONFIG_RTPS_RECEIVE_TOPICS}")
+  STRING(REPLACE ", " ";" CONFIG_RTPS_RECEIVE_ALIAS_TOPICS "${CONFIG_RTPS_RECEIVE_ALIAS_TOPICS}")
+  string(REGEX REPLACE ", " ";" CONFIG_RTPS_RECEIVE_TOPICS "${CONFIG_RTPS_RECEIVE_TOPICS}")
+  set(CONFIG_RTPS_RECEIVE_TOPICS "${CONFIG_RTPS_RECEIVE_TOPICS};${CONFIG_RTPS_RECEIVE_ALIAS_TOPICS}")
 
 else()
   message(

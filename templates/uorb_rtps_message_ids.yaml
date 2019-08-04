@@ -296,3 +296,15 @@ rtps:
   - alias: VehicleTrajectoryWaypoint
     id: 133
     msg: VehicleTrajectoryWaypointDesired
+  - alias: ObstacleDistance
+    id: 134
+    msg: ObstacleDistanceFused
+  - alias: VehicleAttitude
+    id: 135
+    msg: VehicleVisionAttitude
+  - alias: VehicleLocalPositionSetpoint
+    id: 136
+    msg: TrajectorySetpoint
+  - alias: CameraTrigger
+    id: 137
+    msg: CameraTriggerSecondary

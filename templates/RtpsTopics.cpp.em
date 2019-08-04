@@ -7,6 +7,7 @@
 @#
 @# Context:
 @#  - msgs (List) list of all msg files
+@#  - ids (List) list of all RTPS msg ids
 @###############################################
 @{
 import os
@@ -16,12 +17,13 @@ import gencpp
 from px_generate_uorb_topic_helper import * # this is in Tools/
 from px_generate_uorb_topic_files import MsgScope # this is in Tools/
 
-send_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.SEND]
-recv_topics = [s.short_name for idx, s in enumerate(spec) if scope[idx] == MsgScope.RECEIVE]
+send_topics = [(alias[idx] if alias[idx] else s.short_name) for idx, s in enumerate(spec) if scope[idx] == MsgScope.SEND]
+recv_topics = [(alias[idx] if alias[idx] else s.short_name) for idx, s in enumerate(spec) if scope[idx] == MsgScope.RECEIVE]
 }@
 /****************************************************************************
  *
  * Copyright 2017 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+ * Copyright (C) 2018-2019 PX4 Pro Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -99,6 +101,7 @@ void RtpsTopics::publish(uint8_t topic_ID, char data_buffer[], size_t len)
         break;
 @[end for]@
         default:
+            printf("Unexpected topic ID to publish\n");
         break;
     }
 }
@@ -118,9 +121,16 @@ bool RtpsTopics::hasMsg(uint8_t *topic_ID)
             case @(rtps_message_id(ids, topic)): if (_@(topic)_sub.hasMsg()) *topic_ID = @(rtps_message_id(ids, topic)); break;
 @[end for]@
             default:
+                printf("Unexpected topic ID to check hasMsg\n");
             break;
         }
         _next_sub_idx++;
+    }
+
+    if (0 == *topic_ID)
+    {
+        _next_sub_idx = 0;
+        return false;
     }
 
     return true;
@@ -142,6 +152,7 @@ bool RtpsTopics::getMsg(const uint8_t topic_ID, eprosima::fastcdr::Cdr &scdr)
         break;
 @[end for]@
         default:
+            printf("Unexpected topic ID '%hhu' to getMsg\n", topic_ID);
         break;
     }
 

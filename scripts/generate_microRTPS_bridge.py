@@ -62,9 +62,9 @@ def check_rtps_id_uniqueness(classifier):
 
     repeated_ids = dict()
 
-    full_send_list = dict(list(msg for msg in classifier.msgs_to_send.items()) + list(msg[0].items()[0] for msg in classifier.alias_msgs_to_send))
-    full_receive_list = dict(list(msg for msg in classifier.msgs_to_receive.items()) + list(msg[0].items()[0] for msg in classifier.alias_msgs_to_receive))
-    full_ignore_list = dict(list(msg for msg in classifier.msgs_to_ignore.items()) + list(msg[0].items()[0] for msg in classifier.alias_msgs_to_ignore))
+    full_send_list = dict(list(msg for msg in classifier.msgs_to_send.items()) + list(list(msg[0].items())[0] for msg in classifier.alias_msgs_to_send))
+    full_receive_list = dict(list(msg for msg in classifier.msgs_to_receive.items()) + list(list(msg[0].items())[0] for msg in classifier.alias_msgs_to_receive))
+    full_ignore_list = dict(list(msg for msg in classifier.msgs_to_ignore.items()) + list(list(msg[0].items())[0] for msg in classifier.alias_msgs_to_ignore))
 
     # check if there are repeated ID's on the messages to send
     for key, value in full_send_list.items():
@@ -298,7 +298,7 @@ def generate_agent(out_dir):
 
     if classifier.alias_msgs_to_send:
         for msg_file in classifier.alias_msgs_to_send:
-            msg_alias = msg_file[0].keys()[0]
+            msg_alias = list(msg_file[0].keys())[0]
             msg_name = msg_file[1]
             if gen_idl:
                 if out_dir != agent_out_dir:
@@ -328,7 +328,7 @@ def generate_agent(out_dir):
 
     if classifier.alias_msgs_to_receive:
         for msg_file in classifier.alias_msgs_to_receive:
-            msg_alias = msg_file[0].keys()[0]
+            msg_alias = list(msg_file[0].keys())[0]
             msg_name = msg_file[1]
             if gen_idl:
                 if out_dir != agent_out_dir:

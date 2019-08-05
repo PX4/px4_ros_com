@@ -252,6 +252,8 @@ rtps:
     msg: PowerMonitor
   - id: 110
     msg: LandingGear
+  - id: 111
+    msg: WheelEncoders
   - alias: ActuatorControls
     id: 120
     msg: ActuatorControls0

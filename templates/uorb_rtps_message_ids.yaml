@@ -198,6 +198,8 @@ rtps:
     msg: UlogStreamAck
   - id: 86
     msg: VehicleAirData
+  - id: 134
+    msg: VehicleAngularVelocity
   - id: 87
     msg: VehicleAttitude
     send: true
@@ -278,6 +280,9 @@ rtps:
   - alias: VehicleAttitudeSetpoint
     id: 127
     msg: FwVirtualAttitudeSetpoint
+  - alias: VehicleAngularVelocity
+    id: 135
+    msg: VehicleAngularVelocityGroundtruth
   - alias: VehicleAttitude
     id: 128
     msg: VehicleAttitudeGroundtruth

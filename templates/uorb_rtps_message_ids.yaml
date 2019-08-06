@@ -198,8 +198,6 @@ rtps:
     msg: UlogStreamAck
   - id: 86
     msg: VehicleAirData
-  - id: 134
-    msg: VehicleAngularVelocity
   - id: 87
     msg: VehicleAttitude
     send: true
@@ -256,6 +254,8 @@ rtps:
     msg: LandingGear
   - id: 111
     msg: WheelEncoders
+  - id: 112
+    msg: VehicleAngularVelocity
   - alias: ActuatorControls
     id: 120
     msg: ActuatorControls0
@@ -280,9 +280,6 @@ rtps:
   - alias: VehicleAttitudeSetpoint
     id: 127
     msg: FwVirtualAttitudeSetpoint
-  - alias: VehicleAngularVelocity
-    id: 135
-    msg: VehicleAngularVelocityGroundtruth
   - alias: VehicleAttitude
     id: 128
     msg: VehicleAttitudeGroundtruth
@@ -315,3 +312,6 @@ rtps:
   - alias: CameraTrigger
     id: 137
     msg: CameraTriggerSecondary
+  - alias: VehicleAngularVelocity
+    id: 138
+    msg: VehicleAngularVelocityGroundtruth

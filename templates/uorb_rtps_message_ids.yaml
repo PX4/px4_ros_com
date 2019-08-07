@@ -256,6 +256,8 @@ rtps:
     msg: WheelEncoders
   - id: 112
     msg: VehicleAngularVelocity
+  - id: 113
+    msg: VehicleAcceleration
   - alias: ActuatorControls
     id: 120
     msg: ActuatorControls0

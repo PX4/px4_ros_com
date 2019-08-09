@@ -317,3 +317,5 @@ rtps:
   - alias: VehicleAngularVelocity
     id: 138
     msg: VehicleAngularVelocityGroundtruth
+  - id: 139
+    msg: AirspeedValidated

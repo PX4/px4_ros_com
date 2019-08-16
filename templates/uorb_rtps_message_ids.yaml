@@ -258,6 +258,8 @@ rtps:
     msg: VehicleAngularVelocity
   - id: 113
     msg: VehicleAcceleration
+  - id: 114
+    msg: SensorGyroControl
   - alias: ActuatorControls
     id: 120
     msg: ActuatorControls0

@@ -260,64 +260,64 @@ rtps:
     msg: VehicleAcceleration
   - id: 114
     msg: SensorGyroControl
+  - id: 115
+    msg: AirspeedValidated
   - alias: ActuatorControls
-    id: 120
+    id: 150
     msg: ActuatorControls0
   - alias: ActuatorControls
-    id: 121
+    id: 151
     msg: ActuatorControls1
   - alias: ActuatorControls
-    id: 122
+    id: 152
     msg: ActuatorControls2
   - alias: ActuatorControls
-    id: 123
+    id: 153
     msg: ActuatorControls3
   - alias: ActuatorControls
-    id: 124
+    id: 154
     msg: ActuatorControlsVirtualFw
   - alias: ActuatorControls
-    id: 125
+    id: 155
     msg: ActuatorControlsVirtualMc
   - alias: VehicleAttitudeSetpoint
-    id: 126
+    id: 156
     msg: McVirtualAttitudeSetpoint
   - alias: VehicleAttitudeSetpoint
-    id: 127
+    id: 157
     msg: FwVirtualAttitudeSetpoint
   - alias: VehicleAttitude
-    id: 128
+    id: 158
     msg: VehicleAttitudeGroundtruth
   - alias: VehicleGlobalPosition
-    id: 129
+    id: 159
     msg: VehicleGlobalPositionGroundtruth
   - alias: VehicleLocalPosition
-    id: 130
+    id: 160
     msg: VehicleLocalPositionGroundtruth
   - alias: VehicleOdometry
-    id: 131
+    id: 161
     msg: VehicleMocapOdometry
     receive: true
   - alias: VehicleOdometry
-    id: 132
+    id: 162
     msg: VehicleVisualOdometry
     receive: true
   - alias: VehicleTrajectoryWaypoint
-    id: 133
+    id: 163
     msg: VehicleTrajectoryWaypointDesired
   - alias: ObstacleDistance
-    id: 134
+    id: 164
     msg: ObstacleDistanceFused
   - alias: VehicleAttitude
-    id: 135
+    id: 165
     msg: VehicleVisionAttitude
   - alias: VehicleLocalPositionSetpoint
-    id: 136
+    id: 166
     msg: TrajectorySetpoint
   - alias: CameraTrigger
-    id: 137
+    id: 167
     msg: CameraTriggerSecondary
   - alias: VehicleAngularVelocity
-    id: 138
+    id: 168
     msg: VehicleAngularVelocityGroundtruth
-  - id: 139
-    msg: AirspeedValidated

@@ -36,6 +36,55 @@
 #       - FASTRTPSGEN_DIR
 ##################################################################################
 
+# Check if FastRTPSGen exists
+if($ENV{FASTRTPSGEN_DIR})
+  message(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
+  set(FASTRTPSGEN "$ENV{FASTRTPSGEN_DIR}/fastrtpsgen")
+else()
+  find_file(FASTRTPSGEN NAMES fastrtpsgen PATH_SUFFIXES bin)
+  if(FASTRTPSGEN-NOTFOUND)
+    message(FATAL_ERROR "fastrtpsgen not found")
+  else()
+    get_filename_component(FASTRTPSGEN_DIR ${FASTRTPSGEN} DIRECTORY)
+    message(STATUS "fastrtpsgen found in ${FASTRTPSGEN_DIR}")
+  endif()
+endif()
+
+# Get FastRTPSGen version
+set(FASTRTPSGEN_VERSION)
+execute_process(COMMAND fastrtpsgen -version
+                OUTPUT_VARIABLE FASTRTPSGEN_VERSION_OUTPUT
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCH
+             "([0-9]+)\\.([0-9]+)\\.([0-9]+)$"
+             FASTRTPSGEN_VERSION
+             "${FASTRTPSGEN_VERSION_OUTPUT}")
+# If the above command fails, force FastRTPSGen to 1.0.0
+if(NOT FASTRTPSGEN_VERSION)
+  set(FASTRTPSGEN_VERSION "1.0.0")
+endif()
+message(STATUS "fastrtpsgen version ${FASTRTPSGEN_VERSION}")
+
+# Find ROS distro
+set(ROS_DISTRO)
+if(DEFINED ENV{ROS2_DISTRO})
+  set(ROS_DISTRO $ENV{ROS2_DISTRO})
+else()
+  set(ROS_DISTRO $ENV{ROS_DISTRO})
+endif()
+
+# Set IDL dir
+#
+# Until ROS2 Crystal, rosidl_generate_dds_interfaces() CMake function is used
+# on px4_msgs package to generate the IDL msgs to the dds_fastrpts dir.
+# From Dashing, the IDL files generated from rosidl_generate_interfaces()
+# function are used
+set(IDL_DIR)
+if(${ROS_DISTRO} MATCHES "ardent" OR ${ROS_DISTRO} MATCHES "bouncy" OR ${ROS_DISTRO} MATCHES "crystal")
+   set(IDL_DIR ${MSGS_DIR}/dds_fastrtps)
+else()
+   set(IDL_DIR ${MSGS_DIR})
+endif()
 
 # Check if the RTPS ID's mapper yaml file exists and if yes, change the msg
 # naming to PascalCase
@@ -105,18 +154,29 @@ set(MICRORTPS_AGENT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/micrortps_agent)
 # Set the list of files to be compiled
 set(MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/microRTPS_agent.cpp)
 list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/microRTPS_transport.h)
-list(
-  APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/microRTPS_transport.cpp)
+list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/microRTPS_transport.cpp)
 list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/RtpsTopics.h)
 list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/RtpsTopics.cpp)
 
 set(ALL_TOPIC_NAMES ${CONFIG_RTPS_SEND_TOPICS} ${CONFIG_RTPS_RECEIVE_TOPICS})
 foreach(topic ${ALL_TOPIC_NAMES})
-  list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}_.cpp)
-  list(APPEND MICRORTPS_AGENT_FILES
-              ${MICRORTPS_AGENT_DIR}/${topic}_PubSubTypes.cpp)
-  list(APPEND MICRORTPS_AGENT_FILES
-              ${MICRORTPS_AGENT_DIR}/${topic}_PubSubTypes.h)
+  # Requires differentiation between FastRTPSGen versions
+  if(FASTRTPSGEN_VERSION VERSION_GREATER_EQUAL 1.5 AND FASTRTPSGEN_VERSION VERSION_LESS_EQUAL 1.8)
+    list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}_.cpp)
+  else()
+    list(APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}.cpp)
+  endif()
+  if(FASTRTPSGEN_VERSION VERSION_GREATER_EQUAL 1.5 AND FASTRTPSGEN_VERSION VERSION_LESS_EQUAL 1.8)
+    list(APPEND MICRORTPS_AGENT_FILES
+                ${MICRORTPS_AGENT_DIR}/${topic}_PubSubTypes.cpp)
+    list(APPEND MICRORTPS_AGENT_FILES
+                ${MICRORTPS_AGENT_DIR}/${topic}_PubSubTypes.h)
+  else()
+    list(APPEND MICRORTPS_AGENT_FILES
+                ${MICRORTPS_AGENT_DIR}/${topic}PubSubTypes.cpp)
+    list(APPEND MICRORTPS_AGENT_FILES
+                ${MICRORTPS_AGENT_DIR}/${topic}PubSubTypes.h)
+  endif()
 endforeach()
 
 foreach(topic ${CONFIG_RTPS_RECEIVE_TOPICS}) # received topics are to be

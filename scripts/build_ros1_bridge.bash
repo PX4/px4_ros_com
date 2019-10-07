@@ -23,17 +23,41 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Get FastRTPSGen version
+fastrtpsgen_version_out=""
+if [[ -z $FASTRTPSGEN_DIR ]]; then
+  fastrtpsgen_version_out="$FASTRTPSGEN_DIR/$(fastrtpsgen -version)"
+else
+  fastrtpsgen_version_out=$(fastrtpsgen -version)
+fi
+if [[ -z $fastrtpsgen_version_out ]]; then
+  echo "FastRTPSGen not found! Please build and install FastRTPSGen..."
+  exit 1
+else
+  fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
+  if ! [[ $fastrtpsgen_version =~ "^[0-9]+([.][0-9]+)?$" ]] ; then
+    fastrtpsgen_version="1.0"
+  fi
+  echo "FastRTPSGen version major: ${fastrtpsgen_version}"
+fi
+
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
   "xenial")
     ROS1_DISTRO="kinetic"
-    ROS2_DISTRO="bouncy"
+    ROS2_DISTRO="ardent"
     ;;
   "bionic")
     ROS1_DISTRO="melodic"
-    ROS2_DISTRO="crystal"
+    if [[ $fastrtpsgen_version == "1.5" || $fastrtpsgen_version == "1.6" ]]; then
+      ROS2_DISTRO="bouncy"
+    elif [[ $fastrtpsgen_version == "1.7"]]; then
+      ROS2_DISTRO="crystal"
+    else
+      ROS2_DISTRO="dashing"
+    fi
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."

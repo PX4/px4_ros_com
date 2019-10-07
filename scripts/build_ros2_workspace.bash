@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros2_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS2" >&2
   echo
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS2 workspace."
-  echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy|crystal). If not set, the script will set the ROS2_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_distro \t\t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS2_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS2_DISTRO"
   echo
   exit 0
@@ -21,16 +21,40 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Get FastRTPSGen version
+fastrtpsgen_version_out=""
+if [[ -z $FASTRTPSGEN_DIR ]]; then
+  fastrtpsgen_version_out="$FASTRTPSGEN_DIR/$(fastrtpsgen -version)"
+else
+  fastrtpsgen_version_out=$(fastrtpsgen -version)
+fi
+if [[ -z $fastrtpsgen_version_out ]]; then
+  echo "FastRTPSGen not found! Please build and install FastRTPSGen..."
+  exit 1
+else
+  fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
+  if ! [[ $fastrtpsgen_version =~ "^[0-9]+([.][0-9]+)?$" ]] ; then
+    fastrtpsgen_version="1.0"
+  fi
+  echo "FastRTPSGen version major: ${fastrtpsgen_version}"
+fi
+
 # One can pass the ROS2_DISTRO using the '--ros_distro' arg
 unset ROS_DISTRO
 if [ -z $ros_distro ]; then
   # set the ROS2_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
   "xenial")
-    export ROS2_DISTRO="bouncy"
+    export ROS2_DISTRO="ardent"
     ;;
   "bionic")
-    export ROS2_DISTRO="crystal"
+    if [[ $fastrtpsgen_version == "1.5" || $fastrtpsgen_version == "1.6" ]]; then
+      ROS2_DISTRO="bouncy"
+    elif [[ $fastrtpsgen_version == "1.7"]]; then
+      ROS2_DISTRO="crystal"
+    else
+      ROS2_DISTRO="dashing"
+    fi
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."

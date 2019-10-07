@@ -50,7 +50,7 @@ if [ -z $ros_distro ]; then
   "bionic")
     if [[ $fastrtpsgen_version == "1.5" || $fastrtpsgen_version == "1.6" ]]; then
       ROS2_DISTRO="bouncy"
-    elif [[ $fastrtpsgen_version == "1.7"]]; then
+    elif [[ $fastrtpsgen_version == "1.7" ]]; then
       ROS2_DISTRO="crystal"
     else
       ROS2_DISTRO="dashing"

@@ -9,6 +9,18 @@ env:
 
 matrix:
   include:
+    - name: Build on ROS2 Ardent
+      os: linux
+      language: cpp
+      services:
+        - docker
+      cache:
+      ccache: true
+      env:
+        - ROS2_DISTRO=ardent
+        - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
+        - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-10-04
     - name: Build on ROS2 Bouncy
       os: linux
       language: cpp
@@ -20,7 +32,7 @@ matrix:
         - ROS2_DISTRO=bouncy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-07-29
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-10-04
     - name: Build on ROS2 Crystal
       os: linux
       language: cpp
@@ -32,7 +44,7 @@ matrix:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-07-29
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-10-04
     - name: Build on ROS2 Dashing
       os: linux
       language: cpp
@@ -44,7 +56,7 @@ matrix:
         - ROS2_DISTRO=dashing
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-07-29
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-10-04
 
 script:
   # CI runs over all branches containing 'master' or 'ros2' on the name or that do not contain 'ros1' in the name

@@ -33,7 +33,7 @@ if [[ -z $fastrtpsgen_version_out ]]; then
   exit 1
 else
   fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
-  if ! [[ $fastrtpsgen_version =~ "^[0-9]+([.][0-9]+)?$" ]] ; then
+  if ! [[ $fastrtpsgen_version =~ ^[0-9]+([.][0-9]+)?$ ]] ; then
     fastrtpsgen_version="1.0"
   fi
   echo "FastRTPSGen version major: ${fastrtpsgen_version}"

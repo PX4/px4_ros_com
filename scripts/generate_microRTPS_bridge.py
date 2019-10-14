@@ -251,11 +251,10 @@ if(os.path.exists(fastrtpsgen_path)):
     except OSError:
         raise
 
-    try:
+    if fastrtpsgen_version_out.isdigit():
         fastrtpsgen_version = float(fastrtpsgen_version_out)
-    except ValueError:
+    else:
         fastrtpsgen_version = 1.0
-
 else:
     raise Exception(
         "FastRTPSGen not found. Specify the location of fastrtpsgen with the -f flag")

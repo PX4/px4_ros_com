@@ -82,7 +82,6 @@ bool @(topic)_Publisher::init()
     ParticipantAttributes PParam;
     PParam.rtps.builtin.domainId = 0;
 @[if 1.5 <= fastrtpsgen_version <= 1.7 or ros2_distro == "ardent" or ros2_distro == "bouncy" or ros2_distro == "crystal" or ros2_distro == "dashing"]@
-
     PParam.rtps.builtin.leaseDuration = c_TimeInfinite;
 @[else]@
     PParam.rtps.builtin.discovery_config.leaseDuration = c_TimeInfinite;

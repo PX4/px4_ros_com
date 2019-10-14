@@ -194,8 +194,17 @@ foreach(topic ${CONFIG_RTPS_SEND_TOPICS}) # advertised topics should first be
     APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}_Subscriber.h)
 endforeach()
 
-MESSAGE(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
-MESSAGE(STATUS "px4_msgs message dir under ${MSGS_DIR}")
+message(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
+message(STATUS "px4_msgs message dir under ${MSGS_DIR}")
+
+set(IDL_DIR)
+if(FASTRTPSGEN_VERSION VERSION_GREATER 1.4 AND FASTRTPSGEN_VERSION VERSION_LESS 1.9)
+  set(IDL_DIR "${MSGS_DIR}/dds_fastrtps")
+else()
+  set(IDL_DIR "${MSGS_DIR}")
+endif()
+
+message(STATUS "IDL definitions under ${IDL_DIR}")
 
 get_filename_component(px4_msgs_FASTRTPSGEN_INCLUDE "../../" ABSOLUTE BASE_DIR ${px4_msgs_DIR})
 add_custom_command(
@@ -213,7 +222,7 @@ add_custom_command(
     --agent
     --agent-outdir ${MICRORTPS_AGENT_DIR}
     --package "px4_msgs"
-    --idl-dir ${MSGS_DIR}/dds_fastrtps
+    --idl-dir ${IDL_DIR}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Generating micro-RTPS agent code...")
 

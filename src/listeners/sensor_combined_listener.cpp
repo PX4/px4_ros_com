@@ -45,7 +45,7 @@
 #include "px4_msgs/SensorCombined.h"
 
 static constexpr auto kDefaultSensorCombinedPubTopic = "SensorCombined_topic_feedback";
-static constexpr auto kDefaultSensorCombinedSubTopic = "SensorCombined_topic";
+static constexpr auto kDefaultSensorCombinedSubTopic = "SensorCombined_PubSubTopic";
 
 //! sensor_combined publisher (to ROS) naming
 std::string _sensor_combined_pub_topic;

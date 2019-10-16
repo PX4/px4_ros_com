@@ -50,7 +50,7 @@ class SensorCombinedListener : public rclcpp::Node
 public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
-			"SensorCombined_topic",
+			"SensorCombined_PubSubTopic",
 			[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED SENSOR COMBINED DATA"   << std::endl;

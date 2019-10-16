@@ -9,7 +9,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo
   echo -e "\t--ros1_ws_dir \t Location of the ROS(1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
   echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo
   exit 0
 fi

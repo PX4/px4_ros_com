@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: setup_system.bash [option...] \t This script setups the system with the required dependencies." >&2
   echo
   echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--clean \t If set, issues 'apt-get autoremove', 'apt-get autoclean' and deletes temp files."
   echo
   exit 0
@@ -22,16 +22,49 @@ while [ $# -gt 0 ]; do
 done
 
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
+unset ROS_DISTRO
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
-  case "$(lsb_release -sc)" in
+  case "$(lsb_release -s -c)" in
   "xenial")
     ROS1_DISTRO="kinetic"
-    ROS2_DISTRO="bouncy"
+    ROS2_DISTRO="ardent"
+
+    # Install Fast-RTPS (and Fast-RTPS-Gen) 1.6.0
+    wget -q "http://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-rtps/eprosima-fast-rtps-1-6-0/eprosima_fastrtps-1-6-0-linux-tar-gz?format=raw" -O /tmp/eprosima_fastrtps.tar.gz
+    cd /tmp && tar zxf eprosima_fastrtps.tar.gz
+    cd eProsima_FastRTPS-1.6.0-Linux
+    ./configure CXXFLAGS="-g -D__DEBUG" --libdir=/usr/lib
+    sudo make install
+    cd $PWD
     ;;
   "bionic")
     ROS1_DISTRO="melodic"
-    ROS2_DISTRO="crystal"
+
+    # Install Gradle 5.6.2 (Required to build Fast-RTPS-Gen)
+    wget -q "https://services.gradle.org/distributions/gradle-5.6.2-bin.zip" -O /tmp/gradle-5.6.2-bin.zip
+    mkdir /opt/gradle
+    cd /tmp
+    unzip -d /opt/gradle gradle-5.6.2-bin.zip
+    echo "export PATH=$PATH:/opt/gradle/gradle-5.6.2/bin" >> ~/.bashrc
+    source ~/.bashrc
+    cd $PWD
+
+    # Install Fast-RTPS 1.8.2
+    git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b 1.8.x /tmp/FastRTPS-1.8.2
+    cd /tmp/FastRTPS-1.8.2
+    mkdir build && cd build
+    cmake -DTHIRDPARTY=ON -DSECURITY=ON ..
+    sudo make install
+    cd $PWD
+
+    # Install Fast-RTPS-Gen 1.0.1
+    git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.1 /tmp/Fast-RTPS-Gen
+    cd /tmp/Fast-RTPS-Gen
+    gradle assemble
+    sudo cp share/fastrtps/fastrtpsgen.jar /usr/local/share/fastrtps/
+    sudo cp scripts/fastrtpsgen /usr/local/bin/
+    cd $PWD
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."
@@ -113,6 +146,7 @@ sudo apt-get install -y \
   python3-colcon-common-extensions \
   python3-dev \
   ros-$ROS2_DISTRO-desktop \
+  ros-$ROS2_DISTRO-launch-testing-ament-cmake \
   ros-$ROS2_DISTRO-rosidl-generator-dds-idl
 
 # Install Python3 packages needed for testing

@@ -29,42 +29,10 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   "xenial")
     ROS1_DISTRO="kinetic"
     ROS2_DISTRO="ardent"
-
-    # Install Fast-RTPS (and Fast-RTPS-Gen) 1.6.0
-    wget -q "http://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-rtps/eprosima-fast-rtps-1-6-0/eprosima_fastrtps-1-6-0-linux-tar-gz?format=raw" -O /tmp/eprosima_fastrtps.tar.gz
-    cd /tmp && tar zxf eprosima_fastrtps.tar.gz
-    cd eProsima_FastRTPS-1.6.0-Linux
-    ./configure CXXFLAGS="-g -D__DEBUG" --libdir=/usr/lib
-    sudo make install
-    cd $PWD
     ;;
   "bionic")
     ROS1_DISTRO="melodic"
-
-    # Install Gradle 5.6.2 (Required to build Fast-RTPS-Gen)
-    wget -q "https://services.gradle.org/distributions/gradle-5.6.2-bin.zip" -O /tmp/gradle-5.6.2-bin.zip
-    mkdir /opt/gradle
-    cd /tmp
-    unzip -d /opt/gradle gradle-5.6.2-bin.zip
-    echo "export PATH=$PATH:/opt/gradle/gradle-5.6.2/bin" >> ~/.bashrc
-    source ~/.bashrc
-    cd $PWD
-
-    # Install Fast-RTPS 1.8.2
-    git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b 1.8.x /tmp/FastRTPS-1.8.2
-    cd /tmp/FastRTPS-1.8.2
-    mkdir build && cd build
-    cmake -DTHIRDPARTY=ON -DSECURITY=ON ..
-    sudo make install
-    cd $PWD
-
-    # Install Fast-RTPS-Gen 1.0.1
-    git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.1 /tmp/Fast-RTPS-Gen
-    cd /tmp/Fast-RTPS-Gen
-    gradle assemble
-    sudo cp share/fastrtps/fastrtpsgen.jar /usr/local/share/fastrtps/
-    sudo cp scripts/fastrtpsgen /usr/local/bin/
-    cd $PWD
+    ROS2_DISTRO="dashing"
     ;;
   *)
     echo "Unsupported version of Ubuntu detected."
@@ -74,6 +42,42 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
 else
   ROS1_DISTRO="$ros1_distro"
   ROS2_DISTRO="$ros2_distro"
+fi
+
+if [ $ROS2_DISTRO == "ardent" ]; then
+  # Install Fast-RTPS (and Fast-RTPS-Gen) 1.6.0
+  # Note: Fast-RTPS-Gen was included in the Fast-RTPS release in this version
+  wget -q "http://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-rtps/eprosima-fast-rtps-1-6-0/eprosima_fastrtps-1-6-0-linux-tar-gz?format=raw" -O /tmp/eprosima_fastrtps.tar.gz \
+    && cd /tmp && tar zxf eprosima_fastrtps.tar.gz \
+    && cd eProsima_FastRTPS-1.6.0-Linux \
+    && ./configure CXXFLAGS="-g -D__DEBUG" --libdir=/usr/lib \
+    && sudo make install \
+    && cd $PWD
+else
+  # Install Gradle 5.6.2 (Required to build Fast-RTPS-Gen)
+  wget -q "https://services.gradle.org/distributions/gradle-5.6.2-bin.zip" -O /tmp/gradle-5.6.2-bin.zip \
+    && mkdir /opt/gradle \
+    && cd /tmp \
+    && unzip -d /opt/gradle gradle-5.6.2-bin.zip \
+    && echo "export PATH=$PATH:/opt/gradle/gradle-5.6.2/bin" >> ~/.bashrc \
+    && source ~/.bashrc \
+    && cd $PWD
+
+  # Install Fast-RTPS 1.8.2
+  git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b 1.8.x /tmp/FastRTPS-1.8.2 \
+    && cd /tmp/FastRTPS-1.8.2 \
+    && mkdir build && cd build \
+    && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
+    && sudo make install \
+    && cd $PWD
+
+  # Install Fast-RTPS-Gen 1.0.1
+  git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.1 /tmp/Fast-RTPS-Gen \
+    && cd /tmp/Fast-RTPS-Gen \
+    && gradle assemble \
+    && sudo cp share/fastrtps/fastrtpsgen.jar /usr/local/share/fastrtps/ \
+    && sudo cp scripts/fastrtpsgen /usr/local/bin/ \
+    && cd $PWD
 fi
 
 # Install ROS1 dependencies
@@ -142,7 +146,6 @@ sudo apt-get install -y --quiet python3-gencpp
 sudo apt-get install -y \
   dirmngr \
   gnupg2 \
-  gradle \
   python3-colcon-common-extensions \
   python3-dev \
   ros-$ROS2_DISTRO-desktop \

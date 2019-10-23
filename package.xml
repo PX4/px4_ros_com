@@ -16,6 +16,10 @@
   <depend>rclcpp</depend>
   <depend>px4_msgs</depend>
 
+  <depend>launch</depend>
+  <depend>launch_testing</depend>
+  <depend>launch_testing_ros</depend>
+
   <exec_depend>rosidl_default_runtime</exec_depend>
 
   <export>

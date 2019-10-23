@@ -114,74 +114,11 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
 fi
 
-gnome-terminal --tab -- /bin/bash -c \
-  '''
-    # source the ROS1 environment
-    unset ROS_DISTRO
-    if [ -z $ros1_path ]; then
-      source /opt/ros/$ROS1_DISTRO/setup.bash
-    else
-      source $ros1_path
-    fi
-
-    # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
-    printf "\n************* Building ROS1 workspace *************\n\n"
-    # build the ROS1 workspace of the px4_ros_com package
-    cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
-
-    # source the ROS1 workspace environment so to have it ready to use
-    source $ROS1_WS_DIR/install/setup.bash
-
-    printf "\nROS1 workspace ready...\n\n"
-    exec /bin/bash
-  '''
-
 printf "\n************* Building ROS2 workspace *************\n\n"
 # build px4_ros_com package, except the ros1_bridge
 cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge --event-handlers console_direct+
-
-gnome-terminal --tab -- /bin/bash -c \
-  '''
-    unset ROS_DISTRO
-    # check if the ROS1 workspace of px4_ros_com and px4_msgs was built and source it.
-    if [ -z $ROS1_WS_DIR ]; then
-      echo "ROS1 workspace does not exist!"
-      exec /bin/bash
-      exit 1
-    else
-      if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
-        unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
-      else
-        echo "ROS1 workspace not built."
-        exec /bin/bash
-        exit 1
-      fi
-    fi
-
-    # source the ROS2 workspace
-    unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
-
-    printf "\n************* Building ros1_bridge *************\n\n"
-    # build the ros1_bridge only
-    cd $ROS2_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
-
-    # source the ROS2 workspace environment so to have it ready to use
-    unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
-
-    printf "\nros1_bridge workspace ready...\n\n"
-    exec /bin/bash
-  '''
 
 # source the ROS2 workspace environment so to have it ready to use
 unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
 
 printf "\nROS2 workspace ready...\n\n"
-
-gnome-terminal --tab -- /bin/bash -c \
-  '''
-  # source the ROS2 workspace environment so to have it ready to use
-  unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
-
-  printf "To start the microRTPS bridge agent, use \"micrortps_agent [options]\"\n\n"
-  exec /bin/bash
-  '''

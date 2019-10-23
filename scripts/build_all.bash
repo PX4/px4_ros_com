@@ -114,27 +114,53 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
 fi
 
-gnome-terminal --tab -- /bin/bash -c \
-  '''
-    # source the ROS1 environment
-    unset ROS_DISTRO
-    if [ -z $ros1_path ]; then
-      source /opt/ros/$ROS1_DISTRO/setup.bash
-    else
-      source $ros1_path
-    fi
+# If running inside a docker container
+if [ -f /.dockerenv ]; then
+  docker exec -it $(docker ps --format="{{.Id}}") /bin/bash -c \
+    '''
+      # source the ROS1 environment
+      unset ROS_DISTRO
+      if [ -z $ros1_path ]; then
+        source /opt/ros/$ROS1_DISTRO/setup.bash
+      else
+        source $ros1_path
+      fi
 
-    # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
-    printf "\n************* Building ROS1 workspace *************\n\n"
-    # build the ROS1 workspace of the px4_ros_com package
-    cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
+      # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
+      printf "\n************* Building ROS1 workspace *************\n\n"
+      # build the ROS1 workspace of the px4_ros_com package
+      cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
 
-    # source the ROS1 workspace environment so to have it ready to use
-    source $ROS1_WS_DIR/install/setup.bash
+      # source the ROS1 workspace environment so to have it ready to use
+      source $ROS1_WS_DIR/install/setup.bash
 
-    printf "\nROS1 workspace ready...\n\n"
-    exec /bin/bash
-  '''
+      printf "\nROS1 workspace ready...\n\n"
+      exit
+    '''
+else
+  gnome-terminal --tab -- /bin/bash -c \
+    '''
+      # source the ROS1 environment
+      unset ROS_DISTRO
+      if [ -z $ros1_path ]; then
+        source /opt/ros/$ROS1_DISTRO/setup.bash
+      else
+        source $ros1_path
+      fi
+
+      # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
+      printf "\n************* Building ROS1 workspace *************\n\n"
+      # build the ROS1 workspace of the px4_ros_com package
+      cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
+
+      # source the ROS1 workspace environment so to have it ready to use
+      source $ROS1_WS_DIR/install/setup.bash
+
+      printf "\nROS1 workspace ready...\n\n"
+      exec /bin/bash
+    '''
+fi
+
 
 printf "\n************* Building ROS2 workspace *************\n\n"
 # build px4_ros_com package, except the ros1_bridge

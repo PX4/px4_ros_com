@@ -63,7 +63,7 @@ matrix:
       env:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
-        - BUILD_PX4_FIRMWARE_RTPS="sudo apt-get install gnome-terminal -y; git clone ${PX4_FIRMWARE}; cd Firmware; make px4_sitl_rtps; cd $pwd;"
+        - BUILD_PX4_FIRMWARE_RTPS="git clone ${PX4_FIRMWARE}; cd Firmware; make px4_sitl_rtps; cd $pwd;"
         - BUILD_ARGS="--ros1_ws_dir ~/colcon1_ws --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="./build_all.bash"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon1_ws/src; cd ~/colcon1_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b ros1; cd src/px4_ros_com; git checkout ros1; cd $pwd; mkdir -p ~/colcon2_ws/src; cd ~/colcon2_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"

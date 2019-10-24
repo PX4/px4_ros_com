@@ -22,7 +22,7 @@ matrix:
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
         - COLCON_BUILD="./build_ros2_workspace.bash"
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-10-23
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-10-24
     - name: Build on ROS2 Bouncy
       os: linux
       language: cpp
@@ -36,7 +36,7 @@ matrix:
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
         - COLCON_BUILD="./build_ros2_workspace.bash"
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-10-23
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-10-24
     - name: Build on ROS2 Crystal
       os: linux
       language: cpp
@@ -50,7 +50,7 @@ matrix:
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="./build_ros2_workspace.bash"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-10-23
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-10-24
     # - name: Build full pipeline (px4_ros_com + ros1_bridge) on ROS2 Crystal
     #   os: linux
     #   language: cpp
@@ -65,7 +65,7 @@ matrix:
     #     - BUILD_ARGS="--ros1_ws_dir ~/colcon1_ws --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
     #     - COLCON_BUILD="./build_all_ci.bash"
     #     - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon1_ws/src; cd ~/colcon1_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b ros1; cd src/px4_ros_com; git checkout ros1; cd $pwd; mkdir -p ~/colcon2_ws/src; cd ~/colcon2_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
-    #     - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-10-23
+    #     - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-10-24
     - name: Build on ROS2 Dashing
       os: linux
       language: cpp
@@ -79,7 +79,7 @@ matrix:
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="./build_ros2_workspace.bash"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-10-23
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-10-24
     - name: Build on ROS2 Eloquent
       os: linux
       language: cpp
@@ -93,21 +93,9 @@ matrix:
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="./build_ros2_workspace.bash"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-eloquent:2019-10-23
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-eloquent:2019-10-24
 
 script:
-  # CI runs over all branches containing 'master' or 'ros2' on the name or that do not contain 'ros1' in the name
-  # if [[ $FULL_BUILD == "ON"]]; then
-  #   docker run -it --name px4ros -w ${TRAVIS_BUILD_DIR}
-  #     --env=CCACHE_DIR="${CCACHE_DIR}"
-  #     --env=LOCAL_USER_ID="$(id -u)"
-  #     --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw
-  #     --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
-  #     ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}"
-  #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/build_ros1.bash
-  #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/build_ros1_bridge.bash
-  #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/config_agent.bash
-  # else
   - if [[ $TRAVIS_BRANCH =~ "master" ]] || [[ $TRAVIS_BRANCH =~ "ros2" ]] || [[ ! "$TRAVIS_BRANCH" =~ "ros1" ]]; then
         docker run -it --rm -w ${TRAVIS_BUILD_DIR}
           --env=CCACHE_DIR="${CCACHE_DIR}"
@@ -116,3 +104,15 @@ script:
           --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
           ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}";
     fi
+    # CI runs over all branches containing 'master' or 'ros2' on the name or that do not contain 'ros1' in the name
+    # if [[ $FULL_BUILD == "ON"]]; then
+    #   docker run -it --name px4ros -w ${TRAVIS_BUILD_DIR}
+    #     --env=CCACHE_DIR="${CCACHE_DIR}"
+    #     --env=LOCAL_USER_ID="$(id -u)"
+    #     --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw
+    #     --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
+    #     ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}"
+    #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/build_ros1.bash
+    #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/build_ros1_bridge.bash
+    #   docker exec -it -w ${TRAVIS_BUILD_DIR} px4ros /bin/bash ${TRAVIS_BUILD_DIR}/scripts/full_build_components/config_agent.bash
+    # else

@@ -262,6 +262,8 @@ rtps:
     msg: SensorGyroControl
   - id: 115
     msg: AirspeedValidated
+  - id: 116
+    msg: OnboardComputerStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

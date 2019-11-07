@@ -3,8 +3,6 @@ rtps:
     msg: ActuatorArmed
   - id: 1
     msg: ActuatorControls
-  - id: 2
-    msg: ActuatorDirect
   - id: 3
     msg: ActuatorOutputs
   - id: 4

@@ -45,17 +45,18 @@ if __name__ == "__main__":
     test_cmd = 'ros2 topic echo /SensorCombined_PubSubTopic'
 
     try:
+        print("SensorCombined_PubSubTopic output test launched")
         call(test_cmd, timeout=timeout, stdout=open(
             "ros2_topic_echo_out", "w"), shell=True)
     except TimeoutExpired as e:
         output = open("ros2_topic_echo_out", "r").read()
         if output:
             print(
-                "Successfully obtained data on SensorCombined_PubSubTopic topic. microRTPS bridge is up! Output:\n", output)
+                "\nSuccessfully obtained data on SensorCombined_PubSubTopic topic. microRTPS bridge is up! Output:\n\n", output)
             remove("ros2_topic_echo_out")
             exit(0)
         else:
             print(
-                "Something went wrong. Please check if the microRTPS bridge is functioning correctly.")
+                "\nSomething went wrong. Please check if the microRTPS bridge is functioning correctly.\n")
             remove("ros2_topic_echo_out")
             exit(1)

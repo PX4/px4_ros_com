@@ -5,7 +5,7 @@ env:
     - CCACHE_DIR=${HOME}/.ccache
     - PX4_FIRMWARE=https://github.com/PX4/Firmware.git
     - PX4_MSGS=https://github.com/PX4/px4_msgs.git
-    - BUILD_PX4_FIRMWARE_RTPS="git clone ${PX4_FIRMWARE}; cd Firmware; make px4_sitl_rtps; cd $pwd;"
+    - BUILD_PX4_FIRMWARE_RTPS="git clone ${PX4_FIRMWARE} ~/PX4/Firmware; cd ~/PX4/Firmware; DONT_RUN=1 make px4_sitl_rtps gazebo; cd $pwd;"
 
 matrix:
   include:
@@ -54,7 +54,7 @@ matrix:
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
         - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-11-03
-        - TEST_SETUP=""
+        - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 flight_controller_output.py -p ~/PX4/Firmware/;"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     - name: Build on ROS2 Dashing
@@ -70,7 +70,7 @@ matrix:
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
         - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-11-03
-        - TEST_SETUP="git clone https://github.com/ros2/test_interface_files -b dashing; git clone https://github.com/ros2/rosidl.git src/rosidl; cd src/rosidl; git checkout 0.8.0; cd ../../;"
+        - TEST_SETUP=""
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     # - name: Build full pipeline (px4_ros_com + ros1_bridge) on ROS2 Dashing
@@ -112,7 +112,7 @@ script:
           --env=LOCAL_USER_ID="$(id -u)"
           --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw
           --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
-          ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${TEST_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}";
+          ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}; ${TEST_SETUP}";
     fi
     # CI runs over all branches containing 'master' or 'ros2' on the name or that do not contain 'ros1' in the name
     # if [[ $FULL_BUILD == "ON"]]; then

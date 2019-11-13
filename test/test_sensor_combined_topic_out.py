@@ -41,7 +41,7 @@ from sys import exit
 from subprocess import call, TimeoutExpired
 
 if __name__ == "__main__":
-    timeout = 1.1  # seconds
+    timeout = 2  # seconds
     test_cmd = 'ros2 topic echo /SensorCombined_PubSubTopic'
 
     try:

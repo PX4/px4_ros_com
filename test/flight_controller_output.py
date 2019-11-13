@@ -81,7 +81,7 @@ if __name__ == "__main__":
          px4_target + " &) && cd " + os.getcwd(), shell=True, stderr=DEVNULL)
 
     # waits for PX4 daemon and Gazebo to load
-    time.sleep(5)
+    time.sleep(10)
 
     # launch the specified test
     if (listener == "sensor_combined"):

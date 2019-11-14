@@ -65,18 +65,20 @@ if __name__ == "__main__":
 
     # get ROS distro
     ros_distro = check_output("rosversion -d", shell=True)
-    print("\033[34m" + "\n-------------- PX4 MICRORTPS COMMUNICATION TESTS --------------" + "\033[0m" + "\033[5m" + "\n\n-- Running test over" + "\033[93m" + " ROS2 " +
+    print("\n" + "\033[34m" +
+          "-------------- PX4 MICRORTPS COMMUNICATION TEST --------------" + "\033[0m")
+    print("\n" + "\033[5m" + "-- Running test over" + "\033[93m" + " ROS2 " +
           str(ros_distro.strip().decode("utf-8")).capitalize() + "\033[0m")
 
     # launch the microRTPS agent
-    print("\n-- Starting microRTPS bridge agent...\n")
+    print("\n" + "\033[93m" + "-- Starting microRTPS bridge agent..." + "\033[0m" + "\n")
     call("micrortps_agent -t UDP &", shell=True, stderr=STDOUT)
 
     # waits for the agent to load
     time.sleep(3)
 
     # launch PX4 SITL daemon, in headless mode
-    print("\n-- Starting the PX4 SITL daemon and Gazebo (without GUI)...\n")
+    print("\n" + "\033[93m" + "-- Starting the PX4 SITL daemon and Gazebo (without GUI)..." + "\033[0m" + "\n")
     call("cd " + px4_dir + " && (NO_PXH=1 HEADLESS=1 make px4_sitl_rtps gazebo_" +
          px4_target + " &) && cd " + os.getcwd(), shell=True, stderr=DEVNULL)
 
@@ -92,12 +94,14 @@ if __name__ == "__main__":
     call("killall gzserver micrortps_agent px4 ros2",
          shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
-    print("\033[34m" + "-------------- TEST RESULTS --------------" + "\033[0m")
+    print("\033[34m" + "------------------------ TEST RESULTS ------------------------" + "\033[0m")
     if (test_result):
         print("\033[91m" + "[FAILED]\tFlight controller output test failed! Failed to get data from the '" +
-              listener + "' uORB topic" + "\033[0m" + "\033[34m" + "\n------------------------------------------\n" + "\033[0m")
+              listener + "' uORB topic" + "\033[0m")
+        print("\033[34m" + "--------------------------------------------------------------" + "\033[0m" + "\n")
         exit(1)
     else:
         print("\033[92m" + "[SUCCESS]\tFlight controller output test successfull! Successfully retrieved data from the '" +
-              listener + "' uORB topic" + "\033[0m" + "\033[34m" + "\n------------------------------------------\n" + "\033[0m")
+              listener + "' uORB topic" + "\033[0m")
+        print("\033[34m" + "--------------------------------------------------------------" + "\033[0m" + "\n")
         exit(0)

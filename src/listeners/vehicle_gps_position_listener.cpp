@@ -48,7 +48,7 @@ class VehicleGpsPositionListener : public rclcpp::Node
 public:
 	explicit VehicleGpsPositionListener() : Node("vehicle_global_position_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::VehicleGpsPosition>(
-			"VehicleGpsPosition_topic",
+			"VehicleGpsPosition_PubSubTopic",
 			[this](const px4_msgs::msg::VehicleGpsPosition::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED VEHICLE GPS POSITION DATA"   << std::endl;

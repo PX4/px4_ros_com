@@ -47,15 +47,17 @@ class DebugVectAdvertiser : public rclcpp::Node
 {
 public:
 	DebugVectAdvertiser() : Node("debug_vect_advertiser") {
-		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("DebugVect_topic");
+		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("DebugVect_PubSubTopic");
 		auto timer_callback =
 		[this]()->void {
 			auto debug_vect = px4_msgs::msg::DebugVect();
 			debug_vect.timestamp = this->now().nanoseconds() * 1E-3;
+			std::string name = "test";
+			std::copy(name.begin(), name.end(), debug_vect.name.begin());
 			debug_vect.x = 1.0;
 			debug_vect.y = 2.0;
 			debug_vect.z = 3.0;
-			RCLCPP_INFO(this->get_logger(), "Publishing debug_vect: time: %f x:%f y:%f z:%f",
+			RCLCPP_INFO(this->get_logger(), "\033[97m Publishing debug_vect: time: %f x:%f y:%f z:%f \033[0m",
                                 debug_vect.timestamp, debug_vect.x, debug_vect.y, debug_vect.z);
 			this->publisher_->publish(debug_vect);
 		};

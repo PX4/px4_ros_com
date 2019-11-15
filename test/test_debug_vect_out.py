@@ -36,29 +36,35 @@
 # to evaluate if there's data output coming out of it. If the log output file
 # is empty, means that there's no output on the topic, so the test fails
 
-from os import remove
+import os
 from sys import exit
-from subprocess import call, TimeoutExpired
+from subprocess import call, check_output, DEVNULL
+from time import sleep
 
 if __name__ == "__main__":
-    timeout = 2  # seconds
-    test_cmd = 'ros2 topic echo /SensorCombined_PubSubTopic'
+    px4_bin_dir = os.environ["PX4_BIN_DIR"] if "PX4_BIN_DIR" in os.environ else "$HOME/PX4/Firmware/build/px4_sitl_rtps/bin"
+    test_cmd = "/bin/bash -c '" + \
+        os.path.join(os.environ["PX4_BIN_DIR"],
+                     "px4-listener") + " debug_vect'"
 
-    try:
+    print("\n\033[93m-- 'debug_vect' uORB data test launched:\033[0m")
+    # start the debug_vect ROS 2 avertiser
+    call("/bin/bash -c 'debug_vect_advertiser &'", shell=True)
+
+    sleep(3)
+
+    # call the 'listener' command for the 'debug_vect' uORB topic
+    output = check_output(test_cmd, shell=True, universal_newlines=True)
+
+    call("killall debug_vect_advertiser",
+         shell=True, stdout=DEVNULL, stderr=DEVNULL)
+
+    if output and "never published" not in output:
         print(
-            "\n\033[93m" + "-- SensorCombined_PubSubTopic output test launched:\033[0m")
-        call(test_cmd, timeout=timeout, stdout=open(
-            "ros2_topic_echo_out", "w"), shell=True)
-    except TimeoutExpired as e:
-        output = open("ros2_topic_echo_out", "r").read()
-        if output:
-            print(
-                "\n\033[42m" + "-- Successfully obtained data on SensorCombined_PubSubTopic topic. microRTPS bridge is up! Output:\033[0m\n\n")
-            print("\033[97m" + output + "\033[0m")
-            remove("ros2_topic_echo_out")
-            exit(0)
-        else:
-            print(
-                "\n\033[41m" + "-- Something went wrong. Please check if the microRTPS bridge is functioning correctly.\033[0m\n")
-            remove("ros2_topic_echo_out")
-            exit(1)
+            "\n\033[42m-- Successfully obtained data on 'debug_vect' uORB topic. microRTPS bridge is up! Output:\033[0m")
+        print("\033[97m" + output + "\033[0m")
+        exit(0)
+    else:
+        print(
+            "\n\033[41m-- Something went wrong. Please check if the microRTPS bridge is functioning correctly.\033[0m\n")
+        exit(1)

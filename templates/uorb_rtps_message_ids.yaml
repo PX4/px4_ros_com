@@ -264,6 +264,14 @@ rtps:
     msg: OnboardComputerStatus
   - id: 117
     msg: CellularStatus
+  - id: 118
+    msg: SensorAccelFifo
+  - id: 119
+    msg: SensorAccelStatus
+  - id: 120
+    msg: SensorGyroFifo
+  - id: 121
+    msg: SensorGyroStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

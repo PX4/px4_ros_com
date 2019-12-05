@@ -46,7 +46,7 @@ rtps:
     msg: DistanceSensor
     send: true
   - id: 18
-    msg: Ekf2Innovations
+    msg: EstimatorInnovations
   - id: 19
     msg: Ekf2Timestamps
   - id: 20
@@ -334,3 +334,9 @@ rtps:
   - alias: VehicleOdometry
     id: 169
     msg: VehicleVisualOdometryAligned
+  - alias: EstimatorInnovations
+    id: 170
+    msg: EstimatorInnovationVariances
+  - alias: EstimatorInnovations
+    id: 171
+    msg: EstimatorInnovationTestRatios

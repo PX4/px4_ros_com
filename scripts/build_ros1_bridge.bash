@@ -14,6 +14,8 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+
 # parse the arguments
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
@@ -68,8 +70,6 @@ else
   ROS1_DISTRO="$ros1_distro"
   ROS2_DISTRO="$ros2_distro"
 fi
-
-SCRIPT_DIR=$PWD
 
 # ROS2 dirs
 ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)

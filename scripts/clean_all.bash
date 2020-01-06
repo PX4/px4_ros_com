@@ -11,6 +11,8 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+
 # parse the arguments
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
@@ -19,8 +21,6 @@ while [ $# -gt 0 ]; do
   fi
   shift
 done
-
-SCRIPT_DIR=$PWD
 
 echo "Build cleansing..."
 CLEAN_HISTORY=0

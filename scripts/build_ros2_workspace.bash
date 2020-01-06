@@ -12,6 +12,8 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+
 # parse the arguments
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
@@ -74,8 +76,6 @@ else
     source $ros_path
   fi
 fi
-
-SCRIPT_DIR=$PWD
 
 # workaround for rosidl fix in Dashing, while backport isn't applied from Eloquent
 # source ~/PX4/rosidl_ws/install/setup.bash

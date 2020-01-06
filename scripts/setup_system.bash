@@ -135,14 +135,6 @@ sudo apt-get install -y --quiet python3-genmsg \
     && sudo apt-get clean autoclean \
     && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
 
-# Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 18.10 and above)
-sudo apt-get install -y --quiet python3-gencpp \
-  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/ \
-    && sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb \
-    && sudo apt-get -y autoremove \
-    && sudo apt-get clean autoclean \
-    && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
-
 sudo apt-get install -y \
   dirmngr \
   gnupg2 \

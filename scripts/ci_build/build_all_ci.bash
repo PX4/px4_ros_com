@@ -14,6 +14,8 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+
 # parse the arguments
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
@@ -98,8 +100,6 @@ else
     source $ros2_path
   fi
 fi
-
-SCRIPT_DIR=$PWD
 
 # setup the required path variables
 export ROS2_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)

@@ -23,7 +23,7 @@ done
 
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 unset ROS_DISTRO
-if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
+if [ -z $ros1_distro ] && [ -z $ros2_distro ]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename
   case "$(lsb_release -s -c)" in
   "xenial")
@@ -96,10 +96,10 @@ sudo apt-get -y install \
   protobuf-compiler \
   python-catkin-tools \
   python-tk \
-  ros-$ROS_DISTRO-desktop-full \
-  ros-$ROS_DISTRO-gazebo-ros-pkgs \
-  ros-$ROS_DISTRO-rostest \
-  ros-$ROS_DISTRO-rosunit
+  ros-$ROS1_DISTRO-desktop-full \
+  ros-$ROS1_DISTRO-gazebo-ros-pkgs \
+  ros-$ROS1_DISTRO-rostest \
+  ros-$ROS1_DISTRO-rosunit
 
 # Prepare rosdep to install dependencies.
 echo "Updating rosdep ..."
@@ -122,25 +122,25 @@ unset ROS_DISTRO
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
 
 echo "Updating package lists ..."
-sudo sh -c "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main $(lsb_release -sc) main" >/etc/apt/sources.list.d/ros2-latest.list
-sudo apt-get --qq update
+sudo sh -c "echo deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main $(lsb_release -sc) main > /etc/apt/sources.list.d/ros2-latest.list"
+sudo apt-get -qq update
 sudo apt-get -qq dist-upgrade
 echo "Installing ROS2 $ROS2_DISTRO and some dependencies..."
 
 # Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 18.10 and above)
-sudo apt-get install -y --quiet python3-genmsg
-  || sudo wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/
-    && sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb
-    && sudo apt-get -y autoremove
-    && sudo apt-get clean autoclean
+sudo apt-get install -y --quiet python3-genmsg \
+  || sudo wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/ \
+    && sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb \
+    && sudo apt-get -y autoremove \
+    && sudo apt-get clean autoclean \
     && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
 
 # Install python3-gencpp or download and install from deb source (currently only available in Ubuntu 18.10 and above)
-sudo apt-get install -y --quiet python3-gencpp
-  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/
-    && sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb
-    && sudo apt-get -y autoremove
-    && sudo apt-get clean autoclean
+sudo apt-get install -y --quiet python3-gencpp \
+  || wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-gencpp/python3-gencpp_0.6.0-4_all.deb -P /tmp/ \
+    && sudo dpkg -i /tmp/python3-gencpp_0.6.0-4_all.deb \
+    && sudo apt-get -y autoremove \
+    && sudo apt-get clean autoclean \
     && sudo rm /tmp/python3-gencpp_0.6.0-4_all.deb
 
 sudo apt-get install -y \

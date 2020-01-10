@@ -77,9 +77,6 @@ else
   fi
 fi
 
-# workaround for rosidl fix in Dashing, while backport isn't applied from Eloquent
-# source ~/PX4/rosidl_ws/install/setup.bash
-
 # setup the required path variables
 ROS_REPO_DIR=$(cd "$(dirname "$SCRIPT_DIR")" && pwd)
 ROS_WS_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)

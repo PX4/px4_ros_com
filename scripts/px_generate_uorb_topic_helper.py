@@ -43,7 +43,6 @@ import os
 import errno
 
 import genmsg.msgs
-import gencpp
 
 type_map = {
     'int8': 'int8_t',

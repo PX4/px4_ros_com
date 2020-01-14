@@ -21,7 +21,7 @@ matrix:
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-11-03
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2020-01-13
         - TEST_SETUP=""
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
@@ -37,7 +37,7 @@ matrix:
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2019-11-03
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-bouncy:2020-01-13
         - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_output; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_input;"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
@@ -53,7 +53,7 @@ matrix:
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2019-11-03
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-crystal:2020-01-13
         - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_output; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_input;"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
@@ -69,7 +69,7 @@ matrix:
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-11-03
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2020-01-13
         - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_output; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_input;"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
@@ -87,7 +87,7 @@ matrix:
     #     - BUILD_ARGS="--ros1_ws_dir ~/colcon1_ws --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
     #     - COLCON_BUILD="./ci_build/build_all_ci.bash"
     #     - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon1_ws/src; cd ~/colcon1_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b ros1; cd src/px4_ros_com; git checkout ros1; cd $pwd; mkdir -p ~/colcon2_ws/src; cd ~/colcon2_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master; cd src/px4_ros_com/scripts;"
-    #     - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-11-03
+    #     - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2020-01-13
 
     - name: Build on ROS2 Eloquent
       os: linux
@@ -101,7 +101,7 @@ matrix:
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-eloquent:2019-11-03
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-eloquent:2020-01-13
         - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_output; python3 pipeline_io_test.py -d ~/PX4/Firmware/ -t fcu_input;"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 

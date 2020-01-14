@@ -23,6 +23,18 @@ endif()
 # Look for the PX4 Firmware dir if PX4_FIRMWARE_DIR is not set
 # find_package(PX4Firmware)
 
+# Check if ROS_DISTRO is Eloquent
+# Required since "create_subscription()" API changed
+if(DEFINED ENV{ROS2_DISTRO})
+  if ($ENV{ROS2_DISTRO} STREQUAL "eloquent")
+    add_definitions(-DROS_DISTRO_ELOQUENT=1)
+  endif()
+else()
+  if ($ENV{ROS_DISTRO} STREQUAL "eloquent")
+    add_definitions(-DROS_DISTRO_ELOQUENT=1)
+  endif()
+endif()
+
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)

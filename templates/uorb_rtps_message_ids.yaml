@@ -262,6 +262,7 @@ rtps:
     msg: AirspeedValidated
   - id: 116
     msg: OnboardComputerStatus
+    receive: True
   - id: 117
     msg: CellularStatus
   - id: 118

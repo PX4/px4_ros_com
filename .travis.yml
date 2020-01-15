@@ -113,7 +113,7 @@ script:
           --env=LOCAL_USER_ID="$(id -u)"
           --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw
           --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
-          ${DOCKER_CONTAINER} /bin/bash -c "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}; ${TEST_SETUP}";
+          ${DOCKER_CONTAINER} /bin/bash -ce "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS}; ${TEST_SETUP}";
     fi
     # if [[ $FULL_BUILD == "ON"]]; then
     #   docker run -it --name px4ros -w ${TRAVIS_BUILD_DIR}

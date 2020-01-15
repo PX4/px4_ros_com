@@ -24,7 +24,7 @@ endif()
 # find_package(PX4Firmware)
 
 # Check if ROS_DISTRO is Eloquent
-# Required since "create_subscription()" API changed
+# Required since "create_subscription()" and "create_publisher()" APIs changed
 if(DEFINED ENV{ROS2_DISTRO})
   if ($ENV{ROS2_DISTRO} STREQUAL "eloquent")
     add_definitions(-DROS_DISTRO_ELOQUENT=1)

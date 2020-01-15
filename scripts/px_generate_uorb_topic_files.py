@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #############################################################################
 #
 #   Copyright (C) 2013-2018 PX4 Pro Development Team. All rights reserved.
@@ -37,7 +37,7 @@ px_generate_uorb_topic_files.py
 Generates c/cpp header/source files for uorb topics from .msg (ROS syntax)
 message files
 """
-from __future__ import print_function
+
 import os
 import shutil
 import filecmp
@@ -55,14 +55,14 @@ Required python packages not installed.
 
 On a Debian/Ubuntu system please run:
 
-  sudo apt-get install python-empy
-  sudo pip install catkin_pkg
+  sudo apt-get install python3-empy
+  sudo pip3 install pyros-genmsg
 
 On MacOS please run:
-  sudo pip install empy catkin_pkg
+  sudo pip3 install empy pyros-genmsg
 
 On Windows please run:
-  easy_install empy catkin_pkg
+  easy_install empy pyros-genmsg
 ''')
     exit(1)
 
@@ -208,19 +208,11 @@ def generate_uRTPS_general(filename_send_msgs, filename_alias_send_msgs, filenam
     receive_msgs = list(os.path.join(msg_dir, msg + ".msg")
                         for msg in filename_receive_msgs)
 
-    if sys.version_info[0] < 3:
-        alias_send_msgs = list([os.path.join(
-            msg_dir, msg[1] + ".msg"), msg[0].keys()[0]] for msg in filename_alias_send_msgs)
-    else:
-        alias_send_msgs = list([os.path.join(msg_dir, msg[1] + ".msg"),
-                                list(msg[0].keys())[0]] for msg in filename_alias_send_msgs)
+    alias_send_msgs = list([os.path.join(
+        msg_dir, msg[1] + ".msg"), list(msg[0].keys())[0]] for msg in filename_alias_send_msgs)
 
-    if sys.version_info[0] < 3:
-        alias_receive_msgs = list([os.path.join(
-            msg_dir, msg[1] + ".msg"), msg[0].keys()[0]] for msg in filename_alias_receive_msgs)
-    else:
-        alias_receive_msgs = list([os.path.join(
-            msg_dir, msg[1] + ".msg"), list(msg[0].keys())[0]] for msg in filename_alias_receive_msgs)
+    alias_receive_msgs = list([os.path.join(
+        msg_dir, msg[1] + ".msg"), list(msg[0].keys())[0]] for msg in filename_alias_receive_msgs)
 
     em_globals_list = []
     if send_msgs:

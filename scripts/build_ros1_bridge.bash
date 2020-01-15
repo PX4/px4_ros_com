@@ -5,11 +5,13 @@ set -e
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros1_bridge.bash [option...] \t This script build the ros1_bridge package." >&2
   echo
-  echo "NOTE: The script requires both ROS2 and ROS(1) workspaces to be built previously." >&2
+  echo "NOTE: The script requires both ROS 2 and ROS (1) workspaces to be built previously." >&2
   echo
-  echo -e "\t--ros1_ws_dir \t Location of the ROS(1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
-  echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros1_ws_dir \t Location of the ROS( 1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
+  echo -e "\t--ros1_distro \t Set ROS (1) distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2  distro name (ardent|bouncy|crystal|dashing|eloquent). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros1_path \t\t Set ROS(1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
+  echo -e "\t--ros2_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo
   exit 0
 fi
@@ -25,40 +27,68 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-# Get FastRTPSGen version
-fastrtpsgen_version_out=""
-if [[ -z $FASTRTPSGEN_DIR ]]; then
-  fastrtpsgen_version_out="$FASTRTPSGEN_DIR/$(fastrtpsgen -version)"
-else
-  fastrtpsgen_version_out=$(fastrtpsgen -version)
-fi
-if [[ -z $fastrtpsgen_version_out ]]; then
-  echo "FastRTPSGen not found! Please build and install FastRTPSGen..."
-  exit 1
-else
-  fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
-  if ! [[ $fastrtpsgen_version =~ ^[0-9]+([.][0-9]+)?$ ]] ; then
-    fastrtpsgen_version="1.0"
-  fi
-  echo "FastRTPSGen version major: ${fastrtpsgen_version}"
-fi
-
+unset ROS_DISTRO
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
-  # set the ROS_DISTRO variables automatically based on the Ubuntu codename
+  # set the ROS_DISTRO variables automatically based on the Ubuntu codename and
+  # ROS install directory
   case "$(lsb_release -s -c)" in
   "xenial")
-    ROS1_DISTRO="kinetic"
-    ROS2_DISTRO="ardent"
+    if [ -d "/opt/ros/kinetic" ]; then
+      ROS1_DISTRO="kinetic"
+    else
+      if [ -z $ros1_path ]; then
+        echo "- No ROS (1) distro installed or not installed in the default directory."
+        echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/kinetic/install). Otherwise, please install ROS Kinetic following http://wiki.ros.org/kinetic/Installation"
+        exit 1
+      else
+        # source the ROS(1) environment (from arg)
+        source $ros1_path
+      fi
+    fi
+    if [ -d "/opt/ros/ardent" ]; then
+      ROS2_DISTRO="ardent"
+    else
+      if [ -z $ros2_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/ardent/install). Otherwise, please install ROS 2 Ardent following https://index.ros.org/doc/ros2/Installation/Crystal/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS 2 environment (from arg)
+        source $ros2_path
+      fi
+    fi
     ;;
   "bionic")
-    ROS1_DISTRO="melodic"
-    if [[ $fastrtpsgen_version == "1.5" || $fastrtpsgen_version == "1.6" ]]; then
-      ROS2_DISTRO="bouncy"
-    elif [[ $fastrtpsgen_version == "1.7" ]]; then
-      ROS2_DISTRO="crystal"
+    if [ -d "/opt/ros/melodic" ]; then
+      ROS1_DISTRO="melodic"
     else
+      if [ -z $ros1_path ]; then
+        echo "- No ROS (1) distro installed or not installed in the default directory."
+        echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/melodic/install). Otherwise, please install ROS Melodic following http://wiki.ros.org/melodic/Installation"
+        exit 1
+      else
+        # source the ROS (1) environment (from arg)
+        source $ros1_path
+      fi
+    fi
+    if [ -d "/opt/ros/dashing" ]; then
       ROS2_DISTRO="dashing"
+    elif [ -d "/opt/ros/eloquent" ]; then
+      ROS2_DISTRO="eloquent"
+    elif [ -d "/opt/ros/crystal" ]; then
+      ROS2_DISTRO="crystal"
+    elif [ -d "/opt/ros/bouncy" ]; then
+      ROS2_DISTRO="bouncy"
+    else
+      if [ -z $ros2_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/eloquent/install). Otherwise, please install ROS 2 Dashing following https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS2 environment (from arg)
+        source $ros2_path
+      fi
     fi
     ;;
   *)
@@ -68,7 +98,23 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   esac
 else
   ROS1_DISTRO="$ros1_distro"
+  if [ -z $ros1_path ]; then
+    echo "- Warning: You set a ROS (1) manually to be used."
+    echo "  This assumes you want to use another ROS (1) version installed on your system. Please set the install location with '--ros1_path' arg! (ex: --ros_path ~/ros_src/kinetic/install/setup.bash)"
+    exit 1
+  else
+    # source the ROS (1) environment (from arg)
+    source $ros1_path
+  fi
   ROS2_DISTRO="$ros2_distro"
+  if [ -z $ros2_path ]; then
+    echo "- Warning: You set a ROS 2 manually to be used."
+    echo "  This assumes you want to use another ROS 2 version installed on your system. Please set the install location with '--ros2_path' arg! (ex: --ros_path ~/ros_src/eloquent/install/setup.bash)"
+    exit 1
+  else
+    # source the ROS 2 environment (from arg)
+    source $ros2_path
+  fi
 fi
 
 # ROS2 dirs

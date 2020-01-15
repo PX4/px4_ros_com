@@ -3,13 +3,13 @@ set -e
 
 # parse help argument
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
-  echo -e "Usage: build_all.bash [option...] \t This script builds px4_ros_com workspaces for ROS2 and ROS(1)" >&2
+  echo -e "Usage: build_all.bash [option...] \t This script builds px4_ros_com workspaces for ROS 2 and ROS (1)" >&2
   echo
-  echo -e "\t--ros1_ws_dir \t\t Location of the ROS(1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
-  echo -e "\t--ros1_distro \t\t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t\t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros1_path \t\t Set ROS(1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS1_DISTRO/"
-  echo -e "\t--ros2_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS2_DISTRO/"
+  echo -e "\t--ros1_ws_dir \t\t Location of the ROS (1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
+  echo -e "\t--ros1_distro \t\t Set ROS (1) distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros1_path \t\t Set ROS (1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
+  echo -e "\t--ros2_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo
   exit 0
 fi
@@ -25,7 +25,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-# Get FastRTPSGen version
+# Check FastRTPSGen version
 fastrtpsgen_version_out=""
 if [[ -z $FASTRTPSGEN_DIR ]]; then
   fastrtpsgen_version_out="$FASTRTPSGEN_DIR/$(fastrtpsgen -version)"
@@ -39,47 +39,78 @@ else
   fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
   if ! [[ $fastrtpsgen_version =~ ^[0-9]+([.][0-9]+)?$ ]] ; then
     fastrtpsgen_version="1.0"
+    echo "FastRTPSGen version: ${fastrtpsgen_version}"
+  else
+    echo "FastRTPSGen version: ${fastrtpsgen_version_out: -5}"
   fi
-  echo "FastRTPSGen version major: ${fastrtpsgen_version}"
 fi
 
-# One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 unset ROS_DISTRO
-if [ -z $ros1_distro ]; then
-  # set the ROS_DISTRO variables automatically based on the Ubuntu codename
+# One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
+if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
+  # set the ROS_DISTRO variables automatically based on the Ubuntu codename and
+  # ROS install directory
   case "$(lsb_release -s -c)" in
   "xenial")
-    export ROS1_DISTRO="kinetic"
-    ;;
-  "bionic")
-    export ROS1_DISTRO="melodic"
-    ;;
-  *)
-    echo "Unsupported version of Ubuntu detected."
-    exit 1
-    ;;
-  esac
-else
-  export ROS1_DISTRO="$ros1_distro"
-  if [ -z $ros1_path ]; then
-    echo "- Warning: You set a ROS(1) distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
-    echo "           This assumes you are using a ROS version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/kinetic/devel)"
-    exit 1
-  fi
-fi
-if [ -z $ros2_distro ]; then
-  # set the ROS_DISTRO variables automatically based on the Ubuntu codename
-  case "$(lsb_release -s -c)" in
-  "xenial")
-    export ROS2_DISTRO="ardent"
-    ;;
-  "bionic")
-    if [[ $fastrtpsgen_version == "1.5" || $fastrtpsgen_version == "1.6" ]]; then
-      ROS2_DISTRO="bouncy"
-    elif [[ $fastrtpsgen_version == "1.7" ]]; then
-      ROS2_DISTRO="crystal"
+    if [ -d "/opt/ros/kinetic" ]; then
+      ROS1_DISTRO="kinetic"
     else
-      ROS2_DISTRO="dashing"
+      if [ -z $ros1_path ]; then
+        echo "- No ROS (1) distro installed or not installed in the default directory."
+        echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/kinetic/install). Otherwise, please install ROS Kinetic following http://wiki.ros.org/kinetic/Installation"
+        exit 1
+      else
+        # source the ROS(1) environment (from arg)
+        source $ros1_path
+        export ROS1_DISTRO="$(rosversion -d)"
+      fi
+    fi
+    if [ -d "/opt/ros/ardent" ]; then
+      ROS2_DISTRO="ardent"
+    else
+      if [ -z $ros2_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/ardent/install). Otherwise, please install ROS 2 Ardent following https://index.ros.org/doc/ros2/Installation/Crystal/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS 2 environment (from arg)
+        source $ros2_path
+        export ROS2_DISTRO="$(rosversion -d)"
+      fi
+    fi
+    ;;
+  "bionic")
+    if [ -d "/opt/ros/melodic" ]; then
+      export ROS1_DISTRO="melodic"
+    else
+      if [ -z $ros1_path ]; then
+        echo "- No ROS (1) distro installed or not installed in the default directory."
+        echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/melodic/install). Otherwise, please install ROS Melodic following http://wiki.ros.org/melodic/Installation"
+        exit 1
+      else
+        # source the ROS (1) environment (from arg)
+        source $ros1_path
+        export ROS1_DISTRO="$(rosversion -d)"
+      fi
+    fi
+    if [ -d "/opt/ros/dashing" ]; then
+      export ROS2_DISTRO="dashing"
+    elif [ -d "/opt/ros/eloquent" ]; then
+      export ROS2_DISTRO="eloquent"
+    elif [ -d "/opt/ros/crystal" ]; then
+      export ROS2_DISTRO="crystal"
+    elif [ -d "/opt/ros/bouncy" ]; then
+      export ROS2_DISTRO="bouncy"
+    else
+      if [ -z $ros2_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/eloquent/install). Otherwise, please install ROS 2 Dashing following https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS2 environment (from arg)
+        source $ros2_path
+        export ROS2_DISTRO="$(rosversion -d)"
+      fi
     fi
     ;;
   *)
@@ -87,17 +118,20 @@ if [ -z $ros2_distro ]; then
     exit 1
     ;;
   esac
-  # source the ROS2 environment
-  source /opt/ros/$ROS2_DISTRO/setup.bash
 else
-  export ROS2_DISTRO="$ros2_distro"
-  if [ -z $ros2_path ]; then
-    echo "- Warning: You set a ROS2 distro which is not the supported by default in Ubuntu $(lsb_release -s -c)..."
-    echo "           This assumes you are using a ROS2 version installed from source. Please set the install location with '--ros_path' arg! (ex: ~/ros_src/bouncy/install)"
+  if [ -z $ros1_path ]; then
+    echo "- Warning: You set a ROS (1) manually to be used."
+    echo "  This assumes you want to use another ROS (1) version installed on your system. Please set the install location with '--ros1_path' arg! (ex: --ros_path ~/ros_src/kinetic/install/setup.bash)"
     exit 1
   else
-    # source the ROS2 environment (from arg)
-    source $ros2_path
+    export ROS1_DISTRO="$ros1_distro"
+  fi
+  if [ -z $ros2_path ]; then
+    echo "- Warning: You set a ROS 2 manually to be used."
+    echo "  This assumes you want to use another ROS 2 version installed on your system. Please set the install location with '--ros2_path' arg! (ex: --ros_path ~/ros_src/eloquent/install/setup.bash)"
+    exit 1
+  else
+    export ROS2_DISTRO="$ros2_distro"
   fi
 fi
 
@@ -114,10 +148,20 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS2_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS2_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS2_DISTRO
 fi
 
-gnome-terminal --tab -- /bin/bash -c \
+# Check if gnome-terminal exists
+if [ -x "$(command -v gnome-terminal)" ]; then
+  SHELL_TERM="gnome-terminal --tab -- /bin/bash -c"
+  echo $SHELL_TERM
+# Check if xterm exists
+elif [ -x "$(command -v xterm)" ]; then
+  SHELL_TERM="xterm -e"
+  echo $SHELL_TERM
+fi
+
+$SHELL_TERM \
   '''
-    # source the ROS1 environment
     unset ROS_DISTRO
+    # source the ROS1 environment
     if [ -z $ros1_path ]; then
       source /opt/ros/$ROS1_DISTRO/setup.bash
     else
@@ -127,20 +171,27 @@ gnome-terminal --tab -- /bin/bash -c \
     # check if the ROS1 side of px4_ros_com was built and source it. Otherwise, build it
     printf "\n************* Building ROS1 workspace *************\n\n"
     # build the ROS1 workspace of the px4_ros_com package
-    cd $ROS1_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --event-handlers console_direct+
+    cd $ROS1_WS_DIR && catkin init && catkin build
 
     # source the ROS1 workspace environment so to have it ready to use
-    source $ROS1_WS_DIR/install/setup.bash
+    source $ROS1_WS_DIR/devel/setup.bash
 
     printf "\nROS1 workspace ready...\n\n"
     exec /bin/bash
-  '''
+  ''' &
 
 printf "\n************* Building ROS2 workspace *************\n\n"
+
+# source the ROS2 environment
+if [ -z $ros2_path ]; then
+  source /opt/ros/$ROS2_DISTRO/setup.bash
+else
+  source $ros2_path
+fi
 # build px4_ros_com package, except the ros1_bridge
 cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge --event-handlers console_direct+
 
-gnome-terminal --tab -- /bin/bash -c \
+$SHELL_TERM \
   '''
     unset ROS_DISTRO
     # check if the ROS1 workspace of px4_ros_com and px4_msgs was built and source it.
@@ -149,7 +200,9 @@ gnome-terminal --tab -- /bin/bash -c \
       exec /bin/bash
       exit 1
     else
-      if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
+      if [ -f $ROS1_WS_DIR/devel/setup.bash ]; then
+        unset ROS_DISTRO && source $ROS1_WS_DIR/devel/setup.bash
+      elif [ -f $ROS1_WS_DIR/install/setup.bash ]; then
         unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
       else
         echo "ROS1 workspace not built."
@@ -170,18 +223,18 @@ gnome-terminal --tab -- /bin/bash -c \
 
     printf "\nros1_bridge workspace ready...\n\n"
     exec /bin/bash
-  '''
+  ''' &
 
 # source the ROS2 workspace environment so to have it ready to use
-unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
+source $ROS2_WS_DIR/install/setup.bash
 
 printf "\nROS2 workspace ready...\n\n"
 
-gnome-terminal --tab -- /bin/bash -c \
+$SHELL_TERM \
   '''
   # source the ROS2 workspace environment so to have it ready to use
-  unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash
+  source $ROS2_WS_DIR/install/setup.bash
 
   printf "To start the microRTPS bridge agent, use \"micrortps_agent [options]\"\n\n"
   exec /bin/bash
-  '''
+  ''' &

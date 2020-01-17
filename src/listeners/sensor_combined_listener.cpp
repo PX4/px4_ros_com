@@ -51,7 +51,7 @@ public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
 			"SensorCombined_PubSubTopic",
-#ifdef ROS_DISTRO_ELOQUENT
+#ifdef ROS_DEFAULT_API
             10,
 #endif
 			[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {

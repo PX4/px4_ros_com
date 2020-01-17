@@ -13,40 +13,30 @@ endif()
 # Check if any sanitizers set
 include(EnableSanitizers)
 
-# Option to set the PX4 Firmware repository directory
-option(PX4_FIRMWARE_DIR "PX4 Firmware repository directory (by default not set)"
-       "")
-if(${PX4_FIRMWARE} NOT STREQUAL "")
-  set(PX4_FIRMWARE_DIR "${PX4_FIRMWARE_DIR}" CACHE INTERNAL "PX4_FIRMWARE_DIR")
-endif()
-
-# Look for the PX4 Firmware dir if PX4_FIRMWARE_DIR is not set
-# find_package(PX4Firmware)
-
-# Check if ROS_DISTRO is Eloquent
+# Check if ROS_DISTRO is Dashing or Eloquent
 # Required since "create_subscription()" and "create_publisher()" APIs changed
+list(APPEND ROS_DISTROS "dashing" "eloquent")
 if(DEFINED ENV{ROS2_DISTRO})
-  if ($ENV{ROS2_DISTRO} STREQUAL "eloquent")
-    add_definitions(-DROS_DISTRO_ELOQUENT=1)
+  if ($ENV{ROS2_DISTRO} IN_LIST ROS_DISTROS)
+    add_definitions(-DROS_DEFAULT_API=1)
   endif()
 else()
-  if ($ENV{ROS_DISTRO} STREQUAL "eloquent")
-    add_definitions(-DROS_DISTRO_ELOQUENT=1)
+  if ($ENV{ROS_DISTRO} IN_LIST ROS_DISTROS)
+    add_definitions(-DROS_DEFAULT_API=1)
   endif()
 endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(fastrtps REQUIRED)
 find_package(fastcdr REQUIRED)
+find_package(fastrtps REQUIRED)
+find_package(rclcpp REQUIRED)
 get_default_rmw_implementation(rmw_implementation)
 find_package("${rmw_implementation}" REQUIRED)
 
 find_package(px4_msgs REQUIRED)
 
-find_package(PythonInterp REQUIRED)
+find_package(PythonInterp 3 REQUIRED)
 
 ###################################
 # Generate micro-RTPS agent code ##

@@ -47,7 +47,7 @@ class DebugVectAdvertiser : public rclcpp::Node
 {
 public:
 	DebugVectAdvertiser() : Node("debug_vect_advertiser") {
-#ifdef ROS_DISTRO_ELOQUENT
+#ifdef ROS_DEFAULT_API
 		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("DebugVect_PubSubTopic", 10);
 #else
 		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("DebugVect_PubSubTopic");

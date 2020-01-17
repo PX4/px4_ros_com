@@ -62,32 +62,25 @@ include(GenerateMicroRTPSAgent)
 
 include_directories(include ${rclcpp_INCLUDE_DIRS})
 
-# Build micro-RTPS agent code
+function(custom_executable subfolder target)
+  add_executable(${target} src/${subfolder}/${target}.cpp)
+  ament_target_dependencies(${target}
+    "rclcpp"
+    "px4_msgs")
+  install(TARGETS ${target}
+  DESTINATION lib/${PROJECT_NAME})
+endfunction()
+
+# Add microRTPS agent
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
 target_link_libraries(micrortps_agent fastrtps fastcdr)
 
-# Build listeners
-add_executable(sensor_combined_listener
-               src/listeners/sensor_combined_listener.cpp)
-add_dependencies(sensor_combined_listener micrortps_agent)
-add_executable(vehicle_gps_position_listener
-               src/listeners/vehicle_gps_position_listener.cpp)
-add_dependencies(vehicle_gps_position_listener micrortps_agent)
+# Add listeners
+custom_executable(listeners sensor_combined_listener)
+custom_executable(listeners vehicle_gps_position_listener)
 
-# Build advertiser
-add_executable(debug_vect_advertiser src/advertisers/debug_vect_advertiser.cpp)
-add_dependencies(debug_vect_advertiser micrortps_agent)
-
-#################################
-# ament specific configuration ##
-#################################
-
-# Add listener dependencies
-ament_target_dependencies(sensor_combined_listener rclcpp px4_msgs)
-ament_target_dependencies(vehicle_gps_position_listener rclcpp px4_msgs)
-
-# Add advertiser dependencies
-ament_target_dependencies(debug_vect_advertiser rclcpp px4_msgs)
+# Add advertiser
+custom_executable(advertisers debug_vect_advertiser)
 
 # Export information to downstream packages
 ament_export_dependencies(rclcpp rosidl_default_runtime)
@@ -107,7 +100,10 @@ install(TARGETS micrortps_agent sensor_combined_listener vehicle_gps_position_li
         RUNTIME DESTINATION bin)
 
 # Install launch files
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 ############
 # Testing ##

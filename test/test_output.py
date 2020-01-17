@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ################################################################################
 #
@@ -32,28 +32,35 @@
 #
 ################################################################################
 
-# This script tests the output of 'ros2 topic echo /SensorCombined_PubSubTopic'
+# This script tests the output of 'ros2 topic echo /<TopicName>'
 # to evaluate if there's data output coming out of it. If the log output file
 # is empty, means that there's no output on the topic, so the test fails
 
+import argparse
 from os import remove
 from sys import exit
 from subprocess import call, TimeoutExpired
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--topic-name", dest='topic_name', type=str,
+                        help="Topic name to test the output to the autopilot", required=True)
+
+    # Parse arguments
+    args = parser.parse_args()
+
     timeout = 3  # seconds
-    test_cmd = 'ros2 topic echo /SensorCombined_PubSubTopic'
 
     try:
         print(
-            "\n\033[93m" + "-- SensorCombined_PubSubTopic output test launched:\033[0m")
-        call(test_cmd, timeout=timeout, stdout=open(
+            "\n\033[93m" + "-- " + args.topic_name + "_PubSubTopic output test launched:\033[0m")
+        call("ros2 topic echo /" + args.topic_name + "_PubSubTopic", timeout=timeout, stdout=open(
             "ros2_topic_echo_out", "w"), shell=True)
     except TimeoutExpired as e:
         output = open("ros2_topic_echo_out", "r").read()
         if output:
             print(
-                "\n\033[42m" + "-- Successfully obtained data on SensorCombined_PubSubTopic topic. microRTPS bridge is up! Output:\033[0m\n\n")
+                "\n\033[42m" + "-- Successfully obtained data on " + args.topic_name + "_PubSubTopic topic. microRTPS bridge is up! Output:\033[0m\n\n")
             print("\033[97m" + output + "\033[0m")
             remove("ros2_topic_echo_out")
             exit(0)

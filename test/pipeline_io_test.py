@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ################################################################################
 #
@@ -44,32 +44,39 @@ from subprocess import call, CalledProcessError, check_output, DEVNULL, Popen, S
 
 if __name__ == "__main__":
 
-    default_px4_ros_com_install_dir = "$HOME/PX4/px4_ros2_ws/install"
-    default_px4_dir = "$HOME/PX4/Firmware"
+    default_px4_ros_com_install_dir = os.path.expanduser("~") + "/PX4/px4_ros2_ws/install"
+    default_px4_dir = os.path.expanduser("~") + "/PX4/Firmware"
     default_px4_target = "iris_rtps"
+    default_test_dir = os.path.dirname(os.path.realpath(__file__))
     default_test_type = "fcu_output"
-    default_listener_topic = "sensor_combined"
-    default_advertiser_topic = "debug_vect"
+    default_subscriber_topic = "sensor_combined"
+    default_publisher_topic = "debug_vect"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--px4-firmware-dir", dest='px4_dir', type=str,
-                        help="PX4 Firmware dir, defaults to $HOME/PX4/Firmware", default=default_px4_dir)
-    parser.add_argument("-p", "--px4-build-target", dest='px4_target', type=str,
+    parser.add_argument("-d", "--test-dir", dest='test_dir', type=str,
+                        help="Absolute path to test script", default=default_test_dir)
+    parser.add_argument("-f", "--px4-firmware-dir", dest='px4_dir', type=str,
+                        help="Absolute path to PX4 Firmware dir, defaults to $HOME/PX4/Firmware", default=default_px4_dir)
+    parser.add_argument("-b", "--px4-build-target", dest='px4_target', type=str,
                         help="PX4 SITL target, defaults to iris_rtps", default=default_px4_target)
-    parser.add_argument("-t", "--test", dest='test', type=str,
+    parser.add_argument("-t", "--test-type", dest='test_type', type=str,
                         help="Test type [fcu_input, fcu_output], defaults to 'fcu_output'", default=default_test_type)
-    parser.add_argument("-l", "--listen", dest='listener_topic', type=str,
-                        help="ROS2 topic to test, defaults to 'sensor_combined'", default=default_listener_topic)
-    parser.add_argument("-a", "--advertise", dest='advertiser_topic', type=str,
-                        help="ROS2 avertiser data, meaning the data to be received on the flight controller side, defaults to 'debug_vect'", default=default_advertiser_topic)
+    parser.add_argument("-s", "--subscriber", dest='subscriber_topic', type=str,
+                        help="ROS2 topic to test, defaults to 'sensor_combined'", default=default_subscriber_topic)
+    parser.add_argument("-p", "--publisher", dest='publisher_topic', type=str,
+                        help="ROS2 publisher data, meaning the data to be received on the flight controller side, defaults to 'debug_vect'", default=default_publisher_topic)
 
     # Parse arguments
     args = parser.parse_args()
-    px4_dir = os.path.abspath(args.px4_dir)
+    if os.path.isabs(args.px4_dir):
+        px4_dir = args.px4_dir
+    else:
+        raise Exception("Please provide PX4 Firmware absolute path")
     px4_target = args.px4_target
-    test = args.test
-    listener = args.listener_topic
-    advertiser = args.advertiser_topic
+    test_dir = args.test_dir
+    test_type = args.test_type
+    listener = args.subscriber_topic
+    advertiser = args.publisher_topic
 
     # get ROS distro
     ros_distro = check_output("rosversion -d", shell=True)
@@ -84,12 +91,8 @@ if __name__ == "__main__":
     print("    > ROS 2 distro: \033[36m" +
           str(ros_distro.strip().decode("utf-8")).capitalize() + "\033[0m")
     print("    > PX4 Firmware: \033[36m" + px4_tag.decode() + "\033[0m")
-    print("\033[5m-- Running " + ("Output test" if(test ==
+    print("\033[5m-- Running " + ("Output test" if(test_type ==
                                                    "fcu_output") else "Input test") + "...\033[0m")
-
-    # set PX4_BIN_DIR so PX4 daemon and commands can be used by shell
-    os.environ["PX4_BIN_DIR"] = os.path.join(
-        px4_dir, "build/px4_sitl_rtps/bin")
 
     # launch the microRTPS agent
     print("\n\033[93m-- Starting microRTPS bridge agent..." + "\033[0m\n")
@@ -107,27 +110,42 @@ if __name__ == "__main__":
     # waits for PX4 daemon and Gazebo to load
     sleep(10)
 
+    # setup the PX4 SITL bin dir
+    px4_bin_dir = os.path.join(px4_dir, "build/px4_sitl_rtps/bin")
+
     # launch the specified test
     topic = ""
-    test_type = list()
+    test_format = list()
     test_result = -1
 
-    if(test == "fcu_output"):
+    if(test_type == "fcu_output"):
         # Flight controller output tests
         if (listener == "sensor_combined"):
+            node = "sensor_combined_listener"
             topic = "sensor_combined"
-            test_type = ["output", "from"]
+            test_format = ["output", "from"]
             test_result = call(
-                "python3 test_sensor_combined_topic_out.py", stderr=STDOUT, shell=True,
+                "python3 " + test_dir + "/test_output.py -t " + topic.replace("_", " ").title().replace(" ", ""), stderr=STDOUT, shell=True,
                 universal_newlines=True)
 
-    elif(test == "fcu_input"):
+    elif(test_type == "fcu_input"):
         # Flight controller input tests
         if (advertiser == "debug_vect"):
-            topic = "debug_vector"
-            test_type = ["input", "on"]
+            package_name = "px4_ros_com"
+            node = "debug_vect_advertiser"
+            topic = "debug_vect"
+            test_format = ["input", "on"]
             test_result = call(
-                "python3 test_debug_vect_out.py", stderr=STDOUT, shell=True,
+                "python3 " + test_dir + "/test_input.py -b " + px4_bin_dir + " -p " + package_name + " -n " + node + " -t " + topic, stderr=STDOUT, shell=True,
+                universal_newlines=True)
+        elif (advertiser == "onboard_computer_status"):
+            # specific test for https://github.com/Auterion/system_monitor_ros
+            package_name = "system_monitor_ros"
+            node = "system_monitor_node"
+            topic = "onboard_computer_status"
+            test_format = ["input", "on"]
+            test_result = call(
+                "python3 " + test_dir + "/test_input.py -b " + px4_bin_dir + " -p " + package_name + " -n " + node + " -t " + topic, stderr=STDOUT, shell=True,
                 universal_newlines=True)
 
     call("killall gzserver micrortps_agent px4 ros2",
@@ -136,13 +154,13 @@ if __name__ == "__main__":
     print(
         "\033[34m------------------------ TEST RESULTS ------------------------\033[0m")
     if (test_result):
-        print("\033[91m" + ("Output test" if(test == "fcu_output") else "Input test") + ": [FAILED]\tFlight controller " + test_type[0] + " test failed! Failed to get data " + test_type[1] + " the '" +
+        print("\033[91m" + ("Output test" if(test_type == "fcu_output") else "Input test") + ": [FAILED]\tFlight controller " + test_format[0] + " test failed! Failed to get data " + test_format[1] + " the '" +
               topic + "' uORB topic\033[0m")
         print(
             "\033[34m" + "--------------------------------------------------------------" + "\033[0m\n")
         exit(1)
     else:
-        print("\033[92m" + ("Output test" if(test == "fcu_output") else "Input test") + ": [SUCCESS]\tFlight controller " + test_type[0] + " test successfull! Successfully retrieved data " + test_type[1] + " the '" +
+        print("\033[92m" + ("Output test" if(test_type == "fcu_output") else "Input test") + ": [SUCCESS]\tFlight controller " + test_format[0] + " test successfull! Successfully retrieved data " + test_format[1] + " the '" +
               topic + "' uORB topic\033[0m")
         print(
             "\033[34m--------------------------------------------------------------" + "\033[0m\n")

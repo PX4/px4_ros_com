@@ -99,6 +99,10 @@ install(DIRECTORY
 # Testing ##
 ############
 
-# TODO
+# Install tests
+install(DIRECTORY
+  test
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 ament_package()

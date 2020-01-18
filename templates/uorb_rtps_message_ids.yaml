@@ -256,8 +256,6 @@ rtps:
     msg: VehicleAngularVelocity
   - id: 113
     msg: VehicleAcceleration
-  - id: 114
-    msg: SensorGyroControl
   - id: 115
     msg: AirspeedValidated
   - id: 116
@@ -273,6 +271,10 @@ rtps:
     msg: SensorGyroFifo
   - id: 121
     msg: SensorGyroStatus
+  - id: 122
+    msg: SensorAccelIntegrated
+  - id: 123
+    msg: SensorGyroIntegrated
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

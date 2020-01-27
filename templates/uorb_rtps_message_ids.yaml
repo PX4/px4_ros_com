@@ -277,6 +277,8 @@ rtps:
     msg: SensorGyroIntegrated
   - id: 124
     msg: VehicleImu
+  - id: 125
+    msg: VehicleAngularAcceleration
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

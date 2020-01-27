@@ -148,7 +148,7 @@ rtps:
     msg: SensorBaro
     send: true
   - id: 64
-    msg: SensorBias
+    msg: EstimatorSensorBias
   - id: 65
     msg: SensorCombined
     send: true

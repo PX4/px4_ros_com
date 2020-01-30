@@ -279,6 +279,8 @@ rtps:
     msg: VehicleImu
   - id: 125
     msg: VehicleAngularAcceleration
+  - id: 126
+    msg: LoggerStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

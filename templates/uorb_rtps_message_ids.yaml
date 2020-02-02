@@ -281,6 +281,8 @@ rtps:
     msg: VehicleAngularAcceleration
   - id: 126
     msg: LoggerStatus
+  - id: 127
+    msg: Rpm
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

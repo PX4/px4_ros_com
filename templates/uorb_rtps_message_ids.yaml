@@ -283,6 +283,8 @@ rtps:
     msg: LoggerStatus
   - id: 127
     msg: Rpm
+  - id: 128
+    msg: HoverThrustEstimate
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

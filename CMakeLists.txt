@@ -17,12 +17,14 @@ include(EnableSanitizers)
 # Required since "create_subscription()" and "create_publisher()" APIs changed
 list(APPEND ROS_DISTROS "dashing" "eloquent")
 if(DEFINED ENV{ROS2_DISTRO})
-  if ($ENV{ROS2_DISTRO} IN_LIST ROS_DISTROS)
+  if($ENV{ROS2_DISTRO} IN_LIST ROS_DISTROS)
     add_definitions(-DROS_DEFAULT_API=1)
+    set(ROS_DISTRO $ENV{ROS2_DISTRO})
   endif()
 else()
-  if ($ENV{ROS_DISTRO} IN_LIST ROS_DISTROS)
+  if($ENV{ROS_DISTRO} IN_LIST ROS_DISTROS)
     add_definitions(-DROS_DEFAULT_API=1)
+    set(ROS_DISTRO $ENV{ROS_DISTRO})
   endif()
 endif()
 
@@ -39,7 +41,9 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
 find_package(PythonInterp 3 REQUIRED)
-find_package(eigen3_cmake_module REQUIRED)
+if(${ROS_DISTRO} IN_LIST ROS_DISTROS)
+  find_package(eigen3_cmake_module REQUIRED)
+endif()
 find_package(Eigen3)
 
 ###################################
@@ -83,7 +87,11 @@ custom_executable(advertisers debug_vect_advertiser)
 
 # Export information to downstream packages
 ament_export_interfaces(frame_transforms HAS_LIBRARY_TARGET)
-ament_export_dependencies(rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3)
+if(${ROS_DISTRO} IN_LIST ROS_DISTROS)
+  ament_export_dependencies(rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3)
+else()
+  ament_export_dependencies(rclcpp rosidl_default_runtime Eigen3)
+endif()
 ament_export_include_directories(include ${px4_msgs_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 ament_export_libraries()
 

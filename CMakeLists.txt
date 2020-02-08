@@ -35,8 +35,12 @@ get_default_rmw_implementation(rmw_implementation)
 find_package("${rmw_implementation}" REQUIRED)
 
 find_package(px4_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 find_package(PythonInterp 3 REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3)
 
 ###################################
 # Generate micro-RTPS agent code ##
@@ -50,7 +54,7 @@ include(GenerateMicroRTPSAgent)
 # Setup targets #
 #################
 
-include_directories(include ${rclcpp_INCLUDE_DIRS})
+include_directories(include ${rclcpp_INCLUDE_DIRS} ${px4_msgs_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 function(custom_executable subfolder target)
   add_executable(${target} src/${subfolder}/${target}.cpp)
@@ -60,6 +64,11 @@ function(custom_executable subfolder target)
   install(TARGETS ${target}
   DESTINATION lib/${PROJECT_NAME})
 endfunction()
+
+# Add frame_transforms lib
+add_library(frame_transforms src/lib/frame_transforms.cpp)
+ament_target_dependencies(frame_transforms Eigen3)
+target_link_libraries(frame_transforms Eigen3)
 
 # Add microRTPS agent
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
@@ -73,8 +82,9 @@ custom_executable(listeners vehicle_gps_position_listener)
 custom_executable(advertisers debug_vect_advertiser)
 
 # Export information to downstream packages
-ament_export_dependencies(rclcpp rosidl_default_runtime)
-ament_export_include_directories(include ${px4_msgs_INCLUDE_DIRS})
+ament_export_interfaces(frame_transforms HAS_LIBRARY_TARGET)
+ament_export_dependencies(rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3)
+ament_export_include_directories(include ${px4_msgs_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 ament_export_libraries()
 
 ############
@@ -83,11 +93,19 @@ ament_export_libraries()
 
 # Install artifacts
 install(DIRECTORY cmake DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY include DESTINATION include)
+install(TARGETS frame_transforms
+        EXPORT frame_transforms
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
+)
 install(TARGETS micrortps_agent sensor_combined_listener vehicle_gps_position_listener debug_vect_advertiser
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin)
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
+)
 
 # Install launch files
 install(DIRECTORY

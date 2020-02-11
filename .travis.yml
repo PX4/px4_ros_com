@@ -9,22 +9,6 @@ env:
 
 matrix:
   include:
-    - name: Build in ROS2 Ardent
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
-      env:
-        - ROS2_DISTRO=ardent
-        - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
-        - BUILD_ARGS="--no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH}"
-        - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2020-02-11
-        - TEST_SETUP=""
-        - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
-
     - name: Build and test in ROS2 Bouncy
       os: linux
       language: cpp

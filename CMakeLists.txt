@@ -14,8 +14,11 @@ endif()
 include(EnableSanitizers)
 
 # Check if ROS_DISTRO is Dashing or Eloquent
-# Required since "create_subscription()" and "create_publisher()" APIs changed
+# Required since
+#   - "create_subscription()" and "create_publisher()" APIs changed
+#   - eigen3_cmake_module is only available in these distros
 list(APPEND ROS_DISTROS "dashing" "eloquent")
+set(ROS_DISTRO)
 if(DEFINED ENV{ROS2_DISTRO})
   if($ENV{ROS2_DISTRO} IN_LIST ROS_DISTROS)
     add_definitions(-DROS_DEFAULT_API=1)
@@ -58,21 +61,27 @@ include(GenerateMicroRTPSAgent)
 # Setup targets #
 #################
 
-include_directories(include ${rclcpp_INCLUDE_DIRS} ${px4_msgs_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+include_directories(include)
 
 function(custom_executable subfolder target)
   add_executable(${target} src/${subfolder}/${target}.cpp)
   ament_target_dependencies(${target}
-    "rclcpp"
-    "px4_msgs")
+    rclcpp
+    px4_msgs
+  )
   install(TARGETS ${target}
   DESTINATION lib/${PROJECT_NAME})
 endfunction()
 
 # Add frame_transforms lib
-add_library(frame_transforms src/lib/frame_transforms.cpp)
-ament_target_dependencies(frame_transforms Eigen3)
-target_link_libraries(frame_transforms Eigen3)
+add_library(frame_transforms SHARED src/lib/frame_transforms.cpp)
+ament_target_dependencies(frame_transforms Eigen3 geometry_msgs sensor_msgs)
+target_include_directories(frame_transforms PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+  ${Eigen3_INCLUDE_DIRS}
+)
+target_link_libraries(frame_transforms Eigen3::Eigen ${geometry_msgs_LIBRARIES} ${sensor_msgs_LIBRARIES})
 
 # Add microRTPS agent
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
@@ -85,32 +94,39 @@ custom_executable(listeners vehicle_gps_position_listener)
 # Add advertiser
 custom_executable(advertisers debug_vect_advertiser)
 
-# Export information to downstream packages
-ament_export_interfaces(frame_transforms HAS_LIBRARY_TARGET)
-if(${ROS_DISTRO} IN_LIST ROS_DISTROS)
-  ament_export_dependencies(rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3)
-else()
-  ament_export_dependencies(rclcpp rosidl_default_runtime Eigen3)
-endif()
-ament_export_include_directories(include ${px4_msgs_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
-ament_export_libraries()
-
 ############
 # Install ##
 ############
 
+# Export information to downstream packages
+if(${ROS_DISTRO} IN_LIST ROS_DISTROS)
+  ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3 px4_msgs geometry_msgs sensor_msgs)
+else()
+  ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime Eigen3 px4_msgs geometry_msgs sensor_msgs)
+endif()
+ament_export_interfaces(export_frame_transforms HAS_LIBRARY_TARGET)
+ament_export_include_directories(include)
+ament_export_libraries(frame_transforms)
+
+# Install header files
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION include/${PROJECT_NAME}
+)
+
 # Install artifacts
-install(DIRECTORY cmake DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY cmake
+        DESTINATION share/${PROJECT_NAME}
+)
 install(TARGETS frame_transforms
-        EXPORT frame_transforms
+        EXPORT export_frame_transforms
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include
 )
-install(TARGETS micrortps_agent sensor_combined_listener vehicle_gps_position_listener debug_vect_advertiser
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
+install(TARGETS micrortps_agent
+        ARCHIVE DESTINATION lib/${PROJECT_NAME}
+        LIBRARY DESTINATION lib/${PROJECT_NAME}
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include
 )

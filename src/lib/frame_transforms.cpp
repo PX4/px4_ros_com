@@ -42,91 +42,119 @@
 
 #include <assert.h>
 
-namespace px4_ros_com {
-namespace frame_transforms {
+namespace px4_ros_com
+{
+namespace frame_transforms
+{
 
-template<class T>
-inline T ned_to_enu_orientation(const T &in) {
-	return transform_orientation(in, StaticTF::NED_TO_ENU);
+// Utils to ease conversions
+namespace utils
+{
+
+// Quaternion
+namespace quaternion
+{
+
+Eigen::Quaterniond quaternion_from_euler(const Eigen::Vector3d &euler)
+{
+	// YPR is ZYX axes
+	return Eigen::Quaterniond(Eigen::AngleAxisd(euler.z(), Eigen::Vector3d::UnitZ()) *
+				  Eigen::AngleAxisd(euler.y(), Eigen::Vector3d::UnitY()) *
+				  Eigen::AngleAxisd(euler.x(), Eigen::Vector3d::UnitX()));
 }
 
-template<class T>
-inline T enu_to_ned_orientation(const T &in) {
-	return transform_orientation(in, StaticTF::ENU_TO_NED);
+Eigen::Quaterniond quaternion_from_euler(const double roll, const double pitch, const double yaw)
+{
+	return quaternion_from_euler(Eigen::Vector3d(roll, pitch, yaw));
 }
 
-template<class T>
-inline T aircraft_to_baselink_orientation(const T &in) {
-	return transform_orientation(in, StaticTF::AIRCRAFT_TO_BASELINK);
+Eigen::Vector3d quaternion_to_euler(const Eigen::Quaterniond &q)
+{
+	// YPR is ZYX axes
+	return q.toRotationMatrix().eulerAngles(2, 1, 0).reverse();
 }
 
-template<class T>
-inline T baselink_to_aircraft_orientation(const T &in) {
-	return transform_orientation(in, StaticTF::BASELINK_TO_AIRCRAFT);
+void quaternion_to_euler(const Eigen::Quaterniond &q, double &roll, double &pitch, double &yaw)
+{
+	const auto euler = quaternion_to_euler(q);
+	roll = euler.x();
+	pitch = euler.y();
+	yaw = euler.z();
 }
 
-template<class T>
-inline T ned_to_enu_local_frame(const T &in) {
-	return transform_static_frame(in, StaticTF::NED_TO_ENU);
+void eigen_quat_to_array(const Eigen::Quaterniond &q, std::array<float, 4> &qarray)
+{
+	qarray[0] = q.w();
+	qarray[1] = q.x();
+	qarray[2] = q.y();
+	qarray[3] = q.z();
 }
 
-template<class T>
-inline T enu_to_ned_local_frame(const T &in) {
-	return transform_static_frame(in, StaticTF::ENU_TO_NED);
+Eigen::Quaterniond array_to_eigen_quat(const std::array<float, 4> &q)
+{
+	return Eigen::Quaterniond(q[0], q[1], q[2], q[3]);
 }
 
-template<class T>
-inline T aircraft_to_baselink_body_frame(const T &in) {
-	return transform_static_frame(in, StaticTF::AIRCRAFT_TO_BASELINK);
+double quaternion_get_yaw(const Eigen::Quaterniond &q)
+{
+	const double &q0 = q.w();
+	const double &q1 = q.x();
+	const double &q2 = q.y();
+	const double &q3 = q.z();
+
+	return std::atan2(2. * (q0 * q3 + q1 * q2), 1. - 2. * (q2 * q2 + q3 * q3));
 }
 
-template<class T>
-inline T baselink_to_aircraft_body_frame(const T &in) {
-	return transform_static_frame(in, StaticTF::BASELINK_TO_AIRCRAFT);
+} // namespace quaternion
+
+// Data types
+namespace types
+{
+
+template <class T, std::size_t SIZE> void covariance_to_array(const T &cov, std::array<float, SIZE> &covmsg)
+{
+	std::copy(cov.cbegin(), cov.cend(), covmsg.begin());
 }
 
-template<class T>
-inline T ecef_to_enu_local_frame(const T &in, const T &map_origin) {
-	return transform_static_frame(in, map_origin, StaticTF::ECEF_TO_ENU);
+template <class T, std::size_t ARR_SIZE>
+void covariance_urt_to_array(const T &covmap, std::array<float, ARR_SIZE> &covmsg)
+{
+	auto m = covmap;
+	std::size_t COV_SIZE = m.rows() * (m.rows() + 1) / 2;
+	assert(COV_SIZE == ARR_SIZE &&
+	       ("covariance matrix URT size (%lu) is different from uORB msg covariance field size (%lu)", COV_SIZE,
+		ARR_SIZE));
+
+	auto out = covmsg.begin();
+
+	for (size_t x = 0; x < m.cols(); x++) {
+		for (size_t y = x; y < m.rows(); y++)
+			*out++ = m(y, x);
+	}
 }
 
-template<class T>
-inline T enu_to_ecef_local_frame(const T &in, const T &map_origin) {
-	return transform_static_frame(in, map_origin, StaticTF::ENU_TO_ECEF);
+template <class T, std::size_t ARR_SIZE>
+void array_urt_to_covariance_matrix(const std::array<float, ARR_SIZE> &covmsg, T &covmat)
+{
+	std::size_t COV_SIZE = covmat.rows() * (covmat.rows() + 1) / 2;
+	assert(COV_SIZE == ARR_SIZE &&
+	       ("covariance matrix URT size (%lu) is different from uORB msg covariance field size (%lu)", COV_SIZE,
+		ARR_SIZE));
+
+	auto in = covmsg.begin();
+
+	for (size_t x = 0; x < covmat.cols(); x++) {
+		for (size_t y = x; y < covmat.rows(); y++) {
+			covmat(x, y) = static_cast<double>(*in++);
+			covmat(y, x) = covmat(x, y);
+		}
+	}
 }
 
-template<class T>
-inline T aircraft_to_ned_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
+} // namespace types
+} // namespace utils
 
-template<class T>
-inline T ned_to_aircraft_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
-
-template<class T>
-inline T aircraft_to_enu_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
-
-template<class T>
-inline T enu_to_aircraft_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
-
-template<class T>
-inline T baselink_to_enu_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
-
-template<class T>
-inline T enu_to_baselink_frame(const T &in, const Eigen::Quaterniond &q) {
-	return transform_frame(in, q);
-}
-
-Eigen::Quaterniond transform_orientation(const Eigen::Quaterniond &q,
-                                         const StaticTF transform)
+Eigen::Quaterniond transform_orientation(const Eigen::Quaterniond &q, const StaticTF transform)
 {
 	Eigen::Quaterniond out;
 
@@ -134,41 +162,39 @@ Eigen::Quaterniond transform_orientation(const Eigen::Quaterniond &q,
 	case StaticTF::NED_TO_ENU:
 	case StaticTF::ENU_TO_NED:
 		out = NED_ENU_Q * q;
-        break;
+		break;
 
 	case StaticTF::AIRCRAFT_TO_BASELINK:
 	case StaticTF::BASELINK_TO_AIRCRAFT:
 		out = q * AIRCRAFT_BASELINK_Q;
-        break;
+		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return out;
+	return out;
 }
 
-
-Eigen::Vector3d transform_static_frame(const Eigen::Vector3d &vec,
-                                       const StaticTF transform)
+Eigen::Vector3d transform_static_frame(const Eigen::Vector3d &vec, const StaticTF transform)
 {
-    Eigen::Vector3d out;
+	Eigen::Vector3d out;
 	switch (transform) {
 	case StaticTF::NED_TO_ENU:
 	case StaticTF::ENU_TO_NED:
 		out = NED_ENU_REFLECTION_XY * (NED_ENU_REFLECTION_Z * vec);
-        break;
+		break;
 
 	case StaticTF::AIRCRAFT_TO_BASELINK:
 	case StaticTF::BASELINK_TO_AIRCRAFT:
-		out =  AIRCRAFT_BASELINK_AFFINE * vec;
-        break;
+		out = AIRCRAFT_BASELINK_AFFINE * vec;
+		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return out;
+	return out;
 }
 
 Covariance3d transform_static_frame(const Covariance3d &cov, const StaticTF transform)
@@ -181,54 +207,55 @@ Covariance3d transform_static_frame(const Covariance3d &cov, const StaticTF tran
 	case StaticTF::NED_TO_ENU:
 	case StaticTF::ENU_TO_NED:
 		cov_out = NED_ENU_REFLECTION_XY * (NED_ENU_REFLECTION_Z * cov_in * NED_ENU_REFLECTION_Z) *
-		          NED_ENU_REFLECTION_XY.transpose();
-        break;
+			  NED_ENU_REFLECTION_XY.transpose();
+		break;
 
 	case StaticTF::AIRCRAFT_TO_BASELINK:
 	case StaticTF::BASELINK_TO_AIRCRAFT:
 		cov_out = cov_in * AIRCRAFT_BASELINK_Q;
 		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return cov_out_;
+	return cov_out_;
 }
 
 Covariance6d transform_static_frame(const Covariance6d &cov, const StaticTF transform)
 {
 	Covariance6d cov_out_;
-	Matrix6d R = Matrix6d::Zero();	// not `auto` because Zero ret is const
+	Matrix6d R = Matrix6d::Zero(); // not `auto` because Zero ret is const
 
 	EigenMapConstCovariance6d cov_in(cov.data());
 	EigenMapCovariance6d cov_out(cov_out_.data());
 
 	switch (transform) {
 	case StaticTF::NED_TO_ENU:
-	case StaticTF::ENU_TO_NED:
-	{
-		Eigen::PermutationMatrix<6> NED_ENU_REFLECTION_XY_6 (NED_ENU_REFLECTION_XY.indices().replicate<2,1>());
+	case StaticTF::ENU_TO_NED: {
+		Eigen::PermutationMatrix<6> NED_ENU_REFLECTION_XY_6(NED_ENU_REFLECTION_XY.indices().replicate<2, 1>());
 		NED_ENU_REFLECTION_XY_6.indices().middleRows<3>(3).array() += 3;
-		Eigen::DiagonalMatrix<double,6> NED_ENU_REFLECTION_Z_6(NED_ENU_REFLECTION_Z.diagonal().replicate<2,1>());
+		Eigen::DiagonalMatrix<double, 6> NED_ENU_REFLECTION_Z_6(
+		    NED_ENU_REFLECTION_Z.diagonal().replicate<2, 1>());
 
 		cov_out = NED_ENU_REFLECTION_XY_6 * (NED_ENU_REFLECTION_Z_6 * cov_in * NED_ENU_REFLECTION_Z_6) *
-		          NED_ENU_REFLECTION_XY_6.transpose();
+			  NED_ENU_REFLECTION_XY_6.transpose();
 		break;
-        }
+	}
 	case StaticTF::AIRCRAFT_TO_BASELINK:
 	case StaticTF::BASELINK_TO_AIRCRAFT:
 		R.block<3, 3>(0, 0) =
-			R.block<3, 3>(3, 3) = AIRCRAFT_BASELINK_R;
+			R.block<3, 3>(3, 3) =
+		AIRCRAFT_BASELINK_R;
 
 		cov_out = R * cov_in * R.transpose();
-        break;
+		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return cov_out_;
+	return cov_out_;
 }
 
 Covariance9d transform_static_frame(const Covariance9d &cov, const StaticTF transform)
@@ -241,38 +268,38 @@ Covariance9d transform_static_frame(const Covariance9d &cov, const StaticTF tran
 
 	switch (transform) {
 	case StaticTF::NED_TO_ENU:
-	case StaticTF::ENU_TO_NED:
-	{
-		Eigen::PermutationMatrix<9> NED_ENU_REFLECTION_XY_9 (NED_ENU_REFLECTION_XY.indices().replicate<3,1>());
+	case StaticTF::ENU_TO_NED: {
+		Eigen::PermutationMatrix<9> NED_ENU_REFLECTION_XY_9(NED_ENU_REFLECTION_XY.indices().replicate<3, 1>());
 		NED_ENU_REFLECTION_XY_9.indices().middleRows<3>(3).array() += 3;
 		NED_ENU_REFLECTION_XY_9.indices().middleRows<3>(6).array() += 6;
-		Eigen::DiagonalMatrix<double,9> NED_ENU_REFLECTION_Z_9(NED_ENU_REFLECTION_Z.diagonal().replicate<3,1>());
+		Eigen::DiagonalMatrix<double, 9> NED_ENU_REFLECTION_Z_9(
+		    NED_ENU_REFLECTION_Z.diagonal().replicate<3, 1>());
 
 		cov_out = NED_ENU_REFLECTION_XY_9 * (NED_ENU_REFLECTION_Z_9 * cov_in * NED_ENU_REFLECTION_Z_9) *
-		          NED_ENU_REFLECTION_XY_9.transpose();
+			  NED_ENU_REFLECTION_XY_9.transpose();
 
 		break;
-        }
+	}
 	case StaticTF::AIRCRAFT_TO_BASELINK:
 	case StaticTF::BASELINK_TO_AIRCRAFT:
 		R.block<3, 3>(0, 0) =
 			R.block<3, 3>(3, 3) =
-				R.block<3, 3>(6, 6) = AIRCRAFT_BASELINK_R;
+				R.block<3, 3>(6, 6) =
+		AIRCRAFT_BASELINK_R;
 
 		cov_out = R * cov_in * R.transpose();
 
-        break;
+		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return cov_out_;
+	return cov_out_;
 }
 
-Eigen::Vector3d transform_static_frame(const Eigen::Vector3d &vec,
-                                       const Eigen::Vector3d &map_origin,
-                                       const StaticTF transform)
+Eigen::Vector3d transform_static_frame(const Eigen::Vector3d &vec, const Eigen::Vector3d &map_origin,
+				       const StaticTF transform)
 {
 	//! Degrees to radians
 	static constexpr double DEG_TO_RAD = (M_PI / 180.0);
@@ -299,37 +326,36 @@ Eigen::Vector3d transform_static_frame(const Eigen::Vector3d &vec,
 	 */
 	Eigen::Matrix3d R;
 	R << -sin_lon,            cos_lon,           0.0,
-	     -cos_lon * sin_lat, -sin_lon * sin_lat, cos_lat,
-	      cos_lon * cos_lat,  sin_lon * cos_lat, sin_lat;
+            -cos_lon * sin_lat, -sin_lon * sin_lat, cos_lat,
+             cos_lon * cos_lat,  sin_lon * cos_lat, sin_lat;
 
-    Eigen::Vector3d out;
+
+	Eigen::Vector3d out;
 	switch (transform) {
 	case StaticTF::ECEF_TO_ENU:
 		out = R * vec;
-        break;
+		break;
 
 	case StaticTF::ENU_TO_ECEF:
 		// ENU to ECEF rotation is just an inverse rotation from ECEF to ENU, which means transpose.
 		R.transposeInPlace();
 		out = R * vec;
-        break;
+		break;
 
-    default:
-        break;
+	default:
+		break;
 	}
 
-    return out;
+	return out;
 }
 
-Eigen::Vector3d transform_frame(const Eigen::Vector3d &vec,
-                                const Eigen::Quaterniond &q)
+Eigen::Vector3d transform_frame(const Eigen::Vector3d &vec, const Eigen::Quaterniond &q)
 {
 	Eigen::Affine3d transformation(q);
 	return transformation * vec;
 }
 
-Covariance3d transform_frame(const Covariance3d &cov,
-                             const Eigen::Quaterniond &q)
+Covariance3d transform_frame(const Covariance3d &cov, const Eigen::Quaterniond &q)
 {
 	Covariance3d cov_out_;
 	EigenMapConstCovariance3d cov_in(cov.data());
@@ -339,8 +365,7 @@ Covariance3d transform_frame(const Covariance3d &cov,
 	return cov_out_;
 }
 
-Covariance6d transform_frame(const Covariance6d &cov,
-                             const Eigen::Quaterniond &q)
+Covariance6d transform_frame(const Covariance6d &cov, const Eigen::Quaterniond &q)
 {
 	Covariance6d cov_out_;
 	Matrix6d R = Matrix6d::Zero();
@@ -349,14 +374,14 @@ Covariance6d transform_frame(const Covariance6d &cov,
 	EigenMapCovariance6d cov_out(cov_out_.data());
 
 	R.block<3, 3>(0, 0) =
-		R.block<3, 3>(3, 3) = q.normalized().toRotationMatrix();
+		R.block<3, 3>(3, 3) =
+	q.normalized().toRotationMatrix();
 
 	cov_out = R * cov_in * R.transpose();
 	return cov_out_;
 }
 
-Covariance9d transform_frame(const Covariance9d &cov,
-                             const Eigen::Quaterniond &q)
+Covariance9d transform_frame(const Covariance9d &cov, const Eigen::Quaterniond &q)
 {
 	Covariance9d cov_out_;
 	Matrix9d R = Matrix9d::Zero();
@@ -366,117 +391,12 @@ Covariance9d transform_frame(const Covariance9d &cov,
 
 	R.block<3, 3>(0, 0) =
 		R.block<3, 3>(3, 3) =
-			R.block<3, 3>(6, 6) = q.normalized().toRotationMatrix();
+			R.block<3, 3>(6, 6) =
+	q.normalized().toRotationMatrix();
 
 	cov_out = R * cov_in * R.transpose();
 	return cov_out_;
 }
 
-
-// Utils to ease conversions
-namespace utils {
-// Quaternion
-namespace quaternion {
-Eigen::Quaterniond quaternion_from_euler(const Eigen::Vector3d &euler)
-{
-	// YPR is ZYX axes
-	return Eigen::Quaterniond(
-			Eigen::AngleAxisd(euler.z(), Eigen::Vector3d::UnitZ()) *
-			Eigen::AngleAxisd(euler.y(), Eigen::Vector3d::UnitY()) *
-			Eigen::AngleAxisd(euler.x(), Eigen::Vector3d::UnitX())
-			);
-}
-
-inline Eigen::Quaterniond quaternion_from_euler(const double roll,
-                                                const double pitch,
-                                                const double yaw) {
-	return quaternion_from_euler(Eigen::Vector3d(roll, pitch, yaw));
-}
-
-Eigen::Vector3d quaternion_to_euler(const Eigen::Quaterniond &q)
-{
-	// YPR is ZYX axes
-	return q.toRotationMatrix().eulerAngles(2, 1, 0).reverse();
-}
-
-inline void quaternion_to_euler(const Eigen::Quaterniond &q, double &roll,
-                                double &pitch, double &yaw)
-{
-	const auto euler = utils::quaternion::quaternion_to_euler(q);
-	roll = euler.x();
-	pitch = euler.y();
-	yaw = euler.z();
-}
-
-inline void eigen_quat_to_array(const Eigen::Quaterniond &q,
-                                std::array<float, 4> &qarray)
-{
-	qarray[0] = q.w();
-	qarray[1] = q.x();
-	qarray[2] = q.y();
-	qarray[3] = q.z();
-}
-
-inline Eigen::Quaterniond array_to_eigen_quat(const std::array<float, 4> &q)
-{
-	return Eigen::Quaterniond(q[0], q[1], q[2], q[3]);
-}
-
-double quaternion_get_yaw(const Eigen::Quaterniond &q)
-{
-	const double &q0 = q.w();
-	const double &q1 = q.x();
-	const double &q2 = q.y();
-	const double &q3 = q.z();
-
-	return std::atan2(2. * (q0*q3 + q1*q2), 1. - 2. * (q2*q2 + q3*q3));
-}
-}   // namespace quaternion
-
-// Data types
-namespace types {
-template<class T, std::size_t SIZE>
-inline void covariance_to_array(const T &cov, std::array<float, SIZE> &covmsg)
-{
-	std::copy(cov.cbegin(), cov.cend(), covmsg.begin());
-}
-
-template<class T, std::size_t ARR_SIZE>
-inline void covariance_urt_to_array(const T &covmap, std::array<float, ARR_SIZE> &covmsg)
-{
-	auto m = covmap;
-	std::size_t COV_SIZE = m.rows() * (m.rows() + 1) / 2;
-	assert(COV_SIZE == ARR_SIZE &&
-				("covariance matrix URT size (%lu) is different from uORB msg covariance field size (%lu)",
-				COV_SIZE, ARR_SIZE));
-
-	auto out = covmsg.begin();
-
-	for (size_t x = 0; x < m.cols(); x++) {
-		for (size_t y = x; y < m.rows(); y++)
-			*out++ = m(y, x);
-	}
-}
-
-template<class T, std::size_t ARR_SIZE>
-inline void array_urt_to_covariance_matrix(const std::array<float, ARR_SIZE> &covmsg, T &covmat)
-{
-	std::size_t COV_SIZE = covmat.rows() * (covmat.rows() + 1) / 2;
-	assert(COV_SIZE == ARR_SIZE &&
-				("covariance matrix URT size (%lu) is different from uORB msg covariance field size (%lu)",
-				COV_SIZE, ARR_SIZE));
-
-	auto in = covmsg.begin();
-
-	for (size_t x = 0; x < covmat.cols(); x++) {
-		for (size_t y = x; y < covmat.rows(); y++) {
-			covmat(x, y) = static_cast<double>(*in++);
-			covmat(y, x) = covmat(x, y);
-		}
-	}
-}
-}   // namespace types
-
-}   // namespace utils
-}	// frame_transforms
-}	// px4_ros_com
+} // namespace frame_transforms
+} // namespace px4_ros_com

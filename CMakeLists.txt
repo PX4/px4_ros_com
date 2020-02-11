@@ -49,7 +49,7 @@ find_package(PythonInterp 3 REQUIRED)
 if(ROS_DISTRO IN_LIST ROS_DISTROS)
   find_package(eigen3_cmake_module REQUIRED)
 endif()
-find_package(Eigen3)
+find_package(Eigen3 REQUIRED)
 
 ###################################
 # Generate micro-RTPS agent code ##

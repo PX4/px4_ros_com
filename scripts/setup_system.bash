@@ -16,7 +16,11 @@ fi
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     v="${1/--/}"
-    declare $v="$2"
+    if [ ! -z $2 ]; then
+      declare $v="$2"
+    else
+      declare $v=1
+    fi
   fi
   shift
 done

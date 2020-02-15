@@ -8,6 +8,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS 2 workspace."
   echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
+  echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
   exit 0
 fi
@@ -18,7 +19,11 @@ SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     v="${1/--/}"
-    declare $v="$2"
+    if [ ! -z $2 ]; then
+      declare $v="$2"
+    else
+      declare $v=1
+    fi
   fi
   shift
 done
@@ -37,9 +42,9 @@ else
   fastrtpsgen_version="${fastrtpsgen_version_out: -5:-2}"
   if ! [[ $fastrtpsgen_version =~ ^[0-9]+([.][0-9]+)?$ ]] ; then
     fastrtpsgen_version="1.0"
-    echo "FastRTPSGen version: ${fastrtpsgen_version}"
+    [ ! -v $verbose ] && echo "FastRTPSGen version: ${fastrtpsgen_version}"
   else
-    echo "FastRTPSGen version: ${fastrtpsgen_version_out: -5}"
+    [ ! -v $verbose ] && echo "FastRTPSGen version: ${fastrtpsgen_version_out: -5}"
   fi
 fi
 
@@ -112,7 +117,8 @@ if [ -z $no_ros1_bridge ] && [ ! -d "$ROS_WS_SRC_DIR/ros1_bridge" ]; then
 fi
 
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-skip ros1_bridge --event-handlers console_direct+
+[ ! -v $verbose ] && colcon_output=$(echo "--event-handlers console_direct+")
+cd $ROS_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-skip ros1_bridge $colcon_output
 
 # source the ROS2 workspace environment so to have it ready to use
 source $ROS_WS_DIR/install/setup.bash

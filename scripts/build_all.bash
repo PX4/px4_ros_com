@@ -10,6 +10,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "\t--ros2_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros1_path \t\t Set ROS (1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--ros2_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
+  echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
   exit 0
 fi
@@ -20,7 +21,11 @@ SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     v="${1/--/}"
-    declare $v="$2"
+    if [ ! -z $2 ]; then
+      declare $v="$2"
+    else
+      declare $v=1
+    fi
   fi
   shift
 done
@@ -189,7 +194,8 @@ else
   source $ros2_path
 fi
 # build px4_ros_com package, except the ros1_bridge
-cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge --event-handlers console_direct+
+[ ! -v $verbose ] && colcon_output=$(echo "--event-handlers console_direct+")
+cd $ROS2_WS_DIR && colcon build --packages-skip ros1_bridge $colcon_output
 
 $SHELL_TERM \
   '''
@@ -216,7 +222,8 @@ $SHELL_TERM \
 
     printf "\n************* Building ros1_bridge *************\n\n"
     # build the ros1_bridge only
-    cd $ROS2_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-select ros1_bridge --cmake-force-configure --event-handlers console_direct+
+    [ ! -v $verbose ] && colcon_output=$(echo "--event-handlers console_direct+")
+    cd $ROS2_WS_DIR && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELWITHDEBINFO --symlink-install --packages-select ros1_bridge --cmake-force-configure $colcon_output
 
     # source the ROS2 workspace environment so to have it ready to use
     unset ROS_DISTRO && source $ROS2_WS_DIR/install/setup.bash

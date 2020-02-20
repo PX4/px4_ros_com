@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: setup_system.bash [option...] \t This script setups the system with the required dependencies." >&2
   echo
   echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing|eloquent). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--clean \t If set, issues 'apt-get autoremove', 'apt-get autoclean' and deletes temp files."
   echo
   exit 0
@@ -48,6 +48,13 @@ else
   ROS2_DISTRO="$ros2_distro"
 fi
 
+# Install Fast-CDR
+git clone https://github.com/eProsima/Fast-CDR.git \
+  && mkdir Fast-CDR/build && cd Fast-CDR/build \
+  && cmake .. \
+  && cmake --build . --target install \
+  && cd $PWD
+
 if [ $ROS2_DISTRO == "ardent" ]; then
   # Install Fast-RTPS (and Fast-RTPS-Gen) 1.6.0
   # Note: Fast-RTPS-Gen was included in the Fast-RTPS release in this version
@@ -58,25 +65,42 @@ if [ $ROS2_DISTRO == "ardent" ]; then
     && sudo make install \
     && cd $PWD
 else
-  # Install Gradle 5.6.2 (Required to build Fast-RTPS-Gen)
-  wget -q "https://services.gradle.org/distributions/gradle-5.6.2-bin.zip" -O /tmp/gradle-5.6.2-bin.zip \
+  # Install Foonathan memory
+  git clone https://github.com/eProsima/foonathan_memory_vendor.git \
+    && cd foonathan_memory_vendor \
+    && mkdir build && cd build
+    && cmake ..
+    && cmake --build . --target install
+
+  # Install Gradle (Required to build Fast-RTPS-Gen)
+  wget -q "https://services.gradle.org/distributions/gradle-6.2-rc-3-bin.zip" -O /tmp/gradle-6.2-rc-3-bin.zip \
     && mkdir /opt/gradle \
     && cd /tmp \
-    && unzip -d /opt/gradle gradle-5.6.2-bin.zip \
-    && echo "export PATH=$PATH:/opt/gradle/gradle-5.6.2/bin" >> ~/.bashrc \
+    && unzip -d /opt/gradle gradle-6.2-rc-3-bin.zip \
+    && echo "export PATH=$PATH:/opt/gradle/gradle-6.2-rc-3/bin" >> ~/.bashrc \
     && source ~/.bashrc \
     && cd $PWD
 
-  # Install Fast-RTPS 1.8.2
-  git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b 1.8.x /tmp/FastRTPS-1.8.2 \
-    && cd /tmp/FastRTPS-1.8.2 \
-    && mkdir build && cd build \
-    && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
-    && sudo make install \
-    && cd $PWD
+  if [ $ROS2_DISTRO == "eloquent" ]; then
+    # Install Fast-RTPS 1.9.3
+    git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b v1.9.3 /tmp/FastRTPS-1.9.3 \
+      && cd /tmp/FastRTPS-1.9.3 \
+      && mkdir build && cd build \
+      && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
+      && make --build . --target install \
+      && cd $PWD
+  else
+    # Install Fast-RTPS 1.8.3
+    git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b v1.8.3 /tmp/FastRTPS-1.8.3 \
+      && cd /tmp/FastRTPS-1.8.3 \
+      && mkdir build && cd build \
+      && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
+      && make --build . --target install \
+      && cd $PWD
+  fi
 
-  # Install Fast-RTPS-Gen 1.0.1
-  git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.1 /tmp/Fast-RTPS-Gen \
+  # Install Fast-RTPS-Gen 1.0.3
+  git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.3 /tmp/Fast-RTPS-Gen \
     && cd /tmp/Fast-RTPS-Gen \
     && gradle assemble \
     && sudo cp share/fastrtps/fastrtpsgen.jar /usr/local/share/fastrtps/ \
@@ -131,20 +155,13 @@ sudo apt-get -qq update
 sudo apt-get -qq dist-upgrade
 echo "Installing ROS2 $ROS2_DISTRO and some dependencies..."
 
-# Install python3-genmsg or download and install from deb source (currently only available in Ubuntu 18.10 and above)
-sudo apt-get install -y --quiet python3-genmsg \
-  || sudo wget http://mirrors.kernel.org/ubuntu/pool/universe/r/ros-genmsg/python3-genmsg_0.5.11-2_all.deb -P /tmp/ \
-    && sudo dpkg -i /tmp/python3-genmsg_0.5.11-2_all.deb \
-    && sudo apt-get -y autoremove \
-    && sudo apt-get clean autoclean \
-    && sudo rm /tmp/python3-genmsg_0.5.11-2_all.deb
-
 sudo apt-get install -y \
   dirmngr \
   gnupg2 \
   python3-colcon-common-extensions \
   python3-dev \
   ros-$ROS2_DISTRO-desktop \
+  ros-$ROS2_DISTRO-eigen3-cmake-module \
   ros-$ROS2_DISTRO-launch-testing-ament-cmake \
   ros-$ROS2_DISTRO-rosidl-generator-dds-idl
 

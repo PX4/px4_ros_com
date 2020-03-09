@@ -285,6 +285,10 @@ rtps:
     msg: Rpm
   - id: 128
     msg: HoverThrustEstimate
+  - id: 129
+    msg: TrajectoryBezier
+  - id: 130
+    msg: VehicleTrajectoryBezier
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

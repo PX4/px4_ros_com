@@ -178,7 +178,9 @@ rtps:
   - id: 77
     msg: TestMotor
   - id: 78
-    msg: TimesyncStatus
+    msg: Timesync
+    receive: true
+    send: true
   - id: 79
     msg: TrajectoryWaypoint
     receive: true
@@ -289,6 +291,8 @@ rtps:
     msg: TrajectoryBezier
   - id: 130
     msg: VehicleTrajectoryBezier
+  - id: 131
+    msg: TimesyncStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

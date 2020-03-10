@@ -1,7 +1,31 @@
+@###############################################
+@#
+@# EmPy template for generating microRTPS_timesync.h file
+@#
+@###############################################
+@# Start of Template
+@#
+@# Context:
+@#  - msgs (List) list of all msg files
+@#  - multi_topics (List) list of all multi-topic names
+@#  - ids (List) list of all RTPS msg ids
+@###############################################
+@{
+import genmsg.msgs
+
+from px_generate_uorb_topic_helper import * # this is in Tools/
+from px_generate_uorb_topic_files import MsgScope # this is in Tools/
+
+package = package[0]
+fastrtpsgen_version = fastrtpsgen_version[0]
+try:
+    ros2_distro = ros2_distro[0].decode("utf-8")
+except AttributeError:
+    ros2_distro = ros2_distro[0]
+}@
 /****************************************************************************
  *
- * Copyright 2017 Proyectos y Sistemas de Mantenimiento SL (eProsima).
- * Copyright (c) 2018-2019 PX4 Development Team. All rights reserved.
+ * Copyright (c) 2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,107 +55,160 @@
  *
  ****************************************************************************/
 
+/*!
+ * @@file microRTPS_timesync.h
+ * @@brief Adds time sync for the microRTPS bridge
+ * @@author Nuno Marques <nuno.marques@@dronesolutions.io>
+ * @@author Julian Kent <julian@@auterion.com>
+ */
+
 #pragma once
 
-#include <cstring>
-#include <arpa/inet.h>
-#include <poll.h>
-#include <termios.h>
+#include <atomic>
+#include <functional>
+#include <thread>
 
-class Transport_node
-{
+@[if ros2_distro]@
+#include "Timesync_Publisher.h"
+#include "Timesync_Subscriber.h"
+@[else]@
+#include "timesync_Publisher.h"
+#include "timesync_Subscriber.h"
+@[end if]@
+
+static constexpr double ALPHA_INITIAL = 0.05;
+static constexpr double ALPHA_FINAL = 0.003;
+static constexpr double BETA_INITIAL = 0.05;
+static constexpr double BETA_FINAL = 0.003;
+static constexpr int WINDOW_SIZE = 500;
+static constexpr int64_t UNKNOWN = 0;
+static constexpr int64_t TRIGGER_RESET_THRESHOLD_NS = 100ll * 1000ll * 1000ll;
+static constexpr int REQUEST_RESET_COUNTER_THRESHOLD = 5;
+
+@# Sets the timesync DDS type according to the FastRTPS and ROS2 version
+@[if 1.5 <= fastrtpsgen_version <= 1.7]@
+@[    if ros2_distro]@
+using timesync_msg_t = @(package)::msg::dds_::Timesync_;
+@[    else]@
+using timesync_msg_t = timesync_;
+@[    end if]@
+@[else]@
+@[    if ros2_distro]@
+using timesync_msg_t = @(package)::msg::Timesync;
+@[    else]@
+using timesync_msg_t = timesync;
+@[    end if]@
+@[end if]@
+@# Sets the timesync publisher entity depending on using ROS2 or not
+@[if ros2_distro]@
+using TimesyncPublisher = Timesync_Publisher;
+@[else]@
+using TimesyncPublisher = timesync_Publisher;
+@[end if]@
+
+class TimeSync {
 public:
-	Transport_node();
-	virtual ~Transport_node();
-
-	virtual int init() {return 0;}
-	virtual uint8_t close() {return 0;}
-	ssize_t read(uint8_t *topic_ID, char out_buffer[], size_t buffer_len);
+	TimeSync();
+	virtual ~TimeSync();
 
 	/**
-	 * write a buffer
-	 * @param topic_ID
-	 * @param buffer buffer to write: it must leave get_header_length() bytes free at the beginning. This will be
-	 *               filled with the header. length does not include get_header_length(). So buffer looks like this:
-	 *                -------------------------------------------------
-	 *               | header (leave free)          | payload data     |
-	 *               | get_header_length() bytes    | length bytes     |
-	 *                -------------------------------------------------
-	 * @param length buffer length excluding header length
-	 * @return length on success, <0 on error
+	 * @@brief Starts the timesync publishing thread
+	 * @@param[in] pub The timesync publisher entity to use
 	 */
-	ssize_t write(const uint8_t topic_ID, char buffer[], size_t length);
+	void start(const TimesyncPublisher* pub);
 
-	/** Get the Length of struct Header to make headroom for the size of struct Header along with payload */
-	size_t get_header_length();
+	/**
+	 * @@brief Resets the filter
+	 */
+	void reset();
 
-protected:
-	virtual ssize_t node_read(void *buffer, size_t len) = 0;
-	virtual ssize_t node_write(void *buffer, size_t len) = 0;
-	virtual bool fds_OK() = 0;
-	uint16_t crc16_byte(uint16_t crc, const uint8_t data);
-	uint16_t crc16(uint8_t const *buffer, size_t len);
+	/**
+	 * @@brief Stops the timesync publishing thread
+	 */
+	void stop();
 
-protected:
-	uint32_t rx_buff_pos;
-	char rx_buffer[1024] = {};
+	/**
+	 * @@brief Get clock monotonic time (raw) in nanoseconds
+	 * @@return System CLOCK_MONOTONIC_RAW time in nanoseconds
+	 */
+	inline int64_t getMonoRawTimeNSec() {
+		timespec t;
+		clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+		return static_cast<int64_t>(t.tv_sec * 1000000000LL + t.tv_nsec);
+	}
+
+	/**
+	 * @@brief Get system monotonic time in microseconds
+	 * @@return System CLOCK_MONOTONIC time in microseconds
+	 */
+	inline int64_t getMonoTimeUSec() {
+		timespec t;
+		clock_gettime(CLOCK_MONOTONIC, &t);
+		return static_cast<int64_t>(t.tv_sec * 1000000000LL + t.tv_nsec) / 1000LL;
+	}
+
+	/**
+	 * @@brief Adds a time offset measurement to be filtered
+	 * @@param[in] local_t1_ns The agent CLOCK_MONOTONIC_RAW time in nanoseconds when the message was sent
+	 * @@param[in] remote_t2_ns The (client) remote CLOCK_MONOTONIC time in nanoseconds
+	 * @@param[in] local_t3_ns The agent current CLOCK_MONOTONIC time in nanoseconds
+	 * @@return true or false depending if the time offset was updated
+	 */
+	bool addMeasurement(int64_t local_t1_ns, int64_t remote_t2_ns, int64_t local_t3_ns);
+
+	/**
+	 * @@brief Processes DDS timesync message
+	 * @@param[in,out] msg The timestamp msg to be processed
+	 */
+	void processTimesyncMsg(timesync_msg_t* msg);
+
+	/**
+	 * @@brief Creates a new timesync DDS message to be sent from the agent to the client
+	 * @@return A new timesync message with the origin in the agent and with the agent timestamp
+	 */
+	timesync_msg_t newTimesyncMsg();
+
+	/**
+	 * @@brief Get the time sync offset in nanoseconds
+	 * @@return The offset in nanoseconds
+	 */
+	inline int64_t getOffset() { return _offset_ns.load(); }
+
+	/**
+	 * @@brief Sums the time sync offset to the timestamp
+	 * @@param[in,out] timestamp The timestamp to add the offset to
+	 */
+	inline void addOffset(uint64_t& timestamp) { timestamp = (timestamp * 1000LL + _offset_ns.load()) / 1000ULL; }
+
+	/**
+	 * @@brief Substracts the time sync offset to the timestamp
+	 * @@param[in,out] timestamp The timestamp to subtract the offset of
+	 */
+	inline void subtractOffset(uint64_t& timestamp) { timestamp = (timestamp * 1000LL - _offset_ns.load()) / 1000ULL; }
 
 private:
-	struct __attribute__((packed)) Header {
-		char marker[3];
-		uint8_t topic_ID;
-		uint8_t seq;
-		uint8_t payload_len_h;
-		uint8_t payload_len_l;
-		uint8_t crc_h;
-		uint8_t crc_l;
-	};
-};
+	std::atomic<int64_t> _offset_ns;
+	int64_t _skew_ns_per_sync;
+	int64_t _num_samples;
 
-class UART_node: public Transport_node
-{
-public:
-	UART_node(const char *uart_name, uint32_t baudrate, uint32_t poll_ms);
-	virtual ~UART_node();
+	int32_t _request_reset_counter;
+	uint8_t _last_msg_seq;
+	uint8_t _last_remote_msg_seq;
 
-	int init();
-	uint8_t close();
+@[if ros2_distro]@
+	Timesync_Publisher _timesync_pub;
+	Timesync_Subscriber _timesync_sub;
+@[else]@
+	timesync_Publisher _timesync_pub;
+	timesync_Subscriber _timesync_sub;
+@[end if]@
 
-protected:
-	ssize_t node_read(void *buffer, size_t len);
-	ssize_t node_write(void *buffer, size_t len);
-	bool fds_OK();
-	bool baudrate_to_speed(uint32_t bauds, speed_t *speed);
+	std::unique_ptr<std::thread> _send_timesync_thread;
+	std::atomic<bool> _request_stop{false};
 
-	int uart_fd;
-	char uart_name[64] = {};
-	uint32_t baudrate;
-	uint32_t poll_ms;
-	struct pollfd poll_fd[1] = {};
-};
-
-class UDP_node: public Transport_node
-{
-public:
-	UDP_node(const char* _udp_ip, uint16_t udp_port_recv, uint16_t udp_port_send);
-	virtual ~UDP_node();
-
-	int init();
-	uint8_t close();
-
-protected:
-	int init_receiver(uint16_t udp_port);
-	int init_sender(uint16_t udp_port);
-	ssize_t node_read(void *buffer, size_t len);
-	ssize_t node_write(void *buffer, size_t len);
-	bool fds_OK();
-
-	int sender_fd;
-	int receiver_fd;
-	char udp_ip[16] = {};
-	uint16_t udp_port_recv;
-	uint16_t udp_port_send;
-	struct sockaddr_in sender_outaddr;
-	struct sockaddr_in receiver_inaddr;
-	struct sockaddr_in receiver_outaddr;
+	/**
+	 * @@brief Updates the offset of the time sync filter
+	 * @@param[in] offset The value of the offset to update to
+	 */
+	inline void updateOffset(const uint64_t& offset) { _offset_ns.store(offset, std::memory_order_relaxed); }
 };

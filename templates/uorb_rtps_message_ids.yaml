@@ -293,6 +293,12 @@ rtps:
     msg: VehicleTrajectoryBezier
   - id: 131
     msg: TimesyncStatus
+  - id: 132
+    msg: OrbTest
+  - id: 133
+    msg: OrbTestMedium
+  - id: 134
+    msg: OrbTestLarge
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

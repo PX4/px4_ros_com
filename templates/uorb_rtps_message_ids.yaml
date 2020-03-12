@@ -367,3 +367,15 @@ rtps:
   - alias: EstimatorInnovations
     id: 171
     msg: EstimatorInnovationTestRatios
+  - alias: OrbTest
+    id: 172
+    msg: OrbMultitest
+  - alias: OrbTestMedium
+    id: 173
+    msg: OrbTestMediumMulti
+  - alias: OrbTestMedium
+    id: 174
+    msg: OrbTestMediumQueue
+  - alias: OrbTestMedium
+    id: 175
+    msg: OrbTestMediumQueuePoll

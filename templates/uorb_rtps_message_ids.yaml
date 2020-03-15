@@ -299,6 +299,8 @@ rtps:
     msg: OrbTestMedium
   - id: 134
     msg: OrbTestLarge
+  - id: 135
+    msg: YawEstimatorStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

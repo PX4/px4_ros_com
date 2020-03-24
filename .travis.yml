@@ -18,7 +18,7 @@ matrix:
       env:
         - ROS1_DISTRO=kinetic
         - ROS1_ENV=/opt/ros/${ROS1_DISTRO}/setup.bash
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2019-07-29
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2020-03-16
     - name: Build on ROS Melodic
       os: linux
       language: cpp
@@ -29,7 +29,7 @@ matrix:
       env:
         - ROS1_DISTRO=melodic
         - ROS1_ENV=/opt/ros/${ROS1_DISTRO}/setup.bash
-        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2019-07-29
+        - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2020-03-16
 
 script:
   # CI runs over all branches containing 'ros1' on the name or that do not contain 'master' in the name

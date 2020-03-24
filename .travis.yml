@@ -1,10 +1,15 @@
 sudo: required
 
+# CI runs over all branches that contain 'ros1' in the name
+branches:
+  only:
+  - /.*ros1.*/
+
 env:
   global:
     - CCACHE_DIR=${HOME}/.ccache
     - PX4_MSGS=https://github.com/PX4/px4_msgs.git
-    - CATKIN_BUILD="unset ROS_DISTRO; mkdir -p ~/catkin_ws/src; cd ~/catkin_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b ros1; cd src/px4_ros_com/scripts; ./build_ros1_workspace.bash"
+    - BUILD="unset ROS_DISTRO; mkdir -p ~/catkin_ws/src; cd ~/catkin_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b ros1 src/px4_msgs; cd src/px4_ros_com/scripts; ./build_ros1_workspace.bash"
 
 matrix:
   include:
@@ -16,8 +21,9 @@ matrix:
       cache:
       ccache: true
       env:
-        - ROS1_DISTRO=kinetic
-        - ROS1_ENV=/opt/ros/${ROS1_DISTRO}/setup.bash
+        - ROS_DISTRO=kinetic
+        - ROS_ENV_PATH=/opt/ros/${ROS_DISTRO}/setup.bash
+        - BUILD_ARGS="--ros_distro ${ROS_DISTRO} --ros_path ${ROS_ENV_PATH}"
         - DOCKER_CONTAINER=px4io/px4-dev-ros2-ardent:2020-03-16
     - name: Build on ROS Melodic
       os: linux
@@ -27,10 +33,17 @@ matrix:
       cache:
       ccache: true
       env:
-        - ROS1_DISTRO=melodic
-        - ROS1_ENV=/opt/ros/${ROS1_DISTRO}/setup.bash
+        - ROS_DISTRO=melodic
+        - ROS_ENV_PATH=/opt/ros/${ROS_DISTRO}/setup.bash
+        - BUILD_ARGS="--ros_distro ${ROS_DISTRO} --ros_path ${ROS_ENV_PATH}"
         - DOCKER_CONTAINER=px4io/px4-dev-ros2-dashing:2020-03-16
 
 script:
-  # CI runs over all branches containing 'ros1' on the name or that do not contain 'master' in the name
-  - if [[ $TRAVIS_BRANCH =~ "ros1" ]] || [[ ! "$TRAVIS_BRANCH" =~ "master" ]]; then docker run -it --rm -w ${TRAVIS_BUILD_DIR} --env=CCACHE_DIR="${CCACHE_DIR}" --env=LOCAL_USER_ID="$(id -u)" --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw ${DOCKER_CONTAINER} /bin/bash -c "source ${ROS1_ENV}; ${CATKIN_BUILD}"; fi
+  - docker run -it -d --name px4ros -w ${TRAVIS_BUILD_DIR}
+    --env=CCACHE_DIR="${CCACHE_DIR}"
+    --env=LOCAL_USER_ID="$(id -u)"
+    --volume=${CCACHE_DIR}:${CCACHE_DIR}:rw
+    --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
+    ${DOCKER_CONTAINER};
+  - docker exec -it px4ros /bin/bash -ce "${BUILD} ${BUILD_ARGS}";
+  - docker stop px4ros;

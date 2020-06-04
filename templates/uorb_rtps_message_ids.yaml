@@ -268,38 +268,32 @@ rtps:
   - id: 118
     msg: SensorAccelFifo
   - id: 119
-    msg: SensorAccelStatus
-  - id: 120
     msg: SensorGyroFifo
-  - id: 121
-    msg: SensorGyroStatus
-  - id: 122
-    msg: SensorAccelIntegrated
-  - id: 123
-    msg: SensorGyroIntegrated
-  - id: 124
+  - id: 120
     msg: VehicleImu
-  - id: 125
+  - id: 121
+    msg: VehicleImuStatus
+  - id: 122
     msg: VehicleAngularAcceleration
-  - id: 126
+  - id: 123
     msg: LoggerStatus
-  - id: 127
+  - id: 124
     msg: Rpm
-  - id: 128
+  - id: 125
     msg: HoverThrustEstimate
-  - id: 129
+  - id: 126
     msg: TrajectoryBezier
-  - id: 130
+  - id: 127
     msg: VehicleTrajectoryBezier
-  - id: 131
+  - id: 128
     msg: TimesyncStatus
-  - id: 132
+  - id: 129
     msg: OrbTest
-  - id: 133
+  - id: 130
     msg: OrbTestMedium
-  - id: 134
+  - id: 131
     msg: OrbTestLarge
-  - id: 135
+  - id: 132
     msg: YawEstimatorStatus
   - alias: ActuatorControls
     id: 150

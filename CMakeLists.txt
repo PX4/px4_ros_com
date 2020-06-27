@@ -13,11 +13,11 @@ endif()
 # Check if any sanitizers set
 include(EnableSanitizers)
 
-# Check if ROS_DISTRO is Dashing or Eloquent
+# Check if ROS_DISTRO is Dashing, Eloquent or Foxy
 # Required since
 #   - "create_subscription()" and "create_publisher()" APIs changed
 #   - eigen3_cmake_module is only available in these distros
-list(APPEND ROS_DISTROS "dashing" "eloquent")
+list(APPEND ROS_DISTROS "dashing" "eloquent" "foxy")
 set(ROS_DISTRO)
 if(DEFINED ENV{ROS2_DISTRO})
   set(ROS_DISTRO $ENV{ROS2_DISTRO})

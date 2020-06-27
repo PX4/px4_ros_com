@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros2_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS 2" >&2
   echo
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS 2 workspace."
-  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
@@ -81,6 +81,20 @@ if [ -z $ros_distro ]; then
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
         echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/eloquent/install). Otherwise, please install ROS 2 Dashing following https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS2 environment (from arg)
+        source $ros_path
+      fi
+    fi
+    ;;
+  "focal")
+    if [ -d "/opt/ros/foxy" ]; then
+      ROS_DISTRO="foxy"
+    else
+      if [ -z $ros_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
         exit 1
       else
         # source the ROS2 environment (from arg)

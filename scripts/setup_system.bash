@@ -5,8 +5,8 @@ set -e
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: setup_system.bash [option...] \t This script setups the system with the required dependencies." >&2
   echo
-  echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing|eloquent). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros1_distro \t Set ROS1 distro name (kinetic|melodic|noetic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--clean \t If set, issues 'apt-get autoremove', 'apt-get autoclean' and deletes temp files."
   echo
   exit 0
@@ -38,6 +38,10 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro ]; then
     ROS1_DISTRO="melodic"
     ROS2_DISTRO="dashing"
     ;;
+  "focal")
+    ROS1_DISTRO="noetic"
+    ROS2_DISTRO="foxy"
+    ;;
   *)
     echo "Unsupported version of Ubuntu detected."
     exit 1
@@ -57,12 +61,11 @@ git clone https://github.com/eProsima/Fast-CDR.git \
 
 if [ $ROS2_DISTRO == "ardent" ]; then
   # Install Fast-RTPS (and Fast-RTPS-Gen) 1.6.0
-  # Note: Fast-RTPS-Gen was included in the Fast-RTPS release in this version
-  wget -q "http://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-rtps/eprosima-fast-rtps-1-6-0/eprosima_fastrtps-1-6-0-linux-tar-gz?format=raw" -O /tmp/eprosima_fastrtps.tar.gz \
-    && cd /tmp && tar zxf eprosima_fastrtps.tar.gz \
-    && cd eProsima_FastRTPS-1.6.0-Linux \
-    && ./configure CXXFLAGS="-g -D__DEBUG" --libdir=/usr/lib \
-    && sudo make install \
+  git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b v1.6.0 /tmp/FastRTPS-1.6.0 \
+    && cd /tmp/FastRTPS-1.6.0 \
+    && mkdir build && cd build \
+    && cmake -DBUILD_JAVA=ON -DTHIRDPARTY=ON -DSECURITY=ON .. \
+    && make --build . --target install \
     && cd $PWD
 else
   # Install Foonathan memory
@@ -89,6 +92,14 @@ else
       && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
       && make --build . --target install \
       && cd $PWD
+  elif [ $ROS2_DISTRO == "foxy" ]; then
+    # Install Fast-RTPS 1.10.0
+    git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b v1.10.0 /tmp/FastRTPS-1.10.0 \
+      && cd /tmp/FastRTPS-1.10.0 \
+      && mkdir build && cd build \
+      && cmake -DTHIRDPARTY=ON -DSECURITY=ON .. \
+      && make --build . --target install \
+      && cd $PWD
   else
     # Install Fast-RTPS 1.8.3
     git clone --recursive https://github.com/eProsima/Fast-RTPS.git -b v1.8.3 /tmp/FastRTPS-1.8.3 \
@@ -99,8 +110,8 @@ else
       && cd $PWD
   fi
 
-  # Install Fast-RTPS-Gen 1.0.3
-  git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.3 /tmp/Fast-RTPS-Gen \
+  # Install Fast-RTPS-Gen 1.0.4
+  git clone --recursive https://github.com/eProsima/Fast-RTPS-Gen.git -b v1.0.4 /tmp/Fast-RTPS-Gen \
     && cd /tmp/Fast-RTPS-Gen \
     && gradle assemble \
     && sudo cp share/fastrtps/fastrtpsgen.jar /usr/local/share/fastrtps/ \

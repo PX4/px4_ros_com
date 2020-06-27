@@ -5,6 +5,14 @@ branches:
   except:
   - /.*ros1.*/
 
+os: linux
+
+language: cpp
+
+cache: ccache
+
+services: docker
+
 env:
   global:
     - CCACHE_DIR=${HOME}/.ccache
@@ -19,12 +27,6 @@ env:
 matrix:
   include:
     - name: Build and test in ROS2 Bouncy
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
       env:
         - ROS2_DISTRO=bouncy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
@@ -35,12 +37,6 @@ matrix:
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     - name: Build and test in ROS2 Crystal
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
       env:
         - ROS2_DISTRO=crystal
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
@@ -51,12 +47,6 @@ matrix:
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     - name: Build and test in ROS2 Dashing
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
       env:
         - ROS2_DISTRO=dashing
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
@@ -83,12 +73,6 @@ matrix:
     #     - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws1/src/px4_ros_com; cp -a ${TRAVIS_BUILD_DIR}/. ~/colcon_ws1/src/px4_ros_com/; git clone ${PX4_MSGS} -b ros1 ~/colcon_ws1/src/px4_msgs; cd ~/colcon_ws1/src/px4_ros_com; git checkout ros1; cd ${TRAVIS_BUILD_DIR}; git checkout $ROS2_BRANCH; mkdir -p ~/colcon_ws2/src; cd ~/colcon_ws2; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     - name: Build and test in ROS2 Eloquent
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
       env:
         - ROS2_DISTRO=eloquent
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
@@ -99,12 +83,6 @@ matrix:
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
     - name: Build and test in ROS2 Foxy
-      os: linux
-      language: cpp
-      services:
-        - docker
-      cache:
-      ccache: true
       env:
         - ROS2_DISTRO=foxy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash

@@ -82,14 +82,13 @@ matrix:
         - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -f ~/PX4/Firmware/ -p debug_vect -t fcu_output; python3 pipeline_io_test.py -f ~/PX4/Firmware/ -s sensor_combined -t fcu_input"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
-    - name: Build and test in ROS2 Foxy
+    - name: Build in ROS2 Foxy
       env:
         - ROS2_DISTRO=foxy
         - ROS2_ENV_PATH=/opt/ros/${ROS2_DISTRO}/setup.bash
         - BUILD_ARGS="--verbose --no_ros1_bridge --ros_distro ${ROS2_DISTRO} --ros_path ${ROS2_ENV_PATH};"
         - COLCON_BUILD="cd src/px4_ros_com/scripts && ./build_ros2_workspace.bash"
         - DOCKER_CONTAINER=px4io/px4-dev-ros2-foxy:2020-06-27
-        - TEST_SETUP="source ~/colcon_ws/install/setup.bash; cd ~/colcon_ws/src/px4_ros_com/test; python3 pipeline_io_test.py -f ~/PX4/Firmware/ -p debug_vect -t fcu_output; python3 pipeline_io_test.py -f ~/PX4/Firmware/ -s sensor_combined -t fcu_input"
         - WS_SETUP="unset ROS_DISTRO; mkdir -p ~/colcon_ws/src; cd ~/colcon_ws; ln -s ${TRAVIS_BUILD_DIR} src/px4_ros_com; git clone ${PX4_MSGS} -b master src/px4_msgs;"
 
 before-script:
@@ -104,6 +103,7 @@ script:
     --volume=${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}:rw
     ${DOCKER_CONTAINER};
   - if [ -z "$TEST_SETUP" ]; then
+      BUILD_PX4_FIRMWARE_RTPS="";
       INSTALL_PX4_BIN="";
     fi
   - docker exec -it px4ros /bin/bash -ce "${BUILD_PX4_FIRMWARE_RTPS} ${WS_SETUP} ${COLCON_BUILD} ${BUILD_ARGS} ${TEST_SETUP}";

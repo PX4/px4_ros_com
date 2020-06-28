@@ -6,6 +6,7 @@ branches:
   - /.*ros1.*/
 
 os: linux
+dist: focal
 
 language: cpp
 

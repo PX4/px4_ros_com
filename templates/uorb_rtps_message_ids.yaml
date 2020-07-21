@@ -164,7 +164,7 @@ rtps:
     msg: SensorSelection
     send: true
   - id: 71
-    msg: ServorailStatus
+    msg: Px4IoStatus
   - id: 72
     msg: SubsystemInfo
   - id: 73

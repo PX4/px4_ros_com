@@ -15,7 +15,10 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   exit 0
 fi
 
-SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+SCRIPT_DIR=$0
+if [[ ${SCRIPT_DIR:0:1} != '/' ]]; then
+  SCRIPT_DIR=$(dirname $(realpath -s "$PWD/$0"))
+fi
 
 # parse the arguments
 while [ $# -gt 0 ]; do

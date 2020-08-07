@@ -295,6 +295,8 @@ rtps:
     msg: OrbTestLarge
   - id: 132
     msg: YawEstimatorStatus
+  - id: 133
+    msg: TelemetryHeartbeat
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

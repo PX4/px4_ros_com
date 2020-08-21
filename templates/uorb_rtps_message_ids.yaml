@@ -159,7 +159,7 @@ rtps:
   - id: 68
     msg: SensorMag
   - id: 69
-    msg: SensorPreflight
+    msg: SensorPreflightImu
   - id: 70
     msg: SensorSelection
     send: true
@@ -297,6 +297,8 @@ rtps:
     msg: YawEstimatorStatus
   - id: 133
     msg: TelemetryHeartbeat
+  - id: 134
+    msg: SensorPreflightMag
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

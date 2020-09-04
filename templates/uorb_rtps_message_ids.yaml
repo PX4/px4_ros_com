@@ -281,6 +281,8 @@ rtps:
     msg: TelemetryHeartbeat
   - id: 134
     msg: SensorPreflightMag
+  - id: 135
+    msg: EstimatorStates
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

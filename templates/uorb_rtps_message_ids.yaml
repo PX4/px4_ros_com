@@ -145,7 +145,7 @@ rtps:
   - id: 68
     msg: SensorMag
   - id: 69
-    msg: SensorPreflightImu
+    msg: SensorsStatusImu
   - id: 70
     msg: SensorSelection
   - id: 71

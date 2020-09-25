@@ -283,6 +283,8 @@ rtps:
     msg: SensorPreflightMag
   - id: 135
     msg: EstimatorStates
+  - id: 136
+    msg: GeneratorStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

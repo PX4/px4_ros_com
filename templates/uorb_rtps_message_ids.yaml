@@ -44,7 +44,7 @@ rtps:
   - id: 20
     msg: EkfGpsDrift
   - id: 21
-    msg: EkfGpsPosition
+    msg: SensorGps
   - id: 22
     msg: EscReport
   - id: 23

@@ -285,6 +285,10 @@ rtps:
     msg: EstimatorStates
   - id: 136
     msg: GeneratorStatus
+  - id: 137
+    msg: SensorGyroFft
+  - id: 138
+    msg: SensorGyroFftAxis
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

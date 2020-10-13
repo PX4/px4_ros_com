@@ -278,16 +278,14 @@ rtps:
   - id: 132
     msg: YawEstimatorStatus
   - id: 133
-    msg: TelemetryHeartbeat
-  - id: 134
     msg: SensorPreflightMag
-  - id: 135
+  - id: 134
     msg: EstimatorStates
-  - id: 136
+  - id: 135
     msg: GeneratorStatus
-  - id: 137
+  - id: 136
     msg: SensorGyroFft
-  - id: 138
+  - id: 137
     msg: NavigatorMissionItem
   - alias: ActuatorControls
     id: 150

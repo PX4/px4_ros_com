@@ -287,6 +287,8 @@ rtps:
     msg: GeneratorStatus
   - id: 137
     msg: SensorGyroFft
+  - id: 138
+    msg: NavigatorMissionItem
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

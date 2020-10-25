@@ -150,8 +150,6 @@ rtps:
     msg: SensorSelection
   - id: 71
     msg: Px4IoStatus
-  - id: 72
-    msg: SubsystemInfo
   - id: 73
     msg: SystemPower
   - id: 74

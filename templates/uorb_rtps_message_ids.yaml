@@ -285,6 +285,8 @@ rtps:
     msg: SensorGyroFft
   - id: 137
     msg: NavigatorMissionItem
+  - id: 138
+    msg: EstimatorOpticalFlowVel
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

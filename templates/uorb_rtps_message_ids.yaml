@@ -287,6 +287,8 @@ rtps:
     msg: NavigatorMissionItem
   - id: 138
     msg: EstimatorOpticalFlowVel
+  - id: 139
+    msg: EstimatorSelectorStatus
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0
@@ -348,7 +350,7 @@ rtps:
     msg: VehicleAngularVelocityGroundtruth
   - alias: VehicleOdometry
     id: 169
-    msg: VehicleVisualOdometryAligned
+    msg: EstimatorVisualOdometryAligned
   - alias: EstimatorInnovations
     id: 170
     msg: EstimatorInnovationVariances

@@ -372,3 +372,15 @@ rtps:
   - alias: OrbTestMedium
     id: 176
     msg: OrbTestMediumWrapAround
+  - alias: VehicleLocalPosition
+    id: 177
+    msg: EstimatorLocalPosition
+  - alias: VehicleGlobalPosition
+    id: 178
+    msg: EstimatorGlobalPosition
+  - alias: VehicleAttitude
+    id: 179
+    msg: EstimatorAttitude
+  - alias: VehicleOdometry
+    id: 180
+    msg: EstimatorOdometry

@@ -107,6 +107,7 @@ struct options {
     bool sw_flow_control = false;
     bool hw_flow_control = false;
     bool verbose_debug = false;
+    std::string ns = "";
 } _options;
 
 static void usage(const char *name)
@@ -122,7 +123,8 @@ static void usage(const char *name)
              "  -i <ip_address>         Target IP for UDP. Default 127.0.0.1\n"
              "  -f <sw flow control>    Activates UART link SW flow control\n"
              "  -h <hw flow control>    Activates UART link HW flow control\n"
-             "  -v <debug verbosity>    Add more verbosity\n",
+             "  -v <debug verbosity>    Add more verbosity\n"
+             "  -n <namespace>          Micrortps agent ROS2 namespace\n",
              name);
 }
 
@@ -130,7 +132,7 @@ static int parse_options(int argc, char **argv)
 {
     int ch;
 
-    while ((ch = getopt(argc, argv, "t:d:w:b:p:r:s:i:fhv")) != EOF)
+    while ((ch = getopt(argc, argv, "t:d:w:b:p:r:s:i:fhvn:")) != EOF)
     {
         switch (ch)
         {
@@ -147,6 +149,7 @@ static int parse_options(int argc, char **argv)
             case 'f': _options.sw_flow_control = true;                          break;
             case 'h': _options.hw_flow_control = true;                          break;
             case 'v': _options.verbose_debug = true;                            break;
+            case 'n': if (nullptr != optarg) _options.ns = std::string(optarg) + "/"; break;
             default:
                 usage(argv[0]);
                 return -1;
@@ -273,7 +276,7 @@ int main(int argc, char** argv)
     topics.set_timesync(timeSync);
 
 @[if recv_topics]@
-    topics.init(&t_send_queue_cv, &t_send_queue_mutex, &t_send_queue);
+    topics.init(&t_send_queue_cv, &t_send_queue_mutex, &t_send_queue, _options.ns);
 @[end if]@
 
     running = true;

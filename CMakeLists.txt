@@ -89,12 +89,10 @@ target_link_libraries(frame_transforms Eigen3::Eigen ${geometry_msgs_LIBRARIES} 
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
 target_link_libraries(micrortps_agent fastrtps fastcdr)
 
-# Add listeners
-custom_executable(listeners sensor_combined_listener)
-custom_executable(listeners vehicle_gps_position_listener)
-
-# Add advertiser
-custom_executable(advertisers debug_vect_advertiser)
+# Add examples
+custom_executable(examples/listeners sensor_combined_listener)
+custom_executable(examples/listeners vehicle_gps_position_listener)
+custom_executable(examples/advertisers debug_vect_advertiser)
 
 ############
 # Install ##

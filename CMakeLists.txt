@@ -33,7 +33,7 @@ else()
   message(FATAL_ERROR "No ROS Distro set")
 endif()
 
-set(USES_DEPRECATD_EXPORT_API "dashing" "eloquent")
+set(USES_DEPRECATD_EXPORT_API "ardent" "bouncy" "crystal" "dashing" "eloquent")
 
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)

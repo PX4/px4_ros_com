@@ -33,6 +33,8 @@ else()
   message(FATAL_ERROR "No ROS Distro set")
 endif()
 
+set(USES_DEPRECATD_EXPORT_API "dashing" "eloquent")
+
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(fastcdr REQUIRED)
@@ -104,7 +106,12 @@ if(ROS_DISTRO IN_LIST ROS_DISTROS)
 else()
   ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime Eigen3 px4_msgs geometry_msgs sensor_msgs)
 endif()
-ament_export_interfaces(export_frame_transforms HAS_LIBRARY_TARGET)
+if (ROS_DISTRO IN_LIST USES_DEPRECATED_EXPORT_API)
+  ament_export_interfaces(export_frame_transforms HAS_LIBRARY_TARGET)
+else()
+	ament_export_targets(export_frame_transforms HAS_LIBRARY_TARGET)
+endif()	  
+
 ament_export_include_directories(include)
 ament_export_libraries(frame_transforms)
 

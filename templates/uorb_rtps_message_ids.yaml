@@ -289,6 +289,8 @@ rtps:
     msg: EstimatorOpticalFlowVel
   - id: 139
     msg: EstimatorSelectorStatus
+  - id: 140
+    msg: ManualControlSwitches
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

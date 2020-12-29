@@ -291,6 +291,8 @@ rtps:
     msg: EstimatorSelectorStatus
   - id: 140
     msg: ManualControlSwitches
+  - id: 141
+    msg: EstimatorStatusFlags
   - alias: ActuatorControls
     id: 150
     msg: ActuatorControls0

@@ -40,9 +40,13 @@ jobs:
           git clone https://github.com/PX4/Firmware.git ~/PX4/Firmware
           cd ~/PX4/Firmware
           DONT_RUN=1 make px4_sitl_rtps gazebo
-      - name: SITL integration tests
+      - name: SITL integration test - data output
         run: |
           source ~/colcon_ws/install/setup.bash
           cd ~/colcon_ws/src/px4_ros_com/test
           python3 pipeline_io_test.py -f ~/PX4/Firmware/ -p debug_vect -t fcu_output
+      - name: SITL integration test - data input
+        run: |
+          source ~/colcon_ws/install/setup.bash
+          cd ~/colcon_ws/src/px4_ros_com/test
           python3 pipeline_io_test.py -f ~/PX4/Firmware/ -s sensor_combined -t fcu_input

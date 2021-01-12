@@ -95,6 +95,7 @@ target_link_libraries(micrortps_agent fastrtps fastcdr)
 custom_executable(examples/listeners sensor_combined_listener)
 custom_executable(examples/listeners vehicle_gps_position_listener)
 custom_executable(examples/advertisers debug_vect_advertiser)
+custom_executable(examples/offboard offboard_control)
 
 ############
 # Install ##

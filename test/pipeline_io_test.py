@@ -108,7 +108,7 @@ if __name__ == "__main__":
          px4_target + " &) && cd " + os.getcwd(), shell=True, stderr=DEVNULL)
 
     # waits for PX4 daemon and Gazebo to load
-    sleep(10)
+    sleep(20)
 
     # setup the PX4 SITL bin dir
     px4_bin_dir = os.path.join(px4_dir, "build/px4_sitl_rtps/bin")

@@ -21,7 +21,7 @@ jobs:
     container: px4io/px4-dev-ros2-${{ matrix.ros2_distro }}:2020-11-12
     strategy:
       matrix:
-        ros2_distro: [bouncy, crystal, dashing, eloquent, foxy]
+        ros2_distro: [dashing, eloquent, foxy]
     steps:
       - uses: actions/checkout@v2
       - name: Configure workspace

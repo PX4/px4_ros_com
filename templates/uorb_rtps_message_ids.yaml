@@ -91,7 +91,6 @@ rtps:
     msg: ObstacleDistance
   - id: 44
     msg: OffboardControlMode
-    receive: true
   - id: 45
     msg: OpticalFlow
     receive: true
@@ -188,14 +187,12 @@ rtps:
     msg: VehicleAttitudeSetpoint
   - id: 89
     msg: VehicleCommand
-    receive: true
   - id: 90
     msg: VehicleCommandAck
   - id: 91
     msg: VehicleConstraints
   - id: 92
     msg: VehicleControlMode
-    send: true
   - id: 93
     msg: VehicleGlobalPosition
   - id: 94

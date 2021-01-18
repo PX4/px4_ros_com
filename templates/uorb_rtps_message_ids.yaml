@@ -91,6 +91,7 @@ rtps:
     msg: ObstacleDistance
   - id: 44
     msg: OffboardControlMode
+    receive: true
   - id: 45
     msg: OpticalFlow
     receive: true
@@ -187,12 +188,14 @@ rtps:
     msg: VehicleAttitudeSetpoint
   - id: 89
     msg: VehicleCommand
+    receive: true
   - id: 90
     msg: VehicleCommandAck
   - id: 91
     msg: VehicleConstraints
   - id: 92
     msg: VehicleControlMode
+    send: true
   - id: 93
     msg: VehicleGlobalPosition
   - id: 94
@@ -294,97 +297,97 @@ rtps:
   - id: 141
     msg: EstimatorStatusFlags
   - alias: ActuatorControls
-    id: 150
+    id: 170
     msg: ActuatorControls0
   - alias: ActuatorControls
-    id: 151
+    id: 171
     msg: ActuatorControls1
   - alias: ActuatorControls
-    id: 152
+    id: 172
     msg: ActuatorControls2
   - alias: ActuatorControls
-    id: 153
+    id: 173
     msg: ActuatorControls3
   - alias: ActuatorControls
-    id: 154
+    id: 174
     msg: ActuatorControlsVirtualFw
   - alias: ActuatorControls
-    id: 155
+    id: 175
     msg: ActuatorControlsVirtualMc
   - alias: VehicleAttitudeSetpoint
-    id: 156
+    id: 176
     msg: McVirtualAttitudeSetpoint
   - alias: VehicleAttitudeSetpoint
-    id: 157
+    id: 177
     msg: FwVirtualAttitudeSetpoint
   - alias: VehicleAttitude
-    id: 158
+    id: 178
     msg: VehicleAttitudeGroundtruth
   - alias: VehicleGlobalPosition
-    id: 159
+    id: 179
     msg: VehicleGlobalPositionGroundtruth
   - alias: VehicleLocalPosition
-    id: 160
+    id: 180
     msg: VehicleLocalPositionGroundtruth
   - alias: VehicleOdometry
-    id: 161
+    id: 181
     msg: VehicleMocapOdometry
     receive: true
   - alias: VehicleOdometry
-    id: 162
+    id: 182
     msg: VehicleVisualOdometry
     receive: true
   - alias: VehicleTrajectoryWaypoint
-    id: 163
+    id: 183
     msg: VehicleTrajectoryWaypointDesired
   - alias: ObstacleDistance
-    id: 164
+    id: 184
     msg: ObstacleDistanceFused
   - alias: VehicleAttitude
-    id: 165
+    id: 185
     msg: VehicleVisionAttitude
   - alias: VehicleLocalPositionSetpoint
-    id: 166
+    id: 186
     msg: TrajectorySetpoint
   - alias: CameraTrigger
-    id: 167
+    id: 187
     msg: CameraTriggerSecondary
   - alias: VehicleAngularVelocity
-    id: 168
+    id: 188
     msg: VehicleAngularVelocityGroundtruth
   - alias: VehicleOdometry
-    id: 169
+    id: 189
     msg: EstimatorVisualOdometryAligned
   - alias: EstimatorInnovations
-    id: 170
+    id: 190
     msg: EstimatorInnovationVariances
   - alias: EstimatorInnovations
-    id: 171
+    id: 191
     msg: EstimatorInnovationTestRatios
   - alias: OrbTest
-    id: 172
+    id: 192
     msg: OrbMultitest
   - alias: OrbTestMedium
-    id: 173
+    id: 193
     msg: OrbTestMediumMulti
   - alias: OrbTestMedium
-    id: 174
+    id: 194
     msg: OrbTestMediumQueue
   - alias: OrbTestMedium
-    id: 175
+    id: 195
     msg: OrbTestMediumQueuePoll
   - alias: OrbTestMedium
-    id: 176
+    id: 196
     msg: OrbTestMediumWrapAround
   - alias: VehicleLocalPosition
-    id: 177
+    id: 197
     msg: EstimatorLocalPosition
   - alias: VehicleGlobalPosition
-    id: 178
+    id: 198
     msg: EstimatorGlobalPosition
   - alias: VehicleAttitude
-    id: 179
+    id: 199
     msg: EstimatorAttitude
   - alias: VehicleOdometry
-    id: 180
+    id: 200
     msg: EstimatorOdometry

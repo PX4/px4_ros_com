@@ -298,6 +298,16 @@ rtps:
     msg: EstimatorStatusFlags
   - id: 142
     msg: RtlFlightTime
+  - id: 143
+    msg: VehicleAngularAccelerationSetpoint
+  - id: 144
+    msg: VehicleTorqueSetpoint
+  - id: 145
+    msg: VehicleThrustSetpoint
+  - id: 146
+    msg: VehicleActuatorSetpoint
+  - id: 147
+    msg: ControlAllocatorStatus
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

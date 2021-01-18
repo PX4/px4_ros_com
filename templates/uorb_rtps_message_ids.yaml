@@ -296,6 +296,8 @@ rtps:
     msg: ManualControlSwitches
   - id: 141
     msg: EstimatorStatusFlags
+  - id: 142
+    msg: RtlFlightTime
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

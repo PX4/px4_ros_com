@@ -308,6 +308,8 @@ rtps:
     msg: VehicleActuatorSetpoint
   - id: 147
     msg: ControlAllocatorStatus
+  - id: 148
+    msg: MagWorkerData
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

@@ -43,6 +43,7 @@
 #include <px4_msgs/msg/timesync.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
+#include <px4_msgs/msg/timesync.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <chrono>
@@ -69,23 +70,27 @@ public:
 		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic");
 #endif
 
+		// get common timestamp
+        timesync_sub_ = this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic",
+            10,
+            [this](const px4_msgs::msg::Timesync::UniquePtr msg) {
+                timestamp_.store(msg->timestamp);
+            });
+
 		offboard_setpoint_counter_ = 0;
 
 		auto timer_callback = [this]() -> void {
-			// define common timestamp
-			auto timestamp = time_point_cast<microseconds>(steady_clock::now()).time_since_epoch().count();
-
 			if (offboard_setpoint_counter_ == 100) {
 				// Change to Offboard mode after 100 setpoints
-				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, timestamp, 1, 6);
+				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 
 				// Arm the vehicle
 				this->arm();
 			}
 
             // offboard_control_mode needs to be paired with position_setpoint_triplet
-			publish_offboard_control_mode(timestamp);
-			publish_position_setpoint_triplet(timestamp);
+			publish_offboard_control_mode();
+			publish_position_setpoint_triplet();
 
             // stop the counter after reaching 100
 			if (offboard_setpoint_counter_ < 101) {
@@ -104,12 +109,15 @@ private:
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
 	rclcpp::Publisher<PositionSetpointTriplet>::SharedPtr position_setpoint_triplet_publisher_;
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
+	rclcpp::Subscription<px4_msgs::msg::Timesync>::SharedPtr timesync_sub_;
+
+	std::atomic<unsigned long long> timestamp_;   //!< common synced timestamped
 
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 
-	void publish_offboard_control_mode(const long int& timestamp) const;
-	void publish_position_setpoint_triplet(const long int& timestamp) const;
-	void publish_vehicle_command(uint16_t command, const long int& timestamp, float param1 = 0.0,
+	void publish_offboard_control_mode() const;
+	void publish_position_setpoint_triplet() const;
+	void publish_vehicle_command(uint16_t command, float param1 = 0.0,
 				     float param2 = 0.0) const;
 };
 
@@ -117,9 +125,7 @@ private:
  * @brief Send a command to Arm the vehicle
  */
 void OffboardControl::arm() const {
-	auto timestamp = time_point_cast<microseconds>(steady_clock::now()).time_since_epoch().count();
-
-	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, timestamp, 1.0);
+	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
 
 	RCLCPP_INFO(this->get_logger(), "Arm command send");
 }
@@ -128,9 +134,7 @@ void OffboardControl::arm() const {
  * @brief Send a command to Disarm the vehicle
  */
 void OffboardControl::disarm() const {
-	auto timestamp = time_point_cast<microseconds>(steady_clock::now()).time_since_epoch().count();
-
-	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, timestamp, 0.0);
+	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 0.0);
 
 	RCLCPP_INFO(this->get_logger(), "Disarm command send");
 }
@@ -138,11 +142,10 @@ void OffboardControl::disarm() const {
 /**
  * @brief Publish the offboard control mode.
  *        For this example, only position and altitude controls are active.
- * @param timestamp Timestamp of the setpoint triplet
  */
-void OffboardControl::publish_offboard_control_mode(const long int& timestamp) const {
+void OffboardControl::publish_offboard_control_mode() const {
 	OffboardControlMode msg{};
-	msg.timestamp = timestamp;
+	msg.timestamp = timestamp_.load();
 	msg.ignore_thrust = true;
 	msg.ignore_attitude = true;
 	msg.ignore_bodyrate_x = true;
@@ -160,12 +163,11 @@ void OffboardControl::publish_offboard_control_mode(const long int& timestamp) c
  * @brief Publish position setpoint triplets.
  *        For this example, it sends position setpoint triplets to make the
  *        vehicle hover at 5 meters.
- * @param timestamp Timestamp of the setpoint triplet
  */
-void OffboardControl::publish_position_setpoint_triplet(const long int& timestamp) const {
+void OffboardControl::publish_position_setpoint_triplet() const {
 	PositionSetpointTriplet msg{};
-	msg.timestamp = timestamp;
-	msg.current.timestamp = timestamp;
+	msg.timestamp = timestamp_.load();
+	msg.current.timestamp = timestamp_.load();
 	msg.current.type = PositionSetpoint::SETPOINT_TYPE_POSITION;
 	msg.current.x = 0.0;
 	msg.current.y = 0.0;
@@ -183,14 +185,13 @@ void OffboardControl::publish_position_setpoint_triplet(const long int& timestam
 /**
  * @brief Publish vehicle commands
  * @param command   Command code (matches VehicleCommand and MAVLink MAV_CMD codes)
- * @param timestamp Timestamp of the command
  * @param param1    Command parameter 1
  * @param param2    Command parameter 2
  */
-void OffboardControl::publish_vehicle_command(uint16_t command, const long int& timestamp, float param1,
+void OffboardControl::publish_vehicle_command(uint16_t command, float param1,
 					      float param2) const {
 	VehicleCommand msg{};
-	msg.timestamp = timestamp;
+	msg.timestamp = timestamp_.load();
 	msg.param1 = param1;
 	msg.param2 = param2;
 	msg.command = command;

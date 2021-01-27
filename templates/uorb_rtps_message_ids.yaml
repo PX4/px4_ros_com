@@ -405,9 +405,3 @@ rtps:
   - alias: VehicleOdometry
     id: 200
     msg: EstimatorOdometry
-  - alias: ActuatorControls
-    id: 201
-    msg: ActuatorControls4
-  - alias: ActuatorControls
-    id: 202
-    msg: ActuatorControls5

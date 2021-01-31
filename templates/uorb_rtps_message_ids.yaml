@@ -310,6 +310,8 @@ rtps:
     msg: ControlAllocatorStatus
   - id: 148
     msg: MagWorkerData
+  - id: 149
+    msg: TakeoffStatus
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

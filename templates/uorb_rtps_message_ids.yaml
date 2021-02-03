@@ -63,6 +63,7 @@ rtps:
     msg: HomePosition
   - id: 30
     msg: InputRc
+    send: true
   - id: 31
     msg: IridiumsbdStatus
   - id: 32

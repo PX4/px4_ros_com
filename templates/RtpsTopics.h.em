@@ -122,6 +122,9 @@ private:
     inline uint64_t getMsgTimestamp(const T* msg) { return msg->timestamp_(); }
 
     template <class T>
+    inline uint64_t getMsgTimestampSample(const T* msg) { return msg->timestamp_sample_(); }
+
+    template <class T>
     inline uint8_t getMsgSysID(const T* msg) { return msg->sys_id_(); }
 
     template <class T>
@@ -129,6 +132,9 @@ private:
 @[elif ros2_distro]@
     template <class T>
     inline uint64_t getMsgTimestamp(const T* msg) { return msg->timestamp(); }
+
+    template <class T>
+    inline uint64_t getMsgTimestampSample(const T* msg) { return msg->timestamp_sample(); }
 
     template <class T>
     inline uint8_t getMsgSysID(const T* msg) { return msg->sys_id(); }
@@ -143,6 +149,9 @@ private:
     inline void setMsgTimestamp(T* msg, const uint64_t& timestamp) { msg->timestamp_() = timestamp; }
 
     template <class T>
+    inline void setMsgTimestampSample(T* msg, const uint64_t& timestamp_sample) { msg->timestamp_sample_() = timestamp_sample; }
+
+    template <class T>
     inline void setMsgSysID(T* msg, const uint8_t& sys_id) { msg->sys_id_() = sys_id; }
 
     template <class T>
@@ -150,6 +159,9 @@ private:
 @[elif ros2_distro]@
     template <class T>
     inline void setMsgTimestamp(T* msg, const uint64_t& timestamp) { msg->timestamp() = timestamp; }
+
+    template <class T>
+    inline void setMsgTimestampSample(T* msg, const uint64_t& timestamp_sample) { msg->timestamp_sample() = timestamp_sample; }
 
     template <class T>
     inline void setMsgSysID(T* msg, const uint8_t& sys_id) { msg->sys_id() = sys_id; }

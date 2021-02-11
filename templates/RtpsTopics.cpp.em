@@ -141,8 +141,99 @@ bool RtpsTopics::getMsg(const uint8_t topic_ID, eprosima::fastcdr::Cdr &scdr)
 @[    end if]@
                 // apply timestamp offset
                 uint64_t timestamp = getMsgTimestamp(&msg);
+@[    if topic == 'VehicleOdometry' \
+          or topic == 'VehicleMocapOdometry' \
+          or topic == 'VehicleVisualOdometry' \
+          or topic == 'VehicleVisionAttitude' \
+          or topic == 'WindEstimate' \
+          or topic == 'YawEstimatorStatus' \
+          or topic == 'VehicleVisionAttitude' \
+          or topic == 'ActuatorControls' \
+          or topic == 'ActuatorControls0' \
+          or topic == 'ActuatorControls1' \
+          or topic == 'ActuatorControls2' \
+          or topic == 'ActuatorControls3' \
+          or topic == 'ActuatorControlsVirtualFw' \
+          or topic == 'ActuatorControlsVirtualMc' \
+          or topic == 'EstimatorAttitude' \
+          or topic == 'EstimatorGlobalPosition' \
+          or topic == 'EstimatorInnovations' \
+          or topic == 'EstimatorInnovationTestRatios' \
+          or topic == 'EstimatorInnovationVariances' \
+          or topic == 'EstimatorLocalPosition' \
+          or topic == 'EstimatorOdometry' \
+          or topic == 'EstimatorOpticalFlowVel' \
+          or topic == 'EstimatorSensorBias' \
+          or topic == 'EstimatorStates' \
+          or topic == 'EstimatorStatus' \
+          or topic == 'EstimatorVisualOdometryAligned' \
+          or topic == 'HoverThrustEstimate' \
+          or topic == 'SensorAccel' \
+          or topic == 'SensorAccelFifo' \
+          or topic == 'SensorMag' \
+          or topic == 'VehicleAcceleration' \
+          or topic == 'VehicleAirData' \
+          or topic == 'VehicleAngularAcceleration' \
+          or topic == 'VehicleAngularVelocity' \
+          or topic == 'VehicleAngularVelocityGroundtruth' \
+          or topic == 'VehicleAttitude' \
+          or topic == 'VehicleAttitudeGroundtruth' \
+          or topic == 'VehicleGlobalPosition' \
+          or topic == 'VehicleGlobalPositionGroundtruth' \
+          or topic == 'VehicleImu' \
+          or topic == 'VehicleLocalPosition' \
+          or topic == 'VehicleLocalPositionGroundtruth' \
+          or topic == 'VehicleMagnetometer']@
+                uint64_t timestamp_sample = getMsgTimestampSample(&msg);
+@[    end if]@
                 _timesync->addOffset(timestamp);
                 setMsgTimestamp(&msg, timestamp);
+@[    if topic == 'VehicleOdometry' \
+          or topic == 'VehicleMocapOdometry' \
+          or topic == 'VehicleVisualOdometry' \
+          or topic == 'VehicleVisionAttitude' \
+          or topic == 'WindEstimate' \
+          or topic == 'YawEstimatorStatus' \
+          or topic == 'VehicleVisionAttitude' \
+          or topic == 'ActuatorControls' \
+          or topic == 'ActuatorControls0' \
+          or topic == 'ActuatorControls1' \
+          or topic == 'ActuatorControls2' \
+          or topic == 'ActuatorControls3' \
+          or topic == 'ActuatorControlsVirtualFw' \
+          or topic == 'ActuatorControlsVirtualMc' \
+          or topic == 'EstimatorAttitude' \
+          or topic == 'EstimatorGlobalPosition' \
+          or topic == 'EstimatorInnovations' \
+          or topic == 'EstimatorInnovationTestRatios' \
+          or topic == 'EstimatorInnovationVariances' \
+          or topic == 'EstimatorLocalPosition' \
+          or topic == 'EstimatorOdometry' \
+          or topic == 'EstimatorOpticalFlowVel' \
+          or topic == 'EstimatorSensorBias' \
+          or topic == 'EstimatorStates' \
+          or topic == 'EstimatorStatus' \
+          or topic == 'EstimatorVisualOdometryAligned' \
+          or topic == 'HoverThrustEstimate' \
+          or topic == 'SensorAccel' \
+          or topic == 'SensorAccelFifo' \
+          or topic == 'SensorMag' \
+          or topic == 'VehicleAcceleration' \
+          or topic == 'VehicleAirData' \
+          or topic == 'VehicleAngularAcceleration' \
+          or topic == 'VehicleAngularVelocity' \
+          or topic == 'VehicleAngularVelocityGroundtruth' \
+          or topic == 'VehicleAttitude' \
+          or topic == 'VehicleAttitudeGroundtruth' \
+          or topic == 'VehicleGlobalPosition' \
+          or topic == 'VehicleGlobalPositionGroundtruth' \
+          or topic == 'VehicleImu' \
+          or topic == 'VehicleLocalPosition' \
+          or topic == 'VehicleLocalPositionGroundtruth' \
+          or topic == 'VehicleMagnetometer']@
+                _timesync->addOffset(timestamp_sample);
+                setMsgTimestampSample(&msg, timestamp_sample);
+@[    end if]@
                 msg.serialize(scdr);
                 ret = true;
 @[    if topic == 'Timesync' or topic == 'timesync']@

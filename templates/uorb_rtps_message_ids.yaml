@@ -315,6 +315,20 @@ rtps:
     msg: TakeoffStatus
   - id: 150
     msg: HeaterStatus
+  - id: 151
+    msg: GimbalDeviceAttitudeStatus
+  - id: 152
+    msg: GimbalDeviceInformation
+  - id: 153
+    msg: GimbalDeviceSetAttitude
+  - id: 154
+    msg: GimbalManagerInformation
+  - id: 155
+    msg: GimbalManagerSetAttitude
+  - id: 156
+    msg: GimbalManagerStatus
+  - id: 157
+    msg: GimbalManagerSetManualControl
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

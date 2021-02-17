@@ -313,6 +313,8 @@ rtps:
     msg: MagWorkerData
   - id: 149
     msg: TakeoffStatus
+  - id: 150
+    msg: HeaterStatus
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

@@ -226,7 +226,7 @@ rtps:
   - id: 105
     msg: VtolVehicleStatus
   - id: 106
-    msg: WindEstimate
+    msg: Wind
   - id: 107
     msg: CollisionConstraints
     send: true
@@ -329,6 +329,8 @@ rtps:
     msg: GimbalManagerStatus
   - id: 157
     msg: GimbalManagerSetManualControl
+  - id: 158
+    msg: AirspeedWind
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0
@@ -430,3 +432,6 @@ rtps:
   - alias: ActuatorControls
     id: 202
     msg: ActuatorControls5
+  - alias: Wind
+    id: 203
+    msg: EstimatorWind

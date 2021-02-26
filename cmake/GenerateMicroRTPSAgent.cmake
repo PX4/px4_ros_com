@@ -38,8 +38,9 @@
 
 # Check if FastRTPSGen exists
 if($ENV{FASTRTPSGEN_DIR})
-  message(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
-  set(FASTRTPSGEN "$ENV{FASTRTPSGEN_DIR}/fastrtpsgen")
+  set(FASTRTPSGEN_DIR $ENV{FASTRTPSGEN_DIR})
+  message(STATUS "fastrtpsgen found in ${FASTRTPSGEN_DIR}}")
+  set(FASTRTPSGEN "${FASTRTPSGEN_DIR}/fastrtpsgen")
 else()
   find_file(FASTRTPSGEN NAMES fastrtpsgen PATH_SUFFIXES bin)
   if(FASTRTPSGEN-NOTFOUND)
@@ -52,7 +53,7 @@ endif()
 
 # Get FastRTPSGen version
 set(FASTRTPSGEN_VERSION)
-execute_process(COMMAND fastrtpsgen -version
+execute_process(COMMAND ${FASTRTPSGEN} -version
                 OUTPUT_VARIABLE FASTRTPSGEN_VERSION_OUTPUT
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCH
@@ -85,6 +86,8 @@ if(${ROS_DISTRO} MATCHES "ardent" OR ${ROS_DISTRO} MATCHES "bouncy" OR ${ROS_DIS
 else()
    set(IDL_DIR ${MSGS_DIR})
 endif()
+message(STATUS "px4_msgs message dir under ${MSGS_DIR}")
+message(STATUS "IDL definitions under ${IDL_DIR}")
 
 # Check if the RTPS ID's mapper yaml file exists and if yes, change the msg
 # naming to PascalCase
@@ -197,27 +200,15 @@ foreach(topic ${CONFIG_RTPS_SEND_TOPICS}) # advertised topics should first be
     APPEND MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/${topic}_Subscriber.h)
 endforeach()
 
-message(STATUS "fastrtpsgen found in $ENV{FASTRTPSGEN_DIR}")
-message(STATUS "px4_msgs message dir under ${MSGS_DIR}")
-
-set(IDL_DIR)
-if(FASTRTPSGEN_VERSION VERSION_GREATER 1.4 AND FASTRTPSGEN_VERSION VERSION_LESS 1.8)
-  set(IDL_DIR "${MSGS_DIR}/dds_fastrtps")
-else()
-  set(IDL_DIR "${MSGS_DIR}")
-endif()
-
-message(STATUS "IDL definitions under ${IDL_DIR}")
-
 get_filename_component(px4_msgs_FASTRTPSGEN_INCLUDE "../../" ABSOLUTE BASE_DIR ${px4_msgs_DIR})
 add_custom_command(
   OUTPUT  ${MICRORTPS_AGENT_FILES}
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
-          $ENV{FASTRTPSGEN_DIR}
+          ${FASTRTPSGEN_DIR}
   COMMAND
     ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_microRTPS_bridge.py
-    --fastrtpsgen-dir $ENV{FASTRTPSGEN_DIR}
+    --fastrtpsgen-dir ${FASTRTPSGEN_DIR}
     --fastrtpsgen-include ${px4_msgs_FASTRTPSGEN_INCLUDE}
     --topic-msg-dir ${MSGS_DIR}
     --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/templates

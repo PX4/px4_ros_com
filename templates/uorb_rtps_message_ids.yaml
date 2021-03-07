@@ -331,6 +331,8 @@ rtps:
     msg: GimbalManagerSetManualControl
   - id: 158
     msg: AirspeedWind
+  - id: 159
+    msg: EstimatorEventFlags
   - alias: ActuatorControls
     id: 170
     msg: ActuatorControls0

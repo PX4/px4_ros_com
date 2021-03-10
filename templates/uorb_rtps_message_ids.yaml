@@ -207,6 +207,7 @@ rtps:
     msg: VehicleLocalPosition
   - id: 97
     msg: VehicleLocalPositionSetpoint
+    receive: true
   - id: 98
     msg: VehicleMagnetometer
   - id: 99
@@ -386,6 +387,7 @@ rtps:
   - alias: VehicleLocalPositionSetpoint
     id: 186
     msg: TrajectorySetpoint
+    receive: true
   - alias: CameraTrigger
     id: 187
     msg: CameraTriggerSecondary

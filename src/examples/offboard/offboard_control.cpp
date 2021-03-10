@@ -36,15 +36,17 @@
  * @addtogroup examples
  * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
+ * @author Mohamed Moustafa <mohamed.moustafa@nxp.com>
  */
 
 #include <px4_msgs/msg/offboard_control_mode.hpp>
-#include <px4_msgs/msg/position_setpoint_triplet.hpp>
+#include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/timesync.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
-#include <px4_msgs/msg/timesync.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <stdint.h>
+
 
 #include <chrono>
 #include <iostream>
@@ -58,46 +60,49 @@ public:
 	OffboardControl() : Node("offboard_control") {
 #ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
-		    this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic", 10);
-		position_setpoint_triplet_publisher_ =
-		    this->create_publisher<PositionSetpointTriplet>("PositionSetpointTriplet_PubSubTopic", 10);
-		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic", 10);
+			this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic", 10);
+		trajectory_setpoint_publisher_ =
+			this->create_publisher<TrajectorySetpoint>("TrajectorySetpoint_PubSubTopic", 10);
+		vehicle_command_publisher_ =
+			this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic", 10);
 #else
 		offboard_control_mode_publisher_ =
-		    this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic");
-		position_setpoint_triplet_publisher_ =
-		    this->create_publisher<PositionSetpointTriplet>("PositionSetpointTriplet_PubSubTopic");
-		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic");
+			this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic");
+		trajectory_setpoint_publisher_ =
+		 	this->create_publisher<TrajectorySetpoint>("TrajectorySetpoint_PubSubTopic");
+		vehicle_command_publisher_ =
+			this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic");
 #endif
 
 		// get common timestamp
-        timesync_sub_ = this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic",
-            10,
-            [this](const px4_msgs::msg::Timesync::UniquePtr msg) {
-                timestamp_.store(msg->timestamp);
-            });
+		timesync_sub_ = this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic",
+		10,
+		[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
+			timestamp_.store(msg->timestamp);
+		});
 
 		offboard_setpoint_counter_ = 0;
 
 		auto timer_callback = [this]() -> void {
-			if (offboard_setpoint_counter_ == 100) {
-				// Change to Offboard mode after 100 setpoints
+
+			if (offboard_setpoint_counter_ == 10) {
+				// Change to Offboard mode after 10 setpoints
 				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 
 				// Arm the vehicle
 				this->arm();
 			}
 
-            // offboard_control_mode needs to be paired with position_setpoint_triplet
+            		// offboard_control_mode needs to be paired with trajectory_setpoint
 			publish_offboard_control_mode();
-			publish_position_setpoint_triplet();
+			publish_trajectory_setpoint();
 
-            // stop the counter after reaching 100
-			if (offboard_setpoint_counter_ < 101) {
+           		 // stop the counter after reaching 11
+			if (offboard_setpoint_counter_ < 11) {
 				offboard_setpoint_counter_++;
 			}
 		};
-		timer_ = this->create_wall_timer(10ms, timer_callback);
+		timer_ = this->create_wall_timer(100ms, timer_callback);
 	}
 
 	void arm() const;
@@ -107,16 +112,16 @@ private:
 	rclcpp::TimerBase::SharedPtr timer_;
 
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
-	rclcpp::Publisher<PositionSetpointTriplet>::SharedPtr position_setpoint_triplet_publisher_;
+	rclcpp::Publisher<TrajectorySetpoint>::SharedPtr trajectory_setpoint_publisher_;
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
 	rclcpp::Subscription<px4_msgs::msg::Timesync>::SharedPtr timesync_sub_;
 
-	std::atomic<unsigned long long> timestamp_;   //!< common synced timestamped
+	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
 
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 
 	void publish_offboard_control_mode() const;
-	void publish_position_setpoint_triplet() const;
+	void publish_trajectory_setpoint() const;
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0,
 				     float param2 = 0.0) const;
 };
@@ -146,40 +151,30 @@ void OffboardControl::disarm() const {
 void OffboardControl::publish_offboard_control_mode() const {
 	OffboardControlMode msg{};
 	msg.timestamp = timestamp_.load();
-	msg.ignore_thrust = true;
-	msg.ignore_attitude = true;
-	msg.ignore_bodyrate_x = true;
-	msg.ignore_bodyrate_y = true;
-	msg.ignore_bodyrate_z = true;
-	msg.ignore_position = false;
-	msg.ignore_velocity = true;
-	msg.ignore_acceleration_force = true;
-	msg.ignore_alt_hold = true;
+	msg.position = true;
+	msg.velocity = false;
+	msg.acceleration = false;
+	msg.attitude = false;
+	msg.body_rate = false;
 
 	offboard_control_mode_publisher_->publish(msg);
 }
 
-/**
- * @brief Publish position setpoint triplets.
- *        For this example, it sends position setpoint triplets to make the
- *        vehicle hover at 5 meters.
- */
-void OffboardControl::publish_position_setpoint_triplet() const {
-	PositionSetpointTriplet msg{};
-	msg.timestamp = timestamp_.load();
-	msg.current.timestamp = timestamp_.load();
-	msg.current.type = PositionSetpoint::SETPOINT_TYPE_POSITION;
-	msg.current.x = 0.0;
-	msg.current.y = 0.0;
-	msg.current.z = -5.0;
-	msg.current.yaw = 1.5707963268;
-	msg.current.cruising_speed = -1.0;
-	msg.current.position_valid = true;
-	msg.current.yaw_valid = true;
-	msg.current.alt_valid = true;
-	msg.current.valid = true;
 
-	position_setpoint_triplet_publisher_->publish(msg);
+/**
+ * @brief Publish a trajectory setpoint
+ *        For this example, it sends a trajectory setpoint to make the
+ *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
+ */
+void OffboardControl::publish_trajectory_setpoint() const {
+	TrajectorySetpoint msg{};
+	msg.timestamp = timestamp_.load();
+	msg.x = 0.0;
+	msg.y = 0.0;
+	msg.z = -5.0;
+	msg.yaw = -3.14; // [-PI:Pi)
+
+	trajectory_setpoint_publisher_->publish(msg);
 }
 
 /**

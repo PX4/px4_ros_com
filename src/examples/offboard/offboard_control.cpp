@@ -146,15 +146,11 @@ void OffboardControl::disarm() const {
 void OffboardControl::publish_offboard_control_mode() const {
 	OffboardControlMode msg{};
 	msg.timestamp = timestamp_.load();
-	msg.ignore_thrust = true;
-	msg.ignore_attitude = true;
-	msg.ignore_bodyrate_x = true;
-	msg.ignore_bodyrate_y = true;
-	msg.ignore_bodyrate_z = true;
-	msg.ignore_position = false;
-	msg.ignore_velocity = true;
-	msg.ignore_acceleration_force = true;
-	msg.ignore_alt_hold = true;
+	msg.attitude = true;
+	msg.body_rate = true;
+	msg.position = false;
+	msg.velocity = true;
+	msg.acceleration = true;
 
 	offboard_control_mode_publisher_->publish(msg);
 }
@@ -169,12 +165,11 @@ void OffboardControl::publish_position_setpoint_triplet() const {
 	msg.timestamp = timestamp_.load();
 	msg.current.timestamp = timestamp_.load();
 	msg.current.type = PositionSetpoint::SETPOINT_TYPE_POSITION;
-	msg.current.x = 0.0;
-	msg.current.y = 0.0;
-	msg.current.z = -5.0;
+	msg.current.vx = 0.0;
+	msg.current.vy = 0.0;
+	msg.current.vz = -5.0;
 	msg.current.yaw = 1.5707963268;
 	msg.current.cruising_speed = -1.0;
-	msg.current.position_valid = true;
 	msg.current.yaw_valid = true;
 	msg.current.alt_valid = true;
 	msg.current.valid = true;

@@ -37,6 +37,11 @@
  * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
  * @author Mohamed Moustafa <mohamed.moustafa@nxp.com>
+
+ * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
+ * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info. 
+ * As per PR: https://github.com/PX4/PX4-Autopilot/pull/17094, the format
+ * of the TrajectorySetpoint message shall change.
  */
 
 #include <px4_msgs/msg/offboard_control_mode.hpp>
@@ -46,7 +51,6 @@
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
-
 
 #include <chrono>
 #include <iostream>
@@ -75,11 +79,11 @@ public:
 #endif
 
 		// get common timestamp
-		timesync_sub_ = this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic",
-		10,
-		[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
-			timestamp_.store(msg->timestamp);
-		});
+		timesync_sub_ =
+			this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic", 10,
+				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
+					timestamp_.store(msg->timestamp);
+				});
 
 		offboard_setpoint_counter_ = 0;
 
@@ -172,7 +176,7 @@ void OffboardControl::publish_trajectory_setpoint() const {
 	msg.x = 0.0;
 	msg.y = 0.0;
 	msg.z = -5.0;
-	msg.yaw = -3.14; // [-PI:Pi)
+	msg.yaw = -3.14; // [-PI:PI]
 
 	trajectory_setpoint_publisher_->publish(msg);
 }

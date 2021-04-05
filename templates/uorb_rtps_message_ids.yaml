@@ -160,6 +160,7 @@ rtps:
     msg: TecsStatus
   - id: 76
     msg: TelemetryStatus
+    receive: true
   - id: 77
     msg: TestMotor
   - id: 78
@@ -169,6 +170,7 @@ rtps:
   - id: 79
     msg: TrajectoryWaypoint
     receive: true
+    send: true
   - id: 80
     msg: TransponderReport
   - id: 81
@@ -185,6 +187,7 @@ rtps:
     msg: VehicleAirData
   - id: 87
     msg: VehicleAttitude
+    send: true
   - id: 88
     msg: VehicleAttitudeSetpoint
   - id: 89
@@ -205,6 +208,7 @@ rtps:
     msg: VehicleLandDetected
   - id: 96
     msg: VehicleLocalPosition
+    send: true
   - id: 97
     msg: VehicleLocalPositionSetpoint
     receive: true
@@ -219,6 +223,7 @@ rtps:
     msg: VehicleRoi
   - id: 102
     msg: VehicleStatus
+    send: true
   - id: 103
     msg: VehicleStatusFlags
   - id: 104
@@ -241,6 +246,7 @@ rtps:
     msg: WheelEncoders
   - id: 112
     msg: VehicleAngularVelocity
+    send: true
   - id: 113
     msg: VehicleAcceleration
   - id: 115
@@ -268,8 +274,10 @@ rtps:
     msg: HoverThrustEstimate
   - id: 126
     msg: TrajectoryBezier
+    receive: true
   - id: 127
     msg: VehicleTrajectoryBezier
+    receive: true
   - id: 128
     msg: TimesyncStatus
   - id: 129
@@ -378,6 +386,7 @@ rtps:
   - alias: VehicleTrajectoryWaypoint
     id: 183
     msg: VehicleTrajectoryWaypointDesired
+    send: true
   - alias: ObstacleDistance
     id: 184
     msg: ObstacleDistanceFused

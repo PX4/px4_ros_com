@@ -1,0 +1,6 @@
+{
+    "ros.distro": "foxy",
+    "files.associations": {
+        "atomic": "cpp"
+    }
+}

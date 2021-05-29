@@ -94,6 +94,8 @@ if [ -z $ros_distro ]; then
   "focal")
     if [ -d "/opt/ros/foxy" ]; then
       ROS_DISTRO="foxy"
+    elif [ -d "/opt/ros/galactic" ]; then
+      ROS_DISTRO="galactic"
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."

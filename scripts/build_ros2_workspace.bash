@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros2_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS 2" >&2
   echo
   echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS 2 workspace."
-  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
@@ -96,6 +96,8 @@ if [ -z $ros_distro ]; then
       ROS_DISTRO="foxy"
     elif [ -d "/opt/ros/galactic" ]; then
       ROS_DISTRO="galactic"
+    elif [ -d "/opt/ros/rolling" ]; then
+      ROS_DISTRO="rolling"
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."

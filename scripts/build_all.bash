@@ -7,7 +7,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo
   echo -e "\t--ros1_ws_dir \t\t Location of the ROS (1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
   echo -e "\t--ros1_distro \t\t Set ROS (1) distro name (kinetic|melodic|noetic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros1_path \t\t Set ROS (1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--ros2_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
@@ -137,6 +137,10 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
     fi
     if [ -d "/opt/ros/foxy" ]; then
       export ROS2_DISTRO="foxy"
+    elif [ -d "/opt/ros/galactic" ]; then
+      ROS_DISTRO="galactic"
+    elif [ -d "/opt/ros/rolling" ]; then
+      ROS_DISTRO="rolling"
     else
       if [ -z $ros2_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."

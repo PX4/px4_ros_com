@@ -5,8 +5,8 @@ set -e
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros2_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS 2" >&2
   echo
-  echo -e "\t--no_ros1_bridge \t Do not clone and build ros1_bridge. Set if only using ROS 2 workspace."
-  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (ardent|bouncy|crystal|dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--add_ros1_bridge \t Clone ros1_bridge. To be used in a further build in case a ROS1 workspace is used. Check 'build_all' or 'build_ros1_bridge' scripts."
+  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
@@ -56,30 +56,13 @@ unset ROS_DISTRO
 if [ -z $ros_distro ]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename and
   # ROS 2 install directory
+  # The distros are order by priority (according to being LTS vs non-LTS)
   case "$(lsb_release -s -c)" in
-  "xenial")
-    if [ -d "/opt/ros/ardent" ]; then
-      ROS_DISTRO="ardent"
-    else
-      if [ -z $ros_path ]; then
-        echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/ardent/install). Otherwise, please install ROS Ardent following https://index.ros.org/doc/ros2/Installation/Crystal/Linux-Install-Binary/"
-        exit 1
-      else
-        # source the ROS 2 environment (from arg)
-        source $ros_path
-      fi
-    fi
-    ;;
   "bionic")
     if [ -d "/opt/ros/dashing" ]; then
       ROS_DISTRO="dashing"
     elif [ -d "/opt/ros/eloquent" ]; then
       ROS_DISTRO="eloquent"
-    elif [ -d "/opt/ros/crystal" ]; then
-      ROS_DISTRO="crystal"
-    elif [ -d "/opt/ros/bouncy" ]; then
-      ROS_DISTRO="bouncy"
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
@@ -133,7 +116,7 @@ ROS_WS_SRC_DIR=$(cd "$(dirname "$ROS_REPO_DIR")" && pwd)
 ROS_WS_DIR=$(cd "$(dirname "$ROS_WS_SRC_DIR")" && pwd)
 
 # clone ros1_bridge to the workspace dir
-if [ -z $no_ros1_bridge ] && [ ! -d "$ROS_WS_SRC_DIR/ros1_bridge" ]; then
+if [ ! -z $add_ros1_bridge ] && [ ! -d "$ROS_WS_SRC_DIR/ros1_bridge" ]; then
   cd $ROS_WS_SRC_DIR && git clone https://github.com/ros2/ros1_bridge.git -b $ROS_DISTRO
 fi
 

@@ -8,8 +8,8 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo "NOTE: The script requires both ROS 2 and ROS (1) workspaces to be built previously." >&2
   echo
   echo -e "\t--ros1_ws_dir \t Location of the ROS( 1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
-  echo -e "\t--ros1_distro \t Set ROS (1) distro name (kinetic|melodic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2  distro name (ardent|bouncy|crystal|dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros1_distro \t Set ROS (1) distro name (melodic|noetic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2  distro name (dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros1_path \t\t Set ROS(1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--ros2_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
@@ -39,34 +39,9 @@ unset ROS_DISTRO
 # One can pass the ROS_DISTRO's using the '--ros1_distro' and '--ros2_distro' args
 if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
   # set the ROS_DISTRO variables automatically based on the Ubuntu codename and
-  # ROS install directory
+  # ROS install directory.
+  # The distros are order by priority (according to being LTS vs non-LTS)
   case "$(lsb_release -s -c)" in
-  "xenial")
-    if [ -d "/opt/ros/kinetic" ]; then
-      ROS1_DISTRO="kinetic"
-    else
-      if [ -z $ros1_path ]; then
-        echo "- No ROS (1) distro installed or not installed in the default directory."
-        echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/kinetic/install). Otherwise, please install ROS Kinetic following http://wiki.ros.org/kinetic/Installation"
-        exit 1
-      else
-        # source the ROS(1) environment (from arg)
-        source $ros1_path
-      fi
-    fi
-    if [ -d "/opt/ros/ardent" ]; then
-      ROS2_DISTRO="ardent"
-    else
-      if [ -z $ros2_path ]; then
-        echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/ardent/install). Otherwise, please install ROS 2 Ardent following https://index.ros.org/doc/ros2/Installation/Crystal/Linux-Install-Binary/"
-        exit 1
-      else
-        # source the ROS 2 environment (from arg)
-        source $ros2_path
-      fi
-    fi
-    ;;
   "bionic")
     if [ -d "/opt/ros/melodic" ]; then
       export ROS1_DISTRO="melodic"
@@ -85,10 +60,6 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
       export ROS2_DISTRO="dashing"
     elif [ -d "/opt/ros/eloquent" ]; then
       export ROS2_DISTRO="eloquent"
-    elif [ -d "/opt/ros/crystal" ]; then
-      export ROS2_DISTRO="crystal"
-    elif [ -d "/opt/ros/bouncy" ]; then
-      export ROS2_DISTRO="bouncy"
     else
       if [ -z $ros2_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
@@ -102,7 +73,7 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
     fi
     ;;
   "focal")
-    if [ -d "/opt/ros/melodic" ]; then
+    if [ -d "/opt/ros/noetic" ]; then
       export ROS1_DISTRO="noetic"
     else
       if [ -z $ros1_path ]; then

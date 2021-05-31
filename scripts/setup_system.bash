@@ -157,10 +157,11 @@ if [ ! -z $install_ros1 ]; then
 fi
 
 # Install ROS2 dependencies
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | \
+  sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 echo "Updating package lists ..."
-sudo sh -c "echo deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main $(lsb_release -sc) main > /etc/apt/sources.list.d/ros2-latest.list"
 sudo apt-get -qq update
 sudo apt-get -qq dist-upgrade
 echo "Installing ROS2 $ROS2_DISTRO and some dependencies..."

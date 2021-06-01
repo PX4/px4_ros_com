@@ -18,7 +18,7 @@ jobs:
   build_and_test:
     name: "ROS 2 ${{ matrix.ros2_distro }}"
     runs-on: ubuntu-20.04
-    container: px4io/px4-dev-ros2-${{ matrix.ros2_distro }}:2021-05-27
+    container: px4io/px4-dev-ros2-${{ matrix.ros2_distro }}:2021-05-31
     strategy:
       matrix:
         ros2_distro: [dashing, eloquent, foxy, galactic, rolling]

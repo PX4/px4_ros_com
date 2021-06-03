@@ -14,10 +14,12 @@
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
   <build_depend>eigen</build_depend>
+  <build_depend>fastrtps</build_depend>
+  <build_depend>fastcdr</build_depend>
+  <build_depend>ros_environment</build_depend>
 
   <depend>builtin_interfaces</depend>
   <depend>rclcpp</depend>
-  <depend>ros_environment</depend>
 
   <depend>px4_msgs</depend>
   <depend>geometry_msgs</depend>

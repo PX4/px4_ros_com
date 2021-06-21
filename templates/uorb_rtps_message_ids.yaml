@@ -169,7 +169,6 @@ rtps:
     send: true
   - id: 79
     msg: TrajectoryWaypoint
-    receive: true
     send: true
   - id: 80
     msg: TransponderReport

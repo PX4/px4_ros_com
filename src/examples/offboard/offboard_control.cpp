@@ -63,23 +63,23 @@ public:
 	OffboardControl() : Node("offboard_control") {
 #ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic", 10);
+			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in", 10);
 		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("TrajectorySetpoint_PubSubTopic", 10);
+			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in", 10);
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic", 10);
+			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
 #else
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>("OffboardControlMode_PubSubTopic");
+			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in");
 		trajectory_setpoint_publisher_ =
-		 	this->create_publisher<TrajectorySetpoint>("TrajectorySetpoint_PubSubTopic");
+			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in");
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>("VehicleCommand_PubSubTopic");
+			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in");
 #endif
 
 		// get common timestamp
 		timesync_sub_ =
-			this->create_subscription<px4_msgs::msg::Timesync>("Timesync_PubSubTopic", 10,
+			this->create_subscription<px4_msgs::msg::Timesync>("fmu/timesync/out", 10,
 				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
 					timestamp_.store(msg->timestamp);
 				});

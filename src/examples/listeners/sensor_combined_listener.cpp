@@ -50,7 +50,7 @@ class SensorCombinedListener : public rclcpp::Node
 public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
-			"SensorCombined_PubSubTopic",
+			"fmu/sensor_combined/out",
 #ifdef ROS_DEFAULT_API
             10,
 #endif

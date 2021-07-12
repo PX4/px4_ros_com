@@ -42,13 +42,6 @@ ROS2_WS_DIR=$(cd "$(dirname "$ROS2_WS_SRC_DIR")" && pwd)
 ROS1_WS_DIR=${delete_ros1_ws_build:-""}
 
 [ ! -v $verbose ] && echo -e "\t - ROS2:"
-# clean micrortps_agent generated source code
-if [ -d $ROS2_WS_SRC_DIR/px4_ros_com/src/micrortps_agent ]; then
-  cd $ROS2_WS_SRC_DIR/px4_ros_com/src && sudo rm -rf micrortps_agent
-  [ ! -v $verbose ] && echo -e "\t -- Deleted $ROS2_WS_SRC_DIR/px4_ros_com/src/micrortps_agent"
-  CLEAN_HISTORY=1
-fi
-
 # if '--delete_ros1_bridge' set, delete the ros1_bridge repo
 if [ ! -v $delete_ros1_bridge ] && [ -d $ROS2_WS_SRC_DIR/ros1_bridge ]; then
   cd $ROS2_WS_SRC_DIR && sudo rm -rf ros1_bridge

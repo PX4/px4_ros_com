@@ -152,7 +152,7 @@ else()
 endif()
 
 # Set the micro-RTPS agent code dir
-set(MICRORTPS_AGENT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/micrortps_agent)
+set(MICRORTPS_AGENT_DIR ${CMAKE_BINARY_DIR}/src/micrortps_agent)
 
 # Set the list of files to be compiled
 set(MICRORTPS_AGENT_FILES ${MICRORTPS_AGENT_DIR}/microRTPS_agent.cpp)

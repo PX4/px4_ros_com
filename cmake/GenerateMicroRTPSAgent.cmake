@@ -30,7 +30,7 @@
 ##################################################################################
 # Cmake module to generate micro-RTPS agent code Depends on:
 #       - px4_msgs
-#       - templates/uorb_rtps_message_ids.yaml
+#       - templates/urtps_bridge_topics.yaml
 #       - scripts/uorb_rtps_classifier.py
 #       - scripts/generate_microRTPS_bridge.py
 #       - FASTRTPSGEN_DIR
@@ -91,7 +91,7 @@ message(STATUS "IDL definitions under ${IDL_DIR}")
 
 # Check if the RTPS ID's mapper yaml file exists and if yes, change the msg
 # naming to PascalCase
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/urtps_bridge_topics.yaml)
   # Create list of messages to send
   set(CONFIG_RTPS_SEND_TOPICS)
   message(STATUS "Retrieving list of msgs to send...")
@@ -103,7 +103,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
                           --topic-msg-dir
                           ${MSGS_DIR}
                           --rtps-ids-file
-                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
+                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/urtps_bridge_topics.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_SEND_TOPICS)
   set(CONFIG_RTPS_SEND_ALIAS_TOPICS "")
   string(FIND ${CONFIG_RTPS_SEND_TOPICS} "alias" found_send_alias)
@@ -129,7 +129,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
                           --topic-msg-dir
                           ${MSGS_DIR}
                           --rtps-ids-file
-                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
+                          ${CMAKE_CURRENT_SOURCE_DIR}/templates/urtps_bridge_topics.yaml
                   OUTPUT_VARIABLE CONFIG_RTPS_RECEIVE_TOPICS)
   set(CONFIG_RTPS_RECEIVE_ALIAS_TOPICS "")
   string(FIND ${CONFIG_RTPS_RECEIVE_TOPICS} "alias" found_receive_alias)
@@ -147,7 +147,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml)
 else()
   message(
     FATAL_ERROR
-      "RTPS msg ID yaml file \"${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml\" not found!"
+      "RTPS msg ID yaml file \"${CMAKE_CURRENT_SOURCE_DIR}/templates/urtps_bridge_topics.yaml\" not found!"
     )
 endif()
 
@@ -212,11 +212,12 @@ add_custom_command(
     --fastrtpsgen-include ${px4_msgs_FASTRTPSGEN_INCLUDE}
     --topic-msg-dir ${MSGS_DIR}
     --urtps-templates-dir ${CMAKE_CURRENT_SOURCE_DIR}/templates
-    --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/templates/uorb_rtps_message_ids.yaml
+    --rtps-ids-file ${CMAKE_CURRENT_SOURCE_DIR}/templates/urtps_bridge_topics.yaml
     --agent
     --agent-outdir ${MICRORTPS_AGENT_DIR}
     --package "px4_msgs"
     --idl-dir ${IDL_DIR}
+    >${CMAKE_BINARY_DIR}/micrortps_bridge.log 2>&1 || cat ${CMAKE_BINARY_DIR}/micrortps_bridge.log
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Generating micro-RTPS agent code...")
 

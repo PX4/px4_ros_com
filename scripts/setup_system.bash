@@ -53,8 +53,8 @@ fi
 # Install Foonathan memory
 git clone https://github.com/eProsima/foonathan_memory_vendor.git \
   && cd foonathan_memory_vendor \
-  && mkdir build && cd build
-  && cmake ..
+  && mkdir build && cd build \
+  && cmake .. \
   && cmake --build . --target install
 
 # Install Gradle (Required to build Fast-RTPS-Gen)
@@ -195,6 +195,11 @@ curl https://bootstrap.pypa.io/get-pip.py | python3 &&
     pytest-repeat \
     pytest-runner \
     pytest-rerunfailures
+
+# Install Python3 packages for uORB topic generation
+python3 -c "import em" || python3 -m pip install --user empy
+python3 -c "import genmsg.template_tools" || python3 -m pip install --user pyros-genmsg
+python3 -c "import packaging" || python3 -m pip install --user packaging
 
 # Clean residuals
 if [ -o clean ]; then

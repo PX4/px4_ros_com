@@ -143,7 +143,9 @@ if [ -z $ROS1_WS_DIR ]; then
   echo "ROS1 workspace does not exist!"
   exit 1
 else
-  if [ -f $ROS1_WS_DIR/install/setup.bash ]; then
+  if [ -f $ROS1_WS_DIR/devel/setup.bash ]; then
+    unset ROS_DISTRO && source $ROS1_WS_DIR/devel/setup.bash
+  elif [ -f $ROS1_WS_DIR/install/setup.bash ]; then
     unset ROS_DISTRO && source $ROS1_WS_DIR/install/setup.bash
   else
     echo "ROS1 workspace not built."

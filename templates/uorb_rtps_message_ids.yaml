@@ -343,6 +343,12 @@ rtps:
     msg: EstimatorEventFlags
   - id: 160
     msg: Event
+  - id: 161
+    msg: BaroBiasEstimate
+  - id: 162
+    msg: InternalCombustionEngineStatus
+  - id: 163
+    msg: CameraStatus
   - alias: ActuatorControls
     id: 180
     msg: ActuatorControls0

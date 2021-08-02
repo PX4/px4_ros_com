@@ -344,7 +344,7 @@ rtps:
   - id: 160
     msg: Event
   - id: 161
-    msg: BaroBiasEstimate
+    msg: EstimatorBaroBias
   - id: 162
     msg: InternalCombustionEngineStatus
   - id: 163

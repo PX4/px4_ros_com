@@ -38,13 +38,13 @@
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
 
  * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
- * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info. 
+ * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info.
  * As per PR: https://github.com/PX4/PX4-Autopilot/pull/17094, the format
  * of the TrajectorySetpoint message shall change.
  */
 
 #include <px4_msgs/msg/offboard_control_mode.hpp>
-#include <px4_msgs/msg/trajectory_setpoint.hpp>
+#include <px4_msgs/msg/offboard_trajectory_setpoint.hpp>
 #include <px4_msgs/msg/timesync.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
@@ -64,15 +64,15 @@ public:
 #ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
 			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in", 10);
-		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in", 10);
+		offboard_trajectory_setpoint_publisher_ =
+			this->create_publisher<OffboardTrajectorySetpoint>("fmu/offboard_trajectory_setpoint/in", 10);
 		vehicle_command_publisher_ =
 			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
 #else
 		offboard_control_mode_publisher_ =
 			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in");
-		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in");
+		offboard_trajectory_setpoint_publisher_ =
+			this->create_publisher<OffboardTrajectorySetpoint>("fmu/offboard_trajectory_setpoint/in");
 		vehicle_command_publisher_ =
 			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in");
 #endif
@@ -98,7 +98,7 @@ public:
 
             		// offboard_control_mode needs to be paired with trajectory_setpoint
 			publish_offboard_control_mode();
-			publish_trajectory_setpoint();
+			publish_offboard_trajectory_setpoint();
 
            		 // stop the counter after reaching 11
 			if (offboard_setpoint_counter_ < 11) {
@@ -115,7 +115,7 @@ private:
 	rclcpp::TimerBase::SharedPtr timer_;
 
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
-	rclcpp::Publisher<TrajectorySetpoint>::SharedPtr trajectory_setpoint_publisher_;
+	rclcpp::Publisher<OffboardTrajectorySetpoint>::SharedPtr offboard_trajectory_setpoint_publisher_;
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
 	rclcpp::Subscription<px4_msgs::msg::Timesync>::SharedPtr timesync_sub_;
 
@@ -124,7 +124,7 @@ private:
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 
 	void publish_offboard_control_mode() const;
-	void publish_trajectory_setpoint() const;
+	void publish_offboard_trajectory_setpoint() const;
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0,
 				     float param2 = 0.0) const;
 };
@@ -163,21 +163,20 @@ void OffboardControl::publish_offboard_control_mode() const {
 	offboard_control_mode_publisher_->publish(msg);
 }
 
-
 /**
  * @brief Publish a trajectory setpoint
  *        For this example, it sends a trajectory setpoint to make the
  *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
  */
-void OffboardControl::publish_trajectory_setpoint() const {
-	TrajectorySetpoint msg{};
+void OffboardControl::publish_offboard_trajectory_setpoint() const {
+	OffboardTrajectorySetpoint msg{};
 	msg.timestamp = timestamp_.load();
 	msg.x = 0.0;
 	msg.y = 0.0;
 	msg.z = -5.0;
 	msg.yaw = -3.14; // [-PI:PI]
 
-	trajectory_setpoint_publisher_->publish(msg);
+	offboard_trajectory_setpoint_publisher_->publish(msg);
 }
 
 /**

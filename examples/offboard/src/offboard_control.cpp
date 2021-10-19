@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright 2020 PX4 Development Team. All rights reserved.
+ * Copyright 2021 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,21 +61,12 @@ using namespace px4_msgs::msg;
 class OffboardControl : public rclcpp::Node {
 public:
 	OffboardControl() : Node("offboard_control") {
-#ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
 			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in", 10);
 		trajectory_setpoint_publisher_ =
 			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in", 10);
 		vehicle_command_publisher_ =
 			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
-#else
-		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in");
-		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in");
-		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in");
-#endif
 
 		// get common timestamp
 		timesync_sub_ =
@@ -83,6 +74,15 @@ public:
 				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
 					timestamp_.store(msg->timestamp);
 				});
+
+
+        this->declare_parameter("pos_x_m");
+        this->declare_parameter("pos_y_m");
+        this->declare_parameter("pos_z_m");
+
+        this->get_parameter_or("pos_x_m", pos_x_m_, 0.f);
+        this->get_parameter_or("pos_y_m", pos_y_m_, 0.f);
+        this->get_parameter_or("pos_z_m", pos_z_m_, -5.f);
 
 		offboard_setpoint_counter_ = 0;
 
@@ -93,7 +93,7 @@ public:
 				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 
 				// Arm the vehicle
-				this->arm();
+				//this->arm();
 			}
 
             		// offboard_control_mode needs to be paired with trajectory_setpoint
@@ -127,6 +127,10 @@ private:
 	void publish_trajectory_setpoint() const;
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0,
 				     float param2 = 0.0) const;
+
+    float pos_x_m_{0.f};
+    float pos_y_m_{0.f};
+    float pos_z_m_{0.f};
 };
 
 /**
@@ -172,10 +176,10 @@ void OffboardControl::publish_offboard_control_mode() const {
 void OffboardControl::publish_trajectory_setpoint() const {
 	TrajectorySetpoint msg{};
 	msg.timestamp = timestamp_.load();
-	msg.x = 0.0;
-	msg.y = 0.0;
-	msg.z = -5.0;
-	msg.yaw = -3.14; // [-PI:PI]
+	msg.x = pos_x_m_;
+	msg.y = pos_y_m_;
+	msg.z = pos_z_m_;
+	msg.yaw = NAN; // [-PI:PI]
 
 	trajectory_setpoint_publisher_->publish(msg);
 }

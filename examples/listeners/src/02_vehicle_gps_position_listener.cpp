@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright 2019 PX4 Development Team. All rights reserved.
+ * Copyright 2021 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@
 
 /**
  * @brief Vehicle GPS position uORB topic listener example
- * @file vehicle_global_position_listener.cpp
+ * @file 02_vehicle_global_position_listener.cpp
  * @addtogroup examples
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
  */
@@ -48,10 +48,7 @@ class VehicleGpsPositionListener : public rclcpp::Node
 public:
 	explicit VehicleGpsPositionListener() : Node("vehicle_global_position_listener") {
 		subscription_ = this->create_subscription<px4_msgs::msg::VehicleGpsPosition>(
-			"fmu/vehicle_gps_position/out",
-#ifdef ROS_DEFAULT_API
-            10,
-#endif
+			"fmu/vehicle_gps_position/out", 10,
 			[this](const px4_msgs::msg::VehicleGpsPosition::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED VEHICLE GPS POSITION DATA"   << std::endl;

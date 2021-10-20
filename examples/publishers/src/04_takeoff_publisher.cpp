@@ -57,7 +57,11 @@ int main(int argc, char *argv[]) {
     rclcpp::WallRate loop_rate(50ms);
 
     for (int i = 0; i < 10; ++i) {
-        publish_vehicle_command(vehicle_command_publisher, VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 4, 2);
+        publish_vehicle_command(vehicle_command_publisher,
+            VehicleCommand::VEHICLE_CMD_DO_SET_MODE,
+            1,  // MAV_MODE = 1 to use param2 and param3 as custome_mode and custom_submode
+            4,  // CUSTOM_MODE = PX4_CUSTOM_MAIN_MODE_AUTO
+            2); // CUSTOM_SUBMODE = PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF
         loop_rate.sleep();
     }
 

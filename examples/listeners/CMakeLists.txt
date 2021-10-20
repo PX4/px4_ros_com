@@ -12,14 +12,14 @@ find_package(px4_msgs REQUIRED)
 add_executable(sensor_combined_listener src/01_sensor_combined_listener.cpp)
 ament_target_dependencies(sensor_combined_listener rclcpp px4_msgs)
 
-add_executable(vehicle_gps_position_listener src/02_vehicle_gps_position_listener.cpp)
-ament_target_dependencies(vehicle_gps_position_listener rclcpp px4_msgs)
+add_executable(vehicle_odometry_listener src/02_vehicle_odometry_listener.cpp)
+ament_target_dependencies(vehicle_odometry_listener rclcpp px4_msgs)
 
 ament_package()
 
 install(
     TARGETS
         sensor_combined_listener
-        vehicle_gps_position_listener
+        vehicle_odometry_listener
     DESTINATION 
         lib/${PROJECT_NAME})

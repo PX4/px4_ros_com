@@ -31,46 +31,48 @@
  ****************************************************************************/
 
 /**
- * @brief Publishing set mode message for `land` towards PX4
- * @file 05_land_publisher.cpp
+ * @brief Vehicle GPS position uORB topic listener example
+ * @file 02_vehicle_global_position_listener.cpp
  * @addtogroup examples
- * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
  * @author Bastian Jäger <bastian@auterion.com>
-
- * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
- * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info.
- * As per PR: https://github.com/PX4/PX4-Autopilot/pull/17094, the format
- * of the TrajectorySetpoint message shall change.
  */
 
-#include <chrono>
-#include <iostream>
 #include <rclcpp/rclcpp.hpp>
+#include <px4_msgs/msg/vehicle_odometry.hpp>
 
-#include "common.h"
-
-using namespace std::chrono_literals;
-using namespace px4_msgs::msg;
-
-int main(int argc, char *argv[]) {
-    rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("land_publisher");
-
-    rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher
-            = node->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
-    rclcpp::WallRate loop_rate(50ms);
-
-    for (int i = 0; i < 10; ++i) {
-        publish_vehicle_command(vehicle_command_publisher,
-            VehicleCommand::VEHICLE_CMD_DO_SET_MODE,
-            1,  // MAV_MODE = 1 to use param2 and param3 as custome_mode and custom_submode
-            4,  // CUSTOM_MODE = PX4_CUSTOM_MAIN_MODE_AUTO
-            6); // CUSTOM_SUBMODE = PX4_CUSTOM_SUB_MODE_AUTO_LAND
-        loop_rate.sleep();
+/**
+ * @brief Vehicle Odometry uORB topic data callback
+ */
+class VehicleOdometryListener : public rclcpp::Node
+{
+public:
+    explicit VehicleOdometryListener() : Node("vehicle_global_position_listener") {
+        subscription_ = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
+            "fmu/vehicle_odometry/out", 10,
+            [this](const px4_msgs::msg::VehicleOdometry::UniquePtr msg) {
+            std::cout << "\n\n\n\n";
+            std::cout << "RECEIVED VEHICLE ODOMETRY DATA"   << std::endl;
+            std::cout << "=================================="   << std::endl;
+            std::cout << "timestamp: " << msg->timestamp    << std::endl;
+            std::cout << "position: " << msg->x << ", " << msg->y << ", " << msg->z << std::endl;
+            std::cout << "velocity: " << msg->vx << ", " << msg->vy << ", " << msg->vz << std::endl;
+            std::cout << "orientation: " << msg->q[0] << ", " << msg->q[1] << ", " << msg->q[2] << ", " << msg->q[3] << std::endl;
+            std::cout << "angular vel: " << msg->rollspeed << ", " << msg->pitchspeed << ", " << msg->yawspeed << std::endl;
+        });
     }
+
+private:
+    rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr subscription_;
+};
+
+int main(int argc, char *argv[])
+{
+    std::cout << "Starting vehicle_odometry listener node..." << std::endl;
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<VehicleOdometryListener>());
 
     rclcpp::shutdown();
     return 0;
 }
-

@@ -159,7 +159,7 @@ void OffboardControl::publish_offboard_control_mode() const {
 	msg.acceleration = false;
 	msg.attitude = false;
 	msg.body_rate = false;
-	RCLCPP_INFO(this->get_logger(), "offboard control mode publisher  send");
+	// RCLCPP_INFO(this->get_logger(), "offboard control mode publisher  send");
 	offboard_control_mode_publisher_->publish(msg);
 }
 
@@ -176,7 +176,7 @@ void OffboardControl::publish_trajectory_setpoint() const {
 	msg.y = 0.0;
 	msg.z = -5.0;
 	msg.yaw = -3.14; // [-PI:PI]
-	RCLCPP_INFO(this->get_logger(), "trajectory setpoint send");
+	// RCLCPP_INFO(this->get_logger(), "trajectory setpoint send");
 	trajectory_setpoint_publisher_->publish(msg);
 }
 

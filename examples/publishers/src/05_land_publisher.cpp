@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright 2018 PX4 Development Team. All rights reserved.
+ * Copyright 2021 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,55 +31,46 @@
  ****************************************************************************/
 
 /**
- * @brief Debug Vect uORB topic adverstiser example
- * @file debug_vect_advertiser.cpp
+ * @brief Publishing set mode message for `land` towards PX4
+ * @file 05_land_publisher.cpp
  * @addtogroup examples
+ * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
+ * @author Bastian Jäger <bastian@auterion.com>
+
+ * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
+ * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info.
+ * As per PR: https://github.com/PX4/PX4-Autopilot/pull/17094, the format
+ * of the TrajectorySetpoint message shall change.
  */
 
 #include <chrono>
+#include <iostream>
 #include <rclcpp/rclcpp.hpp>
-#include <px4_msgs/msg/debug_vect.hpp>
+
+#include "common.h"
 
 using namespace std::chrono_literals;
+using namespace px4_msgs::msg;
 
-class DebugVectAdvertiser : public rclcpp::Node
-{
-public:
-	DebugVectAdvertiser() : Node("debug_vect_advertiser") {
-#ifdef ROS_DEFAULT_API
-		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("fmu/debug_vect/in", 10);
-#else
-		publisher_ = this->create_publisher<px4_msgs::msg::DebugVect>("fmu/debug_vect/in");
-#endif
-		auto timer_callback =
-		[this]()->void {
-			auto debug_vect = px4_msgs::msg::DebugVect();
-			debug_vect.timestamp = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch().count();
-			std::string name = "test";
-			std::copy(name.begin(), name.end(), debug_vect.name.begin());
-			debug_vect.x = 1.0;
-			debug_vect.y = 2.0;
-			debug_vect.z = 3.0;
-			RCLCPP_INFO(this->get_logger(), "\033[97m Publishing debug_vect: time: %llu x: %f y: %f z: %f \033[0m",
-                                debug_vect.timestamp, debug_vect.x, debug_vect.y, debug_vect.z);
-			this->publisher_->publish(debug_vect);
-		};
-		timer_ = this->create_wall_timer(500ms, timer_callback);
-	}
+int main(int argc, char *argv[]) {
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("land_publisher");
 
-private:
-	rclcpp::TimerBase::SharedPtr timer_;
-	rclcpp::Publisher<px4_msgs::msg::DebugVect>::SharedPtr publisher_;
-};
+    rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher
+            = node->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
+    rclcpp::WallRate loop_rate(50ms);
 
-int main(int argc, char *argv[])
-{
-	std::cout << "Starting debug_vect advertiser node..." << std::endl;
-	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
-	rclcpp::init(argc, argv);
-	rclcpp::spin(std::make_shared<DebugVectAdvertiser>());
+    for (int i = 0; i < 10; ++i) {
+        publish_vehicle_command(vehicle_command_publisher,
+            VehicleCommand::VEHICLE_CMD_DO_SET_MODE,
+            1,  // MAV_MODE = 1 to use param2 and param3 as custome_mode and custom_submode
+            4,  // CUSTOM_MODE = PX4_CUSTOM_MAIN_MODE_AUTO
+            6); // CUSTOM_SUBMODE = PX4_CUSTOM_SUB_MODE_AUTO_LAND
+        loop_rate.sleep();
+    }
 
-	rclcpp::shutdown();
-	return 0;
+    rclcpp::shutdown();
+    return 0;
 }
+

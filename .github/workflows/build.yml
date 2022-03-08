@@ -33,7 +33,7 @@ jobs:
           git clone https://github.com/PX4/px4_msgs.git -b master src/px4_msgs
       - name: Build package
         run: |
-          cd ~/colcon_ws/src/px4_ros_com/scripts
+          cd ~/colcon_ws/src/px4_ros_com/px4_ros_com/scripts
           ./build_ros2_workspace.bash --verbose --no_ros1_bridge --ros_distro ${{ matrix.ros2_distro }} --ros_path /opt/ros/${{ matrix.ros2_distro }}/setup.bash
       # - name: Build PX4 Firmware
       #   run: |

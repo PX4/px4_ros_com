@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>px4_ros_com_listener_examples</name>
+  <version>1.0.0</version>
+  <description>Example of ROS2 and Px4 interaction - listeners</description>
+  <license>BSD 3-Clause</license>
+  <maintainer email="nuno@auterion.com">Nuno Marques</maintainer>
+  <author email="nuno@auterion.com">Nuno Marques</author>
+  <author email="bastian@auterion.com">Bastian Jäger</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>px4_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

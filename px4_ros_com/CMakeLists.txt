@@ -67,16 +67,6 @@ include(GenerateMicroRTPSAgent)
 
 include_directories(include)
 
-function(custom_executable subfolder target)
-  add_executable(${target} src/${subfolder}/${target}.cpp)
-  ament_target_dependencies(${target}
-    rclcpp
-    px4_msgs
-  )
-  install(TARGETS ${target}
-  DESTINATION lib/${PROJECT_NAME})
-endfunction()
-
 # Add frame_transforms lib
 add_library(frame_transforms SHARED src/lib/frame_transforms.cpp)
 ament_target_dependencies(frame_transforms Eigen3 geometry_msgs sensor_msgs)
@@ -91,12 +81,6 @@ target_link_libraries(frame_transforms Eigen3::Eigen ${geometry_msgs_LIBRARIES} 
 add_executable(micrortps_agent ${MICRORTPS_AGENT_FILES})
 ament_target_dependencies(micrortps_agent fastcdr fastrtps rclcpp)
 target_link_libraries(micrortps_agent fastcdr fastrtps ${rclcpp_LIBRARIES})
-
-# Add examples
-custom_executable(examples/listeners sensor_combined_listener)
-custom_executable(examples/listeners vehicle_gps_position_listener)
-custom_executable(examples/advertisers debug_vect_advertiser)
-custom_executable(examples/offboard offboard_control)
 
 ############
 # Install ##

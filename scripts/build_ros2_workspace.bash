@@ -6,7 +6,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo -e "Usage: build_ros2_workspace.bash [option...] \t This script builds px4_ros_com workspace for ROS 2" >&2
   echo
   echo -e "\t--add_ros1_bridge \t Clone ros1_bridge. To be used in a further build in case a ROS1 workspace is used. Check 'build_all' or 'build_ros1_bridge' scripts."
-  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros_distro \t\t Set ROS 2 distro name (dashing|eloquent|foxy|galactic|humble|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros_path \t\t Set ROS 2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
   echo
@@ -79,6 +79,24 @@ if [ -z $ros_distro ]; then
       ROS_DISTRO="foxy"
     elif [ -d "/opt/ros/galactic" ]; then
       ROS_DISTRO="galactic"
+    elif [ -d "/opt/ros/humble" ]; then
+      ROS_DISTRO="humble"
+    elif [ -d "/opt/ros/rolling" ]; then
+      ROS_DISTRO="rolling"
+    else
+      if [ -z $ros_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS2 environment (from arg)
+        source $ros_path
+      fi
+    fi
+    ;;
+  "jammy")
+    if [ -d "/opt/ros/humble" ]; then
+      ROS_DISTRO="humble"
     elif [ -d "/opt/ros/rolling" ]; then
       ROS_DISTRO="rolling"
     else

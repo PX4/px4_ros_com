@@ -17,7 +17,7 @@ include(EnableSanitizers)
 # Required since
 #   - "create_subscription()" and "create_publisher()" APIs changed
 #   - eigen3_cmake_module is only available in these distros
-list(APPEND ROS_DISTROS "dashing" "eloquent" "foxy" "galactic" "rolling")
+list(APPEND ROS_DISTROS "dashing" "eloquent" "foxy" "galactic" "humble" "rolling")
 set(ROS_DISTRO)
 if(DEFINED ENV{ROS2_DISTRO})
   set(ROS_DISTRO $ENV{ROS2_DISTRO})

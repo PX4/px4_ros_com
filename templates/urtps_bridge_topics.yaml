@@ -12,7 +12,7 @@ rtps:
     receive: true
   - msg: OffboardControlMode
     receive: true
-  - msg: OpticalFlow
+  - msg: SensorOpticalFlow
     receive: true
   - msg: PositionSetpoint
     receive: true

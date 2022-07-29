@@ -79,8 +79,6 @@ if [ -z $ros_distro ]; then
       ROS_DISTRO="foxy"
     elif [ -d "/opt/ros/galactic" ]; then
       ROS_DISTRO="galactic"
-    elif [ -d "/opt/ros/humble" ]; then
-      ROS_DISTRO="humble"
     elif [ -d "/opt/ros/rolling" ]; then
       ROS_DISTRO="rolling"
     else
@@ -102,7 +100,7 @@ if [ -z $ros_distro ]; then
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Humble following https://docs.ros.org/en/humble/Installation.html"
         exit 1
       else
         # source the ROS2 environment (from arg)

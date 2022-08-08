@@ -9,7 +9,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
   echo
   echo -e "\t--ros1_ws_dir \t Location of the ROS( 1) workspace where one has cloned px4_ros_com 'ros1' branch. Default: $HOME/px4_ros_com_ros1"
   echo -e "\t--ros1_distro \t Set ROS (1) distro name (melodic|noetic). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
-  echo -e "\t--ros2_distro \t Set ROS2  distro name (dashing|eloquent|foxy|galactic|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
+  echo -e "\t--ros2_distro \t Set ROS2  distro name (dashing|eloquent|foxy|galactic|humble|rolling). If not set, the script will set the ROS_DISTRO env variable based on the Ubuntu codename"
   echo -e "\t--ros1_path \t\t Set ROS(1) environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--ros2_path \t\t Set ROS2 environment setup.bash location. Useful for source installs. If not set, the script sources the environment in /opt/ros/$ROS_DISTRO/"
   echo -e "\t--verbose \t\t Add more verbosity to the console output"
@@ -96,6 +96,32 @@ if [ -z $ros1_distro ] && [ -z $ros2_distro]; then
       if [ -z $ros2_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
         echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
+        exit 1
+      else
+        # source the ROS2 environment (from arg)
+        source $ros2_path
+        export ROS2_DISTRO="$(rosversion -d)"
+      fi
+    fi
+    ;;
+  "jammy")
+    if [ -z $ros1_path ]; then
+      echo "- No ROS (1) distro installed."
+      echo "  If you are using a ROS (1) version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/noetic/install)."
+      exit 1
+    else
+      # source the ROS (1) environment (from arg)
+      source $ros1_path
+      export ROS1_DISTRO="$(rosversion -d)"
+    fi
+    if [ -d "/opt/ros/humble" ]; then
+      ROS2_DISTRO="humble"
+    elif [ -d "/opt/ros/rolling" ]; then
+      ROS2_DISTRO="rolling"
+    else
+      if [ -z $ros2_path ]; then
+        echo "- No ROS 2 distro installed or not installed in the default directory."
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros1_path' arg! (ex: ~/ros_src/humble/install). Otherwise, please install ROS 2 Humble following https://docs.ros.org/en/humble/Installation.html"
         exit 1
       else
         # source the ROS2 environment (from arg)

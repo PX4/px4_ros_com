@@ -36,10 +36,12 @@ endif()
 set(USES_DEPRECATED_EXPORT_API "ardent" "bouncy" "crystal" "dashing" "eloquent")
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(fastcdr REQUIRED)
 find_package(fastrtps REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 get_default_rmw_implementation(rmw_implementation)
 find_package("${rmw_implementation}" REQUIRED)
 
@@ -101,12 +103,13 @@ custom_executable(examples/offboard offboard_control)
 ############
 # Install ##
 ############
+ament_python_install_package(${PROJECT_NAME})
 
 # Export information to downstream packages
 if(ROS_DISTRO IN_LIST ROS_DISTROS)
-  ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3 px4_msgs geometry_msgs sensor_msgs)
+  ament_export_dependencies(ament_cmake ament_cmake_python rclcpp rclpy rosidl_default_runtime eigen3_cmake_module Eigen3 px4_msgs geometry_msgs sensor_msgs)
 else()
-  ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime Eigen3 px4_msgs geometry_msgs sensor_msgs)
+  ament_export_dependencies(ament_cmake ament_cmake_python rclcpp rclpy rosidl_default_runtime Eigen3 px4_msgs geometry_msgs sensor_msgs)
 endif()
 if (ROS_DISTRO IN_LIST USES_DEPRECATED_EXPORT_API)
   ament_export_interfaces(export_frame_transforms HAS_LIBRARY_TARGET)
@@ -146,6 +149,11 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Install python scripts
+install(PROGRAMS 
+  scripts/offboard_control_p.py 
+  DESTINATION lib/${PROJECT_NAME}
+)
 ############
 # Testing ##
 ############

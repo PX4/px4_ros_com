@@ -4,7 +4,7 @@ name: Build and Test package
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
       - 'ros2'
   pull_request:
     branches-ignore:
@@ -30,7 +30,7 @@ jobs:
           mkdir -p ~/colcon_ws/src
           cd ~/colcon_ws
           ln -s ${GITHUB_WORKSPACE} src/px4_ros_com
-          git clone https://github.com/PX4/px4_msgs.git -b master src/px4_msgs
+          git clone https://github.com/PX4/px4_msgs.git -b main src/px4_msgs
       - name: Build package
         run: |
           cd ~/colcon_ws/src/px4_ros_com/scripts

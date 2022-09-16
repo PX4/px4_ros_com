@@ -1,14 +1,10 @@
 name: Build and Test package
 
-# CI runs over all branches that do not contain 'ros1' in the name
+# CI runs over all branches
 on:
   push:
     branches:
       - 'main'
-      - 'ros2'
-  pull_request:
-    branches-ignore:
-      - '**ros1**'
 
 defaults:
   run:
@@ -21,7 +17,7 @@ jobs:
     container: px4io/px4-dev-ros2-${{ matrix.ros2_distro }}:2021-05-31
     strategy:
       matrix:
-        ros2_distro: [dashing, eloquent, foxy, galactic, rolling]
+        ros2_distro: [foxy, galactic, humble, rolling]
     steps:
       - uses: actions/checkout@v3
       - name: Configure workspace
@@ -34,7 +30,7 @@ jobs:
       - name: Build package
         run: |
           cd ~/colcon_ws/src/px4_ros_com/scripts
-          ./build_ros2_workspace.bash --verbose --no_ros1_bridge --ros_distro ${{ matrix.ros2_distro }} --ros_path /opt/ros/${{ matrix.ros2_distro }}/setup.bash
+          ./build_ros2_workspace.bash --verbose -ros_distro ${{ matrix.ros2_distro }} --ros_path /opt/ros/${{ matrix.ros2_distro }}/setup.bash
       # - name: Build PX4 Firmware
       #   run: |
       #     git clone https://github.com/PX4/Firmware.git ~/PX4/Firmware

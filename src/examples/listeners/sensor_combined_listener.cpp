@@ -39,8 +39,8 @@
  * @author Vicente Monge
  */
 
- #include <rclcpp/rclcpp.hpp>
- #include <px4_msgs/msg/sensor_combined.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <px4_msgs/msg/sensor_combined.hpp>
 
 /**
  * @brief Sensor Combined uORB topic data callback
@@ -48,13 +48,10 @@
 class SensorCombinedListener : public rclcpp::Node
 {
 public:
-	explicit SensorCombinedListener() : Node("sensor_combined_listener") {
-		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>(
-			"fmu/sensor_combined/out",
-#ifdef ROS_DEFAULT_API
-            10,
-#endif
-			[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
+	explicit SensorCombinedListener() : Node("sensor_combined_listener")
+	{
+		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>("/fmu/out/sensor_combined", 10,
+		[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED SENSOR COMBINED DATA"   << std::endl;
 			std::cout << "============================="   << std::endl;
@@ -73,6 +70,7 @@ public:
 
 private:
 	rclcpp::Subscription<px4_msgs::msg::SensorCombined>::SharedPtr subscription_;
+
 };
 
 int main(int argc, char *argv[])

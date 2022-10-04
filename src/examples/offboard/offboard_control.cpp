@@ -89,11 +89,13 @@ public:
 		auto timer_callback = [this]() -> void {
 
 			if (offboard_setpoint_counter_ == 10) {
+				
+				// Arm the vehicle
+				this->arm();
+				
 				// Change to Offboard mode after 10 setpoints
 				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 
-				// Arm the vehicle
-				this->arm();
 			}
 
             		// offboard_control_mode needs to be paired with trajectory_setpoint
@@ -133,7 +135,7 @@ private:
  * @brief Send a command to Arm the vehicle
  */
 void OffboardControl::arm() const {
-	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
+	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, VehicleCommand::ARMING_ACTION_ARM);
 
 	RCLCPP_INFO(this->get_logger(), "Arm command send");
 }
@@ -142,7 +144,7 @@ void OffboardControl::arm() const {
  * @brief Send a command to Disarm the vehicle
  */
 void OffboardControl::disarm() const {
-	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 0.0);
+	publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, VehicleCommand::ARMING_ACTION_DISARM);
 
 	RCLCPP_INFO(this->get_logger(), "Disarm command send");
 }

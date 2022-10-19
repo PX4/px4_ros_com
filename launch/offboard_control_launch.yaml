@@ -1,0 +1,7 @@
+launch:
+
+- node:
+    pkg: "px4_ros_com"
+    exec: "offboard_control"
+    name: "offboard_control"
+    output: "screen"

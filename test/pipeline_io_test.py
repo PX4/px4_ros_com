@@ -86,7 +86,7 @@ if __name__ == "__main__":
         "cd " + px4_dir + " && git describe --abbrev=0 && cd " + os.getcwd(), shell=True)
 
     print(
-        "\n\033[34m-------------- PX4 MICRORTPS COMMUNICATION TEST --------------\033[0m")
+        "\n\033[34m-------------- PX4 XRCE-DDS COMMUNICATION TEST --------------\033[0m")
     print("\n-- Test configuration:\n")
     print("    > ROS 2 distro: \033[36m" +
           str(ros_distro.strip().decode("utf-8")).capitalize() + "\033[0m")
@@ -94,9 +94,9 @@ if __name__ == "__main__":
     print("\033[5m-- Running " + ("Output test" if(test_type ==
                                                    "fcu_output") else "Input test") + "...\033[0m")
 
-    # launch the microRTPS agent
-    print("\n\033[93m-- Starting microRTPS bridge agent..." + "\033[0m\n")
-    call("micrortps_agent -t UDP &", shell=True, stderr=STDOUT)
+    # launch the micro-ros-agent
+    print("\n\033[93m-- Starting micro-ros-agent..." + "\033[0m\n")
+    call("micro-ros-agent udp4 --port 2019 &", shell=True, stderr=STDOUT)
 
     # waits for the agent to load
     sleep(3)
@@ -104,14 +104,14 @@ if __name__ == "__main__":
     # launch PX4 SITL daemon, in headless mode
     print(
         "\n\033[93m-- Starting the PX4 SITL daemon and Gazebo (without GUI)...\033[0m\n")
-    call("cd " + px4_dir + " && (NO_PXH=1 HEADLESS=1 make px4_sitl_rtps gazebo_" +
+    call("cd " + px4_dir + " && (NO_PXH=1 HEADLESS=1 make px4_sitl_default gazebo_" +
          px4_target + " &) && cd " + os.getcwd(), shell=True, stderr=DEVNULL)
 
     # waits for PX4 daemon and Gazebo to load
     sleep(20)
 
     # setup the PX4 SITL bin dir
-    px4_bin_dir = os.path.join(px4_dir, "build/px4_sitl_rtps/bin")
+    px4_bin_dir = os.path.join(px4_dir, "build/px4_sitl_default/bin")
 
     # launch the specified test
     topic = ""
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 "python3 " + test_dir + "/test_input.py -b " + px4_bin_dir + " -p " + package_name + " -n " + node + " -t " + topic, stderr=STDOUT, shell=True,
                 universal_newlines=True)
 
-    call("killall gzserver micrortps_agent px4 ros2",
+    call("killall gzserver micro-ros-agent px4 ros2",
          shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
     print(

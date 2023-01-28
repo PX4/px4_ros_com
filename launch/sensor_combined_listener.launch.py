@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Copyright (c) 2018, PX4 Development Team. All rights reserved.
+# Copyright (c) 2018-2022, PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -34,24 +34,28 @@
 
 """
 Example to launch a sensor_combined listener node.
-
-.. seealso::
-    https://index.ros.org/doc/ros2/Launch-system/
 """
 
 from launch import LaunchDescription
-import launch_ros.actions
-import os
-
+from launch_ros.actions import Node
+from launch.actions import ExecuteProcess
 
 def generate_launch_description():
-    if os.environ['ROS_DISTRO'] != "galactic" and os.environ['ROS_DISTRO'] != "rolling":
-        return LaunchDescription([
-            launch_ros.actions.Node(
-                package='px4_ros_com', node_executable='sensor_combined_listener', output='screen'),
-        ])
-    else:
-        return LaunchDescription([
-            launch_ros.actions.Node(
-                package='px4_ros_com', executable='sensor_combined_listener', output='screen'),
-        ])
+
+    micro_ros_agent = ExecuteProcess(
+        cmd=[[
+            'micro-ros-agent udp4 --port 8888 -v '
+        ]],
+        shell=True
+    )
+
+    sensor_combined_listener_node = Node(
+        package='px4_ros_com',
+        executable='sensor_combined_listener',
+        shell=True
+    )
+
+    return LaunchDescription([
+        micro_ros_agent,
+        sensor_combined_listener_node
+    ])

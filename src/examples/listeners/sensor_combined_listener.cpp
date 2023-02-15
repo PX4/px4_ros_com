@@ -50,7 +50,10 @@ class SensorCombinedListener : public rclcpp::Node
 public:
 	explicit SensorCombinedListener() : Node("sensor_combined_listener")
 	{
-		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>("/fmu/out/sensor_combined", 10,
+		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
+		
+		subscription_ = this->create_subscription<px4_msgs::msg::SensorCombined>("/fmu/out/sensor_combined", qos,
 		[this](const px4_msgs::msg::SensorCombined::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED SENSOR COMBINED DATA"   << std::endl;

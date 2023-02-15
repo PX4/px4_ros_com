@@ -48,7 +48,10 @@ class VehicleGpsPositionListener : public rclcpp::Node
 public:
 	explicit VehicleGpsPositionListener() : Node("vehicle_global_position_listener")
 	{
-		subscription_ = this->create_subscription<px4_msgs::msg::SensorGps>("/fmu/out/vehicle_gps_position", 10,
+		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
+		
+		subscription_ = this->create_subscription<px4_msgs::msg::SensorGps>("/fmu/out/vehicle_gps_position", qos,
 		[this](const px4_msgs::msg::SensorGps::UniquePtr msg) {
 			std::cout << "\n\n\n\n\n\n\n\n\n\n";
 			std::cout << "RECEIVED VEHICLE GPS POSITION DATA"   << std::endl;

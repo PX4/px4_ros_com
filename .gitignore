@@ -1,2 +1,3 @@
 build/
 scripts/__pycache__
+/.vs

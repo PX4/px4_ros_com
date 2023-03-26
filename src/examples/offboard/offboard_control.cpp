@@ -36,11 +36,6 @@
  * @addtogroup examples
  * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
-
- * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
- * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info.
- * As per PR: https://github.com/PX4/PX4-Autopilot/pull/17094, the format
- * of the TrajectorySetpoint message shall change.
  */
 
 #include <px4_msgs/msg/offboard_control_mode.hpp>

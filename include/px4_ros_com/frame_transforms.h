@@ -305,6 +305,34 @@ template <class T> inline T baselink_to_aircraft_orientation(const T &in)
 }
 
 /**
+ * @brief Transform from orientation represented in PX4 format to ROS format
+ * PX4 format is aircraft to NED
+ * ROS format is baselink to ENU
+ *
+ * Two steps conversion:
+ * 1. aircraft to NED is converted to aircraft to ENU (NED_to_ENU conversion)
+ * 2. aircraft to ENU is converted to baselink to ENU (baselink_to_aircraft conversion)
+ */
+template <class T> inline T px4_to_ros_orientation(const T &in)
+{
+	return baselink_to_aircraft_orientation(ned_to_enu_orientation(in));
+}
+
+/**
+ * @brief Transform from orientation represented in ROS format to PX4 format
+ * PX4 format is aircraft to NED
+ * ROS format is baselink to ENU
+ *
+ * Two steps conversion:
+ * 1. baselink to ENU is converted to baselink to NED (ENU_to_NED conversion)
+ * 2. baselink to NED is converted to aircraft to NED (aircraft_to_baselink conversion)
+ */
+template <class T> inline T ros_to_px4_orientation(const T &in)
+{
+	return aircraft_to_baselink_orientation(enu_to_ned_orientation(in));
+}
+
+/**
  * @brief Transform data expressed in NED to ENU local frame.
  */
 template <class T> inline T ned_to_enu_local_frame(const T &in)

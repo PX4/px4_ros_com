@@ -57,10 +57,10 @@ public:
 			std::cout << "RECEIVED VEHICLE GPS POSITION DATA"   << std::endl;
 			std::cout << "=================================="   << std::endl;
 			std::cout << "ts: "      << msg->timestamp    << std::endl;
-			std::cout << "lat: " << msg->lat  << std::endl;
-			std::cout << "lon: " << msg->lon << std::endl;
-			std::cout << "alt: " << msg->alt  << std::endl;
-			std::cout << "alt_ellipsoid: " << msg->alt_ellipsoid << std::endl;
+			std::cout << "lat: " << msg->latitude_deg  << std::endl;
+			std::cout << "lon: " << msg->longitude_deg << std::endl;
+			std::cout << "alt: " << msg->altitude_msl_m  << std::endl;
+			std::cout << "alt_ellipsoid: " << msg->altitude_ellipsoid_m << std::endl;
 			std::cout << "s_variance_m_s: " << msg->s_variance_m_s << std::endl;
 			std::cout << "c_variance_rad: " << msg->c_variance_rad << std::endl;
 			std::cout << "fix_type: " << msg->fix_type << std::endl;

@@ -5,7 +5,8 @@
   <version>0.1.0</version>
   <description>Package to interface ROS 2 with PX4</description>
 
-  <maintainer email="nuno.marques@dronesolutions.io">Nuno Marques</maintainer>
+  <maintainer email="beniamino.pozzan@gmail.com">Beniamino Pozzan</maintainer>
+  <author email="beniamino.pozzan@gmail.com">Beniamino Pozzan</author>
   <author email="nuno.marques@dronesolutions.io">Nuno Marques</author>
 
   <license>BSD 3-Clause</license>

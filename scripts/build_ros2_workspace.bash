@@ -45,7 +45,7 @@ if [ -z $ros_distro ]; then
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros2_path' arg! (ex: ~/ros_src/eloquent/install). Otherwise, please install ROS 2 Dashing following https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Binary/"
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros_path' arg! (ex: ~/ros_src/eloquent/install). Otherwise, please install ROS 2 Dashing following https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Binary/"
         exit 1
       else
         # source the ROS2 environment (from arg)
@@ -63,7 +63,7 @@ if [ -z $ros_distro ]; then
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros2_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Foxy following https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Install-Binary/"
         exit 1
       else
         # source the ROS2 environment (from arg)
@@ -79,7 +79,7 @@ if [ -z $ros_distro ]; then
     else
       if [ -z $ros_path ]; then
         echo "- No ROS 2 distro installed or not installed in the default directory."
-        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros2_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Humble following https://docs.ros.org/en/humble/Installation.html"
+        echo "  If you are using a ROS 2 version installed from source, please set the install location with '--ros_path' arg! (ex: ~/ros_src/foxy/install). Otherwise, please install ROS 2 Humble following https://docs.ros.org/en/humble/Installation.html"
         exit 1
       else
         # source the ROS2 environment (from arg)
@@ -97,7 +97,7 @@ if [ -z $ros_distro ]; then
 else
   if [ -z $ros_path ]; then
     echo "- Warning: You set a ROS 2 manually to be used."
-    echo "  This assumes you want to use another ROS 2 version installed on your system. Please set the install location with '--ros2_path' arg! (ex: --ros_path ~/ros_src/eloquent/install/setup.bash)"
+    echo "  This assumes you want to use another ROS 2 version installed on your system. Please set the install location with '--ros_path' arg! (ex: --ros_path ~/ros_src/eloquent/install/setup.bash)"
     exit 1
   else
     # source the ROS 2 environment (from arg)

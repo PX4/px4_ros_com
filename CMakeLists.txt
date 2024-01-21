@@ -24,6 +24,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(rclpy REQUIRED)
 
 #################
 # Setup targets #
@@ -105,5 +106,18 @@ if(BUILD_TESTING)
 	#set(ament_cmake_cpplint_FOUND TRUE)
 	ament_lint_auto_find_test_dependencies()
 endif()
+
+###########
+# Python ##
+###########
+
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+
+# Install Python executables
+install(PROGRAMS
+  src/examples/offboard_py/offboard_control.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

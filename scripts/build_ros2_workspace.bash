@@ -50,6 +50,7 @@ if [ -z $ros_distro ]; then
       else
         # source the ROS2 environment (from arg)
         source $ros_path
+        ros_path_sourced=1
       fi
     fi
     ;;
@@ -84,6 +85,7 @@ if [ -z $ros_distro ]; then
       else
         # source the ROS2 environment (from arg)
         source $ros_path
+        ros_path_sourced=1
       fi
     fi
     ;;
@@ -92,8 +94,11 @@ if [ -z $ros_distro ]; then
     exit 1
     ;;
   esac
-  # source the ROS2 environment
-  source /opt/ros/$ROS_DISTRO/setup.bash
+  # source only if not already sourced from ros_path
+  if [ -z $ros_path_sourced ]; then
+    # source the ROS2 environment
+    source /opt/ros/$ROS_DISTRO/setup.bash
+  fi
 else
   if [ -z $ros_path ]; then
     echo "- Warning: You set a ROS 2 manually to be used."

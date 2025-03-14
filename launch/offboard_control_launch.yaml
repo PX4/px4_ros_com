@@ -1,7 +1,11 @@
 launch:
-
-- node:
-    pkg: "px4_ros_com"
-    exec: "offboard_control"
-    name: "offboard_control"
-    output: "screen"
+  - node:
+      pkg: "px4_ros_com"
+      exec: "offboard_control"
+      name: "offboard_control"
+      output: "screen"
+  - node:
+      pkg: "px4_ros_com"
+      exec: "trajectory_publisher"
+      name: "trajectory_publisher"
+      output: "screen"

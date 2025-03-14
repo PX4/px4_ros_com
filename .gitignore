@@ -1,2 +1,4 @@
 build/
 scripts/__pycache__
+install
+log

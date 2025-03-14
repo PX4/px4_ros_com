@@ -25,6 +25,8 @@ find_package(px4_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(std_msgs REQUIRED)
+
 
 #################
 # Setup targets #
@@ -58,7 +60,7 @@ install(TARGETS debug_vect_advertiser DESTINATION lib/${PROJECT_NAME})
 
 # examples/offboard/offboard_control
 add_executable(offboard_control src/examples/offboard/offboard_control.cpp)
-ament_target_dependencies(offboard_control rclcpp px4_msgs)
+ament_target_dependencies(offboard_control rclcpp px4_msgs std_msgs)
 install(TARGETS offboard_control DESTINATION lib/${PROJECT_NAME})
 
 # examples/offboard/offboard_control_srv
@@ -66,13 +68,17 @@ add_executable(offboard_control_srv src/examples/offboard/offboard_control_srv.c
 ament_target_dependencies(offboard_control_srv rclcpp px4_msgs)
 install(TARGETS offboard_control_srv DESTINATION lib/${PROJECT_NAME})
 
+# Add trajectory_publisher
+add_executable(trajectory_publisher src/examples/offboard/trajectory_publisher.cpp)
+ament_target_dependencies(trajectory_publisher rclcpp px4_msgs)
+install(TARGETS trajectory_publisher DESTINATION lib/${PROJECT_NAME})
 
 ############
 # Install ##
 ############
 
 # Export information to downstream packages
-ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3 px4_msgs geometry_msgs sensor_msgs)
+ament_export_dependencies(ament_cmake rclcpp rosidl_default_runtime eigen3_cmake_module Eigen3 px4_msgs geometry_msgs sensor_msgs std_msgs)
 
 ament_export_targets(export_frame_transforms HAS_LIBRARY_TARGET)
 
@@ -122,6 +128,11 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   src/examples/offboard_py/offboard_control.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  src/examples/offboard_py/maneuver.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

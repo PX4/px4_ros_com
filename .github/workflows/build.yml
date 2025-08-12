@@ -19,7 +19,7 @@ jobs:
       matrix:
         ros2_distro: [foxy, galactic, humble, rolling]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Configure workspace
         run: |
           unset ROS_DISTRO

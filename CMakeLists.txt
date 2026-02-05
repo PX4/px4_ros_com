@@ -116,13 +116,15 @@ endif()
 # Python ##
 ###########
 
-# Install Python modules
+# Install Python modules in px4_ros_com/ (the Python package folder)
 ament_python_install_package(${PROJECT_NAME})
 
-# Install Python executables
+# Install Python executable with a non-conflicting name
+# (requires the script to have a shebang and executable bit)
 install(PROGRAMS
   src/examples/offboard_py/offboard_control.py
   DESTINATION lib/${PROJECT_NAME}
+  RENAME offboard_control_py
 )
 
 ament_package()

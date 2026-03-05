@@ -13,26 +13,32 @@ class OffboardControl(Node):
         super().__init__('offboard_control_takeoff_and_land')
 
         # Configure QoS profile for publishing and subscribing
-        qos_profile = QoSProfile(
+        qos_profile_pub = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             history=HistoryPolicy.KEEP_LAST,
-            depth=1
+            depth=0
+        )
+        qos_profile_sub = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
         )
 
         # Create publishers
         self.offboard_control_mode_publisher = self.create_publisher(
-            OffboardControlMode, '/fmu/in/offboard_control_mode', qos_profile)
+            OffboardControlMode, '/fmu/in/offboard_control_mode', qos_profile_pub)
         self.trajectory_setpoint_publisher = self.create_publisher(
-            TrajectorySetpoint, '/fmu/in/trajectory_setpoint', qos_profile)
+            TrajectorySetpoint, '/fmu/in/trajectory_setpoint', qos_profile_pub)
         self.vehicle_command_publisher = self.create_publisher(
-            VehicleCommand, '/fmu/in/vehicle_command', qos_profile)
+            VehicleCommand, '/fmu/in/vehicle_command', qos_profile_pub)
 
         # Create subscribers
         self.vehicle_local_position_subscriber = self.create_subscription(
-            VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, qos_profile)
+            VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, qos_profile_sub)
         self.vehicle_status_subscriber = self.create_subscription(
-            VehicleStatus, '/fmu/out/vehicle_status', self.vehicle_status_callback, qos_profile)
+            VehicleStatus, '/fmu/out/vehicle_status', self.vehicle_status_callback, qos_profile_sub)
 
         # Initialize variables
         self.offboard_setpoint_counter = 0

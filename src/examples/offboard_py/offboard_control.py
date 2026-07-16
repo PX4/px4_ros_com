@@ -6,6 +6,11 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPo
 from px4_msgs.msg import OffboardControlMode, TrajectorySetpoint, VehicleCommand, VehicleLocalPosition, VehicleStatus
 
 
+MINIUMUM_FLIGHT_TIME = 5  # in seconds; minimum flight time of the vehicle
+TIMER_HERTZ = 10  # in Hz; Frequency of the ROS2 timer
+TAKEOFF_HEIGHT = -5.0; # in m; The heigth the drone will cimb to
+
+
 class OffboardControl(Node):
     """Node for controlling a vehicle in offboard mode."""
 
@@ -30,7 +35,7 @@ class OffboardControl(Node):
 
         # Create subscribers
         self.vehicle_local_position_subscriber = self.create_subscription(
-            VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, qos_profile)
+            VehicleLocalPosition, '/fmu/out/vehicle_local_position_v1', self.vehicle_local_position_callback, qos_profile)
         self.vehicle_status_subscriber = self.create_subscription(
             VehicleStatus, '/fmu/out/vehicle_status', self.vehicle_status_callback, qos_profile)
 
@@ -40,8 +45,10 @@ class OffboardControl(Node):
         self.vehicle_status = VehicleStatus()
         self.takeoff_height = -5.0
 
+        self.flight_time = MINIUMUM_FLIGHT_TIME * TIMER_HERTZ + TIMER_HERTZ
+
         # Create a timer to publish control commands
-        self.timer = self.create_timer(0.1, self.timer_callback)
+        self.timer = self.create_timer(1/TIMER_HERTZ, self.timer_callback)
 
     def vehicle_local_position_callback(self, vehicle_local_position):
         """Callback function for vehicle_local_position topic subscriber."""
@@ -115,21 +122,21 @@ class OffboardControl(Node):
 
     def timer_callback(self) -> None:
         """Callback function for the timer."""
-        self.publish_offboard_control_heartbeat_signal()
-
-        if self.offboard_setpoint_counter == 10:
+        # Send heartbeat and position setpoint for 1 second, then switch to offboard mode and arm the drone
+        if self.offboard_setpoint_counter == TIMER_HERTZ:
             self.engage_offboard_mode()
             self.arm()
 
-        if self.vehicle_local_position.z > self.takeoff_height and self.vehicle_status.nav_state == VehicleStatus.NAVIGATION_STATE_OFFBOARD:
-            self.publish_position_setpoint(0.0, 0.0, self.takeoff_height)
+        self.publish_offboard_control_heartbeat_signal()
 
-        elif self.vehicle_local_position.z <= self.takeoff_height:
+        # Drone will climb to TAKEOFF_HEIGHT and hover there until MINIMUM_FLIGHT_TIME is reached
+        if self.vehicle_local_position.z > self.takeoff_height or self.offboard_setpoint_counter < self.flight_time:
+            self.publish_position_setpoint(0.0, 0.0, self.takeoff_height)
+        else:
             self.land()
             exit(0)
 
-        if self.offboard_setpoint_counter < 11:
-            self.offboard_setpoint_counter += 1
+        self.offboard_setpoint_counter += 1
 
 
 def main(args=None) -> None:

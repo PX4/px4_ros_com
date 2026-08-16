@@ -103,6 +103,7 @@ install(DIRECTORY test DESTINATION share/${PROJECT_NAME}/)
 
 if(BUILD_TESTING)
 	find_package(ament_lint_auto REQUIRED)
+	find_package(ament_cmake_gtest REQUIRED)
 	# the following line skips the linter which checks for copyrights
 	# uncomment the line when a copyright and license is not present in all source files
 	#set(ament_cmake_copyright_FOUND TRUE)
@@ -110,6 +111,10 @@ if(BUILD_TESTING)
 	# uncomment the line when this package is not in a git repo
 	#set(ament_cmake_cpplint_FOUND TRUE)
 	ament_lint_auto_find_test_dependencies()
+
+	ament_add_gtest(frame_transforms_test test/frame_transforms_test.cpp)
+	target_link_libraries(frame_transforms_test frame_transforms)
+	ament_target_dependencies(frame_transforms_test Eigen3 geometry_msgs sensor_msgs)
 endif()
 
 ###########

@@ -360,8 +360,9 @@ Covariance3d transform_frame(const Covariance3d &cov, const Eigen::Quaterniond &
 	Covariance3d cov_out_;
 	EigenMapConstCovariance3d cov_in(cov.data());
 	EigenMapCovariance3d cov_out(cov_out_.data());
+	const Eigen::Matrix3d R = q.normalized().toRotationMatrix();
 
-	cov_out = cov_in * q;
+	cov_out = R * cov_in * R.transpose();
 	return cov_out_;
 }
 
